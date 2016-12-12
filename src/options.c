@@ -17,7 +17,7 @@
 #include "util.h"
 
 const char *color_line_number = "\033[1;33m"; /* bold yellow */
-const char *color_match = "\033[30;43m";      /* black with yellow background */
+const char *color_match = "\033[1;35m";       /* WILD MOD - bold magenta */
 const char *color_path = "\033[1;32m";        /* bold green */
 
 /* TODO: try to obey out_fd? */
@@ -41,7 +41,7 @@ Output Options:\n\
                           (This often differs from the number of matching lines)\n\
      --[no]color          Print color codes in results (Enabled by default)\n\
      --color-line-number  Color codes for line numbers (Default: 1;33)\n\
-     --color-match        Color codes for result match numbers (Default: 30;43)\n\
+     --color-match        Color codes for result match numbers (Default: 1;35)\n\
      --color-path         Color codes for path names (Default: 1;32)\n\
 ");
 #ifdef _WIN32
@@ -651,12 +651,12 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         size_t lang_index;
         printf("The following file types are supported:\n");
         for (lang_index = 0; lang_index < lang_count; lang_index++) {
-            printf("  --%s\n    ", langs[lang_index].name);
+            printf("  --%-18s:", langs[lang_index].name);
             int j;
             for (j = 0; j < MAX_EXTENSIONS && langs[lang_index].extensions[j]; j++) {
                 printf("  .%s", langs[lang_index].extensions[j]);
             }
-            printf("\n\n");
+            printf("\n");
         }
         exit(0);
     }
