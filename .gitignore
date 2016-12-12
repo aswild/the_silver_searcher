@@ -1,6 +1,7 @@
 *.dSYM
 *.o
 *.plist
+*.swp
 .deps
 .dirstamp
 .DS_Store
