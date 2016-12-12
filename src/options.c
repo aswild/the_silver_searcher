@@ -68,6 +68,9 @@ Output Options:\n\
      --print-long-lines   Print matches on very long lines (Default: >2k characters)\n\
      --passthrough        When searching a stream, print all lines even if they\n\
                           don't match\n\
+     --pager[=<pager>]    Pipe output through a pager. Use PAGER from the environment\n\
+                          if not specified, or " DEFAULT_PAGER " if PAGER is unset.\n\
+     --nopager            Don't use a pager.\n\
      --silent             Suppress all log messages, including errors\n\
      --stats              Print stats (files scanned, time taken, etc.)\n\
      --stats-only         Print stats and nothing else.\n\
@@ -296,7 +299,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "numbers", no_argument, &opts.print_line_numbers, 2 },
         { "only-matching", no_argument, NULL, 'o' },
         { "one-device", no_argument, &opts.one_dev, 1 },
-        { "pager", required_argument, NULL, 0 },
+        { "pager", optional_argument, NULL, 0 },
         { "parallel", no_argument, &opts.parallel, 1 },
         { "passthrough", no_argument, &opts.passthrough, 1 },
         { "passthru", no_argument, &opts.passthrough, 1 },
@@ -535,7 +538,17 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                     opts.pager = NULL;
                     break;
                 } else if (strcmp(longopts[opt_index].name, "pager") == 0) {
-                    opts.pager = optarg;
+                    // WILD MOD START - if no pager specifed, read PAGER
+                    if (optarg) {
+                        opts.pager = optarg;
+                    } else {
+                        opts.pager = getenv("PAGER");
+                        if (!opts.pager) {
+                            // if no PAGER in env, fall back to default
+                            opts.pager = DEFAULT_PAGER;
+                        }
+                    }
+                    // WILD MOD END
                     break;
                 } else if (strcmp(longopts[opt_index].name, "workers") == 0) {
                     opts.workers = atoi(optarg);

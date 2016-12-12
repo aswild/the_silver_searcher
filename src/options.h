@@ -10,6 +10,7 @@
 #define DEFAULT_BEFORE_LEN 2
 #define DEFAULT_CONTEXT_LEN 2
 #define DEFAULT_MAX_SEARCH_DEPTH 25
+#define DEFAULT_PAGER "less"
 enum case_behavior {
     CASE_DEFAULT, /* Changes to CASE_SMART at the end of option parsing */
     CASE_SENSITIVE,
