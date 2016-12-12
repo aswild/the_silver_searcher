@@ -9,7 +9,8 @@ lang_spec_t langs[] = {
     { "ada", { "ada", "adb", "ads" } },
     { "asm", { "asm", "s" } },
     { "batch", { "bat", "cmd" } },
-    { "bitbake", { "bb", "bbappend", "bbclass", "inc" } },
+    { "bb", { "bb", "bbappend", "bbclass", "inc", "conf" } },      // WILD ADD
+    { "bitbake", { "bb", "bbappend", "bbclass", "inc", "conf" } }, // WILD MOD (add .conf)
     { "bro", { "bro", "bif" } },
     { "cc", { "c", "h", "xs" } },
     { "cfmx", { "cfc", "cfm", "cfml" } },
@@ -69,6 +70,7 @@ lang_spec_t langs[] = {
     { "plone", { "pt", "cpt", "metadata", "cpy", "py", "xml", "zcml" } },
     { "proto", { "proto" } },
     { "puppet", { "pp" } },
+    { "py", { "py" } }, // WILD ADD
     { "python", { "py" } },
     { "qml", { "qml" } },
     { "racket", { "rkt", "ss", "scm" } },
@@ -83,6 +85,7 @@ lang_spec_t langs[] = {
     { "sass", { "sass", "scss" } },
     { "scala", { "scala" } },
     { "scheme", { "scm", "ss" } },
+    { "sh", { "sh", "bash", "csh", "tcsh", "ksh", "zsh", "fish" } }, // WILD ADD
     { "shell", { "sh", "bash", "csh", "tcsh", "ksh", "zsh", "fish" } },
     { "smalltalk", { "st" } },
     { "sml", { "sml", "fun", "mlb", "sig" } },
