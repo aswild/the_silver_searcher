@@ -97,9 +97,9 @@ Search Options:\n\
   -p --path-to-ignore STRING\n\
                           Use .ignore file at STRING\n\
   -Q --literal            Don't parse PATTERN as a regular expression\n\
-  -s --case-sensitive     Match case sensitively\n\
+  -s --case-sensitive     Match case sensitively (default)\n\
   -S --smart-case         Match case insensitively unless PATTERN contains\n\
-                          uppercase characters (Enabled by default)\n\
+                          uppercase characters\n\
      --search-binary      Search binary files for matches\n\
   -t --all-text           Search all text files (doesn't include hidden files)\n\
   -u --unrestricted       Search all files (ignore .ignore, .gitignore, etc.;\n\
@@ -144,7 +144,7 @@ void print_version(void) {
 
 void init_options(void) {
     memset(&opts, 0, sizeof(opts));
-    opts.casing = CASE_DEFAULT;
+    opts.casing = CASE_SENSITIVE; // WILD MOD
     opts.color = TRUE;
     opts.color_win_ansi = FALSE;
     opts.max_matches_per_file = 0;
@@ -596,10 +596,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 usage();
                 exit(1);
         }
-    }
-
-    if (opts.casing == CASE_DEFAULT) {
-        opts.casing = CASE_SMART;
     }
 
     if (file_search_regex) {
