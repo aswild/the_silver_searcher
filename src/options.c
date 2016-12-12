@@ -40,6 +40,7 @@ Output Options:\n\
   -c --count              Only print the number of matches in each file.\n\
                           (This often differs from the number of matching lines)\n\
      --[no]color          Print color codes in results (Enabled by default)\n\
+     --force-color        Print color even if stdout isn't a TTY\n\
      --color-line-number  Color codes for line numbers (Default: 1;33)\n\
      --color-match        Color codes for result match numbers (Default: 1;35)\n\
      --color-path         Color codes for path names (Default: 1;32)\n\
@@ -218,6 +219,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     size_t lang_count;
     size_t lang_num = 0;
     int has_filetype = 0;
+    int force_color = 0; // WILD ADD
 
     size_t longopts_len, full_len;
     option_t *longopts;
@@ -239,6 +241,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "break", no_argument, &opts.print_break, 1 },
         { "case-sensitive", no_argument, NULL, 's' },
         { "color", no_argument, &opts.color, 1 },
+        { "force-color", no_argument, &force_color, 1}, // WILD ADD
         { "color-line-number", required_argument, NULL, 0 },
         { "color-match", required_argument, NULL, 0 },
         { "color-path", required_argument, NULL, 0 },
@@ -356,8 +359,10 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         * print filenames on every line
      */
     if (!isatty(fileno(stdout))) {
-        opts.color = 0;
-        group = 0;
+        // WILD REMOVE START - move below for force-color
+        //opts.color = 0;
+        //group = 0;
+        // WILD REMOVE END
 
         /* Don't search the file that stdout is redirected to */
         rv = fstat(fileno(stdout), &statbuf);
@@ -597,6 +602,13 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 exit(1);
         }
     }
+
+    // WILD ADD START - support --force-color
+    if (!isatty(fileno(stdout)) && !force_color) {
+        opts.color = 0;
+        group = 0;
+    }
+    // WILD ADD END
 
     if (opts.casing == CASE_DEFAULT) {
         opts.casing = CASE_SMART;
