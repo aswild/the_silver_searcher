@@ -124,11 +124,15 @@ can be found at http://geoff.greer.fm/ag\n");
 
 void print_version(void) {
     char jit = '-';
+    char pcre2 = '-';
     char lzma = '-';
     char zlib = '-';
 
 #ifdef USE_PCRE_JIT
     jit = '+';
+#endif
+#ifdef HAVE_PCRE2
+    pcre2 = '+';
 #endif
 #ifdef HAVE_LZMA_H
     lzma = '+';
@@ -139,7 +143,7 @@ void print_version(void) {
 
     printf("ag version %s\n\n", PACKAGE_VERSION);
     printf("Features:\n");
-    printf("  %cjit %clzma %czlib\n", jit, lzma, zlib);
+    printf("  %cjit %cpcre2 %clzma %czlib\n", jit, pcre2, lzma, zlib);
 }
 
 void init_options(void) {
