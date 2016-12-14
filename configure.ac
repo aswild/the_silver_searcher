@@ -89,5 +89,6 @@ AM_COND_IF(
     [AC_MSG_NOTICE([clang-format found. 'make test' will detect improperly-formatted files.])],
     [AC_MSG_WARN([clang-format not found. 'make test' will not detect improperly-formatted files.])]
 )
+AM_CONDITIONAL([HAVE_PCRE2], [test "x$with_pcre2" = "xyes"])
 
 AC_OUTPUT

@@ -1,5 +1,4 @@
 #include <ctype.h>
-#include <pcre.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +9,7 @@
 #endif
 
 #include "config.h"
+#include "pcre_api.h"
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     char **base_paths = NULL;
     char **paths = NULL;
     int i;
-    int pcre_opts = PCRE_MULTILINE;
+    int pcre_opts = AG_PCRE_MULTILINE;
     int study_opts = 0;
     worker_t *workers = NULL;
     int workers_len;
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     out_fd = stdout;
 
     parse_options(argc, argv, &base_paths, &paths);
-    log_debug("PCRE Version: %s", pcre_version());
+    log_debug("PCRE Version: %s", ag_pcre_version());
     if (opts.stats) {
         memset(&stats, 0, sizeof(stats));
         gettimeofday(&(stats.time_start), NULL);
@@ -57,9 +57,13 @@ int main(int argc, char **argv) {
 
 #ifdef USE_PCRE_JIT
     int has_jit = 0;
-    pcre_config(PCRE_CONFIG_JIT, &has_jit);
+    ag_pcre_config(AG_PCRE_CONFIG_JIT, &has_jit);
     if (has_jit) {
+#ifndef HAVE_PCRE2
         study_opts |= PCRE_STUDY_JIT_COMPILE;
+#else
+        // TODO: how to send this to compile_study for pcre2?
+#endif
     }
 #endif
 
@@ -123,7 +127,7 @@ int main(int argc, char **argv) {
         }
     } else {
         if (opts.casing == CASE_INSENSITIVE) {
-            pcre_opts |= PCRE_CASELESS;
+            pcre_opts |= AG_PCRE_CASELESS;
         }
         if (opts.word_regexp) {
             char *word_regexp_query;
