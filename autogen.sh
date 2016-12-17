@@ -14,8 +14,10 @@ then
     AC_SEARCH_OPTS="-I /usr/local/share/aclocal"
 fi
 
+autoreconf --verbose --install --symlink
+
 # shellcheck disable=2086
-aclocal $AC_SEARCH_OPTS
-autoconf
-autoheader
-automake --add-missing
+#aclocal $AC_SEARCH_OPTS
+#autoconf
+#autoheader
+#automake --add-missing

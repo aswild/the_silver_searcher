@@ -96,7 +96,7 @@ AM_COND_IF(
 # If this isn't a git repo, assume this is building from a release tarball and use
 # PACKAGE_VERSION. Disable if --disable-gitversion is passed.
 AC_ARG_ENABLE([gitversion],
-              AC_HELP_STRING([--disable-gitversion], [Disable dynamic git version and use PACKAGE_VERSION instead]))
+              AS_HELP_STRING([--disable-gitversion], [Disable dynamic git version and use PACKAGE_VERSION instead]))
 
 ag_use_gitversion="no"
 AS_IF([test "x$enable_gitversion" != "xno"], [
