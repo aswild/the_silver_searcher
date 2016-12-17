@@ -15,6 +15,7 @@
 #include "options.h"
 #include "print.h"
 #include "util.h"
+#include "version.h"
 
 const char *color_line_number = "\033[1;33m"; /* bold yellow */
 const char *color_match = "\033[1;35m";       /* WILD MOD - bold magenta */
@@ -141,7 +142,8 @@ void print_version(void) {
     zlib = '+';
 #endif
 
-    printf("ag version %s\n\n", PACKAGE_VERSION);
+    printf("ag version %s\n\n", AG_VERSION);
+    printf("pcre version %s\n", ag_pcre_version());
     printf("Features:\n");
     printf("  %cjit %cpcre2 %clzma %czlib\n", jit, pcre2, lzma, zlib);
 }

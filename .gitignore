@@ -25,6 +25,7 @@ Makefile
 Makefile.in
 missing
 src/config.h*
+src/version.c
 stamp-h1
 tests/*.err
 tests/big/*.err

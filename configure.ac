@@ -10,6 +10,7 @@ AM_INIT_AUTOMAKE([no-define foreign subdir-objects])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PREREQ([2.59])
+AC_PROG_SED
 
 m4_ifdef(
     [AM_SILENT_RULES],
@@ -51,6 +52,7 @@ AS_IF([test "x$with_pcre2" = "xyes"], [
                                       [], [#include <pcre.h>])
                         ])
 ])
+AM_CONDITIONAL([HAVE_PCRE2], [test "x$with_pcre2" = "xyes"])
 
 AC_ARG_ENABLE([zlib],
     AS_HELP_STRING([--disable-zlib], [Disable zlib compressed search support]))
@@ -89,6 +91,35 @@ AM_COND_IF(
     [AC_MSG_NOTICE([clang-format found. 'make test' will detect improperly-formatted files.])],
     [AC_MSG_WARN([clang-format not found. 'make test' will not detect improperly-formatted files.])]
 )
-AM_CONDITIONAL([HAVE_PCRE2], [test "x$with_pcre2" = "xyes"])
+
+# Determine if we're building in a git repo, and if so enable dynamic versioning.
+# If this isn't a git repo, assume this is building from a release tarball and use
+# PACKAGE_VERSION. Disable if --disable-gitversion is passed.
+AC_ARG_ENABLE([gitversion],
+              AC_HELP_STRING([--disable-gitversion], [Disable dynamic git version and use PACKAGE_VERSION instead]))
+
+ag_use_gitversion="no"
+AS_IF([test "x$enable_gitversion" != "xno"], [
+    AC_CHECK_PROG([ag_has_git], [git], [yes])
+    AS_IF([test "x$ag_has_git" = "xyes"], [
+        AC_MSG_CHECKING([Whether this is a git repo])
+        AS_IF([test -d "./.git" && git status --porcelain >/dev/null 2>&1], [
+            AC_MSG_RESULT([yes])
+            ag_use_gitversion="yes"
+        ], [
+            AC_MSG_RESULT([no])
+        ])
+    ])
+])
+AM_CONDITIONAL([USE_GITVERSION], [test "x$ag_use_gitversion" = "xyes"])
+AM_COND_IF([USE_GITVERSION], [], [
+    dnl Logic to use USE_GITVERSION is handled in Makefile.in. If not using gitversion
+    dnl then use sed to create version.c during configure
+    AS_IF([test -f "src/version.c.in"], [
+        AC_MSG_NOTICE([Creating version.c])
+        rm -f src/version.c
+        $SED 's/@AG_VERSION@/PACKAGE_VERSION/' src/version.c.in >src/version.c
+    ])
+])
 
 AC_OUTPUT

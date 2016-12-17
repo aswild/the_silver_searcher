@@ -1,0 +1,4 @@
+#include "config.h"
+#include "version.h"
+
+const char * AG_VERSION = @AG_VERSION@;
