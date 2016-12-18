@@ -17,12 +17,12 @@
 #ifndef __PCRE_API_H__
 #define __PCRE_API_H__
 
-#ifndef HAVE_PCRE2
-#include <pcre.h>
-#define AG_PCRE_DEFINE_PREFIX PCRE_
-#else
+#ifdef HAVE_PCRE2
 #include <pcre2.h>
 #define AG_PCRE_DEFINE_PREFIX PCRE2_
+#else
+#include <pcre.h>
+#define AG_PCRE_DEFINE_PREFIX PCRE_
 #endif // HAVE_PCRE2
 
 // Common macros so that AG_PCRE_* will automatically expand to either
@@ -84,10 +84,14 @@
 /******************************************************************************
  * TYPES
  ******************************************************************************/
-#ifndef HAVE_PCRE2
-typedef pcre ag_pcre_code;
+#ifdef HAVE_PCRE2
+// For pcre2
+typedef pcre2_code          ag_pcre_re_t;
+typedef pcre2_match_context ag_pcre_extra_t;
 #else
-typedef pcre2_code ag_pcre_code;
+// For leagacy pcre
+typedef pcre                ag_pcre_re_t;
+typedef pcre_extra          ag_pcre_extra_t;
 #endif
 
 /******************************************************************************
@@ -95,15 +99,21 @@ typedef pcre2_code ag_pcre_code;
  ******************************************************************************/
 // Function macros - for where the usage of pcre_*() and pcre2_*() are interchangeable
 // (perhaps with the help of other AG_PCRE defines
-#ifndef HAVE_PCRE2
-// for legacy pcre
-#define ag_pcre_config(a, b)    pcre_config(a, b)
+#ifdef HAVE_PCRE2
+// For pcre2
+#define ag_pcre_config    pcre2_config
 #else
-// for pcre2
-#define ag_pcre_config(a, b)    pcre2_config(a, b)
+// For legacy pcre
+#define ag_pcre_config    pcre_config
 #endif
 
 // Functions which need to be wrapped in more than name
 const char *ag_pcre_version(void);
+void        ag_pcre_free_re(ag_pcre_re_t **re);
+void        ag_pcre_free_extra(ag_pcre_extra_t **pextra);
+void        ag_pcre_compile(ag_pcre_re_t **re, ag_pcre_extra_t **re_extra, char *q,
+                            const int pcre_opts, int use_jit);
+int         ag_pcre_match(ag_pcre_re_t *re, ag_pcre_extra_t *extra, const char *buf, int length,
+                          int offset, int options, int *ovector, int ovecsize);
 
 #endif // __PCRE_API_H__

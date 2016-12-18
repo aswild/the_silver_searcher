@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <pcre.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,10 +22,12 @@
 #include <pthread.h>
 #endif
 
+#include "config.h"
 #include "decompress.h"
 #include "ignore.h"
 #include "log.h"
 #include "options.h"
+#include "pcre_api.h"
 #include "print.h"
 #include "uthash.h"
 #include "util.h"
