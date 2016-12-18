@@ -13,6 +13,7 @@
 #include "lang.h"
 #include "log.h"
 #include "options.h"
+#include "pcre_api.h"
 #include "print.h"
 #include "util.h"
 #include "version.h"

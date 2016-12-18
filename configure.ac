@@ -41,7 +41,7 @@ AS_IF([test "x$with_pcre2" = "xyes"], [
       PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [
                         AC_DEFINE([HAVE_PCRE2], [], [Use libpcre2])
                         AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for libpcre2])
-                        AC_DEFINE([USE_PCRE_JIT], [], [Always use jit for libpcre2])
+                        AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])
                         CFLAGS="$CFLAGS $PCRE2_CFLAGS"
                         ])
       ], [

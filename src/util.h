@@ -2,7 +2,6 @@
 #define UTIL_H
 
 #include <dirent.h>
-#include <pcre.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

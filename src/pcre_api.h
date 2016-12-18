@@ -17,6 +17,8 @@
 #ifndef __PCRE_API_H__
 #define __PCRE_API_H__
 
+#include "config.h"
+
 #ifdef HAVE_PCRE2
 #include <pcre2.h>
 #define AG_PCRE_DEFINE_PREFIX PCRE2_
