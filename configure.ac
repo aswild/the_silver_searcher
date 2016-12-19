@@ -103,7 +103,7 @@ AS_IF([test "x$enable_gitversion" != "xno"], [
     AC_CHECK_PROG([ag_has_git], [git], [yes])
     AS_IF([test "x$ag_has_git" = "xyes"], [
         AC_MSG_CHECKING([Whether this is a git repo])
-        AS_IF([test -d "./.git" && git status --porcelain >/dev/null 2>&1], [
+        AS_IF([test -e "./.git" && git status --porcelain >/dev/null 2>&1], [
             AC_MSG_RESULT([yes])
             ag_use_gitversion="yes"
         ], [
