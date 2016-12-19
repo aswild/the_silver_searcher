@@ -22,7 +22,7 @@ then
     exit 1
 fi
 
-SOURCE_FILES=$(git ls-files src/)
+SOURCE_FILES=$(git ls-files src/ | grep '\.[ch]$')
 
 if [ "$1" == "reformat" ]
 then

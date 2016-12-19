@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "config.h"
 #include "pcre_api.h"
+#include "config.h"
 #include "util.h"
 
 /*
@@ -66,11 +66,11 @@ void ag_pcre_compile(ag_pcre_re_t **re, ag_pcre_extra_t **re_extra, char *q, con
 
 #ifdef HAVE_PCRE2
     int pcre2_err = 0;
-    char pcre2_err_buf[120] = {0};
-    *re = pcre2_compile((PCRE2_UCHAR8*)q, PCRE2_ZERO_TERMINATED, pcre_opts,
-                        &pcre2_err, (PCRE2_SIZE*)&pcre_err_offset, NULL);
+    char pcre2_err_buf[120] = { 0 };
+    *re = pcre2_compile((PCRE2_UCHAR8 *)q, PCRE2_ZERO_TERMINATED, pcre_opts,
+                        &pcre2_err, (PCRE2_SIZE *)&pcre_err_offset, NULL);
     if (*re == NULL) {
-        pcre2_get_error_message(pcre2_err, (PCRE2_UCHAR8*)pcre2_err_buf, sizeof(pcre2_err_buf));
+        pcre2_get_error_message(pcre2_err, (PCRE2_UCHAR8 *)pcre2_err_buf, sizeof(pcre2_err_buf));
         pcre_err = pcre2_err_buf;
     }
 #else
@@ -113,7 +113,7 @@ int ag_pcre_match(ag_pcre_re_t *re, ag_pcre_extra_t *extra, const char *buf, int
     PCRE2_SIZE *ovec_pointer;
     int i;
 
-    rc = pcre2_match(re, (const PCRE2_UCHAR8*)buf, (PCRE2_SIZE)length, offset, options, match_data, extra);
+    rc = pcre2_match(re, (const PCRE2_UCHAR8 *)buf, (PCRE2_SIZE)length, offset, options, match_data, extra);
     ovec_count = pcre2_get_ovector_count(match_data);
     ovec_pointer = pcre2_get_ovector_pointer(match_data);
     for (i = 0; i < ovecsize && (uint32_t)i < ovec_count; i++) {

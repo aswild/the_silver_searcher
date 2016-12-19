@@ -544,7 +544,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
         if (!is_directory(path, dir)) {
             if (opts.file_search_regex) {
                 rc = ag_pcre_match(opts.file_search_regex, NULL, dir_full_path, strlen(dir_full_path),
-                               0, 0, offset_vector, 3);
+                                   0, 0, offset_vector, 3);
                 if (rc < 0) { /* no match */
                     log_debug("Skipping %s due to file_search_regex.", dir_full_path);
                     goto cleanup;
