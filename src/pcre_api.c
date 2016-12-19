@@ -119,6 +119,7 @@ int ag_pcre_match(ag_pcre_re_t *re, ag_pcre_extra_t *extra, const char *buf, int
     for (i = 0; i < ovecsize && (uint32_t)i < ovec_count; i++) {
         ovector[i] = ovec_pointer[i];
     }
+    pcre2_match_data_free(match_data);
 #else
     rc = pcre_exec(re, extra, buf, length, offset, options, ovector, ovecsize);
 #endif
