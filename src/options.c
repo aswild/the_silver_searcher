@@ -19,7 +19,7 @@
 #include "version.h"
 
 const char *color_line_number = "\033[1;33m"; /* bold yellow */
-const char *color_match = "\033[1;35m";       /* WILD MOD - bold magenta */
+const char *color_match = "\033[30;43m";      /* black with yellow background */
 const char *color_path = "\033[1;32m";        /* bold green */
 
 /* TODO: try to obey out_fd? */
@@ -43,7 +43,7 @@ Output Options:\n\
                           (This often differs from the number of matching lines)\n\
      --[no]color          Print color codes in results (Enabled by default)\n\
      --color-line-number  Color codes for line numbers (Default: 1;33)\n\
-     --color-match        Color codes for result match numbers (Default: 1;35)\n\
+     --color-match        Color codes for result match numbers (Default: 30;43)\n\
      --color-path         Color codes for path names (Default: 1;32)\n\
 ");
 #ifdef _WIN32
@@ -99,9 +99,9 @@ Search Options:\n\
   -p --path-to-ignore STRING\n\
                           Use .ignore file at STRING\n\
   -Q --literal            Don't parse PATTERN as a regular expression\n\
-  -s --case-sensitive     Match case sensitively (default)\n\
+  -s --case-sensitive     Match case sensitively\n\
   -S --smart-case         Match case insensitively unless PATTERN contains\n\
-                          uppercase characters\n\
+                          uppercase characters (Enabled by default)\n\
      --search-binary      Search binary files for matches\n\
   -t --all-text           Search all text files (doesn't include hidden files)\n\
   -u --unrestricted       Search all files (ignore .ignore, .gitignore, etc.;\n\
@@ -151,7 +151,7 @@ void print_version(void) {
 
 void init_options(void) {
     memset(&opts, 0, sizeof(opts));
-    opts.casing = CASE_SENSITIVE; // WILD MOD
+    opts.casing = CASE_DEFAULT;
     opts.color = TRUE;
     opts.color_win_ansi = FALSE;
     opts.max_matches_per_file = 0;
@@ -591,6 +591,10 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 usage();
                 exit(1);
         }
+    }
+
+    if (opts.casing == CASE_DEFAULT) {
+        opts.casing = CASE_SMART;
     }
 
     if (file_search_regex) {
