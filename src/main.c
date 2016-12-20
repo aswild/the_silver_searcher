@@ -216,6 +216,9 @@ int main(int argc, char **argv) {
     if (opts.pager) {
         pclose(out_fd);
     }
+    if (opts.argv && opts.argv != argv) {
+        free(opts.argv);
+    }
     cleanup_options();
     pthread_cond_destroy(&files_ready);
     pthread_mutex_destroy(&work_queue_mtx);

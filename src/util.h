@@ -23,6 +23,14 @@ FILE *out_fd;
 
 #define H_SIZE (64 * 1024)
 
+#define CHECK_AND_FREE(x) \
+    do { \
+        if (x != NULL) { \
+            free(x); \
+            x = NULL; \
+        } \
+    } while (0)
+
 void *ag_malloc(size_t size);
 void *ag_realloc(void *ptr, size_t size);
 void *ag_calloc(size_t nelem, size_t elsize);

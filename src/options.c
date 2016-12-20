@@ -181,13 +181,10 @@ void init_options(void) {
 }
 
 void cleanup_options(void) {
-    free(opts.color_path);
-    free(opts.color_match);
-    free(opts.color_line_number);
-
-    if (opts.query) {
-        free(opts.query);
-    }
+    CHECK_AND_FREE(opts.color_path);
+    CHECK_AND_FREE(opts.color_match);
+    CHECK_AND_FREE(opts.color_line_number);
+    CHECK_AND_FREE(opts.query);
 
     // Note, ag_pcre_free_* will do NULL checks and set the pointer to NULL after freeing
     ag_pcre_free_re(&opts.re);
@@ -210,30 +207,34 @@ static void get_opts_from_file(const char *path, int *argc_out, char ***argv_out
     char buf[128] = { 0 }; // max length of options in .agrc
     char *arg = NULL;
 
-    if ((fp = fopen(path, "r")) != NULL) {
-        list = ag_malloc(list_size * sizeof(char *));
-        while (fgets(buf, sizeof(buf), fp)) {
-            // ignore lines which don't start with -
-            if (buf[0] == '-') {
-                // strip trailing newline
-                char *newline = strchr(buf, '\n');
-                if (newline) {
-                    *newline = '\0';
+    if (path != NULL) {
+        if ((fp = fopen(path, "r")) != NULL) {
+            list = ag_malloc(list_size * sizeof(char *));
+            while (fgets(buf, sizeof(buf), fp)) {
+                // ignore lines which don't start with -
+                if (buf[0] == '-') {
+                    // strip trailing newline
+                    char *newline = strchr(buf, '\n');
+                    if (newline) {
+                        *newline = '\0';
+                    }
+                    if (count >= list_size) {
+                        // expand buffer if needed
+                        list_size *= 2;
+                        list = ag_realloc(list, list_size * sizeof(char *));
+                    }
+                    arg = ag_strdup(buf);
+                    list[count] = arg;
+                    count++;
+                    log_debug("Got argument '%s' from agrc", arg);
                 }
-                if (count >= list_size) {
-                    // expand buffer if needed
-                    list_size *= 2;
-                    list = ag_realloc(list, list_size * sizeof(char *));
-                }
-                arg = ag_strdup(buf);
-                list[count] = arg;
-                count++;
-                log_debug("Got argument '%s' from agrc", arg);
             }
+            fclose(fp);
+        } else {
+            log_debug("Unable to open agrc file '%s'", path);
         }
-        fclose(fp);
     } else {
-        log_debug("Unable to open agrc file '%s'", path);
+        log_warn("%s: NULL path pointer", __func__);
     }
     *argc_out = count;
     *argv_out = list;
@@ -270,6 +271,8 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     size_t num_exts = 0;
 
     init_options();
+    opts.argc = argc;
+    opts.argv = argv;
 
     option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
@@ -453,8 +456,8 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 snprintf(agrc_file, agrc_len, "%s/.agrc", home_dir);
             }
         }
-        log_debug("Using agrc file '%s'", agrc_file);
 
+        log_debug("Using agrc file '%s'", agrc_file);
         get_opts_from_file(agrc_file, &agrc_argc, &agrc_argv);
         if (agrc_argc) {
             // if we get arguments from .agrc, prepend them to argc/argv
@@ -471,13 +474,14 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             for (i = 1; i < (size_t)argc; i++) {
                 new_argv[agrc_argc + i] = argv[i];
             }
-            argc = new_argc;
-            argv = new_argv;
+            opts.argc = new_argc;
+            opts.argv = new_argv;
         }
-        free(agrc_argv);
+        CHECK_AND_FREE(agrc_argv);
+        CHECK_AND_FREE(agrc_file);
     }
-    for (i = 0; i < (size_t)argc; i++) {
-        log_debug("argv[%lu] = '%s'", i, argv[i]);
+    for (i = 0; i < (size_t)opts.argc; i++) {
+        log_debug("opts.argv[%lu] = '%s'", i, opts.argv[i]);
     }
 
     char *file_search_regex = NULL;
