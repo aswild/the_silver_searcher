@@ -43,10 +43,13 @@ then
     else
         echo "code is not formatted correctly! :("
         echo "Suggested change:"
+        rm -rf clang_format_src
         cp -r src clang_format_src
         $CLANG_FORMAT -style=file -i clang_format_src/*.c clang_format_src/*.h
-        diff -ur src clang_format_src
-        rm -r clang_format_src
+        for file in $SOURCE_FILES; do
+            diff -u ${file} clang_format_${file}
+        done
+        rm -rf clang_format_src
         echo "Run '$0 reformat' to fix formatting"
         exit 1
     fi
