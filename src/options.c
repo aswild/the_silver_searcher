@@ -136,7 +136,11 @@ void print_version(void) {
     char zlib = '-';
 
 #ifdef USE_PCRE_JIT
-    jit = '+';
+    int use_jit = 0;
+    ag_pcre_config(AG_PCRE_CONFIG_JIT, &use_jit);
+    if (use_jit) {
+        jit = '+';
+    }
 #endif
 #ifdef HAVE_PCRE2
     pcre2 = '+';
