@@ -10,6 +10,7 @@ AM_INIT_AUTOMAKE([no-define foreign subdir-objects])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PREREQ([2.59])
+AC_PROG_GREP
 AC_PROG_SED
 
 m4_ifdef(
@@ -23,8 +24,12 @@ AX_PTHREAD(
 )
 
 # Run CFLAGS="-pg" ./configure if you want debug symbols
+if test "`$GREP -c '\b-O' >/dev/null ; echo $?`" = "0" ; then
+    CFLAGS="$CFLAGS -O2"
+fi
+
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow"
-CFLAGS="$CFLAGS -Wpointer-arith -Wcast-qual -Wmissing-prototypes -Wno-missing-braces -std=gnu89 -D_GNU_SOURCE -O2"
+CFLAGS="$CFLAGS -Wpointer-arith -Wcast-qual -Wmissing-prototypes -Wno-missing-braces -std=gnu89 -D_GNU_SOURCE"
 LDFLAGS="$LDFLAGS"
 
 case $host in
