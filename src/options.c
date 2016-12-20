@@ -271,8 +271,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     size_t num_exts = 0;
 
     init_options();
-    opts.argc = argc;
-    opts.argv = argv;
 
     option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
@@ -474,14 +472,14 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             for (i = 1; i < (size_t)argc; i++) {
                 new_argv[agrc_argc + i] = argv[i];
             }
-            opts.argc = new_argc;
-            opts.argv = new_argv;
+            argc = new_argc;
+            argv = new_argv;
         }
         CHECK_AND_FREE(agrc_argv);
         CHECK_AND_FREE(agrc_file);
     }
-    for (i = 0; i < (size_t)opts.argc; i++) {
-        log_debug("opts.argv[%lu] = '%s'", i, opts.argv[i]);
+    for (i = 0; i < (size_t)argc; i++) {
+        log_debug("argv[%lu] = '%s'", i, argv[i]);
     }
 
     char *file_search_regex = NULL;

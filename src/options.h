@@ -32,8 +32,6 @@ typedef struct {
     ag_pcre_re_t *ackmate_dir_filter;
     ag_pcre_extra_t *ackmate_dir_filter_extra;
     size_t after;
-    int argc;
-    char **argv;
     size_t before;
     enum case_behavior casing;
     const char *file_search_string;
