@@ -39,25 +39,41 @@ esac
 
 LIBS="$PTHREAD_LIBS $LIBS"
 
-AC_ARG_WITH([pcre2],
-    [AS_HELP_STRING([--with-pcre2], [Enable experimental support for libpcre2])])
+################### PCRE Check #####################
 
-AS_IF([test "x$with_pcre2" = "xyes"], [
-      PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [
-                        AC_DEFINE([HAVE_PCRE2], [], [Use libpcre2])
-                        AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for libpcre2])
-                        AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])
-                        CFLAGS="$CFLAGS $PCRE2_CFLAGS"
-                        ])
-      ], [
-      PKG_CHECK_MODULES([PCRE], [libpcre], [
-                        AC_DEFINE([HAVE_PCRE], [], [Use libpcre])
-                        CFLAGS="$CFLAGS $PCRE_CFLAGS"
-                        AC_CHECK_DECL([PCRE_CONFIG_JIT], [AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])],
-                                      [], [#include <pcre.h>])
-                        ])
+# actions to take when a PCRE lib is found
+AC_DEFUN([AG_PCRE_SETUP], [
+         ag_have_pcre2="no"
+         AC_DEFINE([HAVE_PCRE], [], [Use libpcre])
+         CFLAGS="$CFLAGS $PCRE_CFLAGS"
+         AC_CHECK_DECL([PCRE_CONFIG_JIT], [AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])],
+                       [], [#include <pcre.h>])
 ])
-AM_CONDITIONAL([HAVE_PCRE2], [test "x$with_pcre2" = "xyes"])
+AC_DEFUN([AG_PCRE2_SETUP], [
+         ag_have_pcre2="yes"
+         AC_DEFINE([HAVE_PCRE2], [], [Use libpcre2])
+         AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for libpcre2])
+         AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])
+         CFLAGS="$CFLAGS $PCRE2_CFLAGS"
+])
+
+# checks which silently set a variable if failing rather than the default error
+AC_DEFUN([AG_CHECK_PCRE_FT], [PKG_CHECK_MODULES([PCRE], [libpcre], [AG_PCRE_SETUP], [ag_found_pcre="no"])])
+AC_DEFUN([AG_CHECK_PCRE2_FT], [PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [AG_PCRE2_SETUP], [ag_found_pcre2="no"])])
+
+# checks which fail if the lib isn't found (pkg_check_modules macro default)
+AC_DEFUN([AG_CHECK_PCRE], [PKG_CHECK_MODULES([PCRE], [libpcre], [AG_PCRE_SETUP])])
+AC_DEFUN([AG_CHECK_PCRE2], [PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [AG_PCRE2_SETUP])])
+
+AC_ARG_WITH([pcre2],
+            [AS_HELP_STRING([--with@<:@out@:>@-pcre2], [Force PCRE1 or PCRE2. By default, try PCRE2 and fallback to PCRE1.])])
+AS_CASE([$with_pcre2],
+        [''],    [AG_CHECK_PCRE2_FT
+                  AS_IF([test "x$ag_found_pcre2" = "xno"], [AG_CHECK_PCRE])],
+        ['yes'], [AG_CHECK_PCRE2],
+        ['no'],  [AG_CHECK_PCRE])
+
+AM_CONDITIONAL([HAVE_PCRE2], [test "x$ag_have_pcre2" = "xyes"])
 
 AC_ARG_ENABLE([zlib],
     AS_HELP_STRING([--disable-zlib], [Disable zlib compressed search support]))
