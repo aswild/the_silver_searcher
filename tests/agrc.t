@@ -1,7 +1,7 @@
 Setup:
 
   $ . $TESTDIR/setup.sh
-  $ alias ag="$TESTDIR/../ag --noaffinity --nocolor --workers=1 --parallel"
+  $ AGOPTS="--noaffinity --nocolor --workers=1 --parallel"
   $ printf -- '-s\n--ignore=foo.*\n' >agrc
   $ printf 'hello\nHello\n' >file.txt
   $ printf 'hello\n' >foo.txt

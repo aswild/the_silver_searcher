@@ -1,8 +1,7 @@
 Setup:
 
   $ . $TESTDIR/setup.sh
-  $ unalias ag
-  $ alias ag="$TESTDIR/../ag --noagrc --noaffinity --nocolor --workers=1"
+  $ AGOPTS="--noagrc --noaffinity --nocolor --workers=1"
   $ printf "blah\n" > blah.txt
   $ printf "blah2\n" >> blah.txt
   $ printf "blah_OTHER\n" > other_file.txt

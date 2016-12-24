@@ -1,8 +1,7 @@
 Setup:
 
   $ . $TESTDIR/setup.sh
-  $ unalias ag
-  $ alias ag="$TESTDIR/../ag --noagrc --noaffinity --nocolor --workers=1"
+  $ AGOPTS="--noagrc --noaffinity --nocolor --workers=1"
   $ printf "foo bar\n" > passthrough_test.txt
   $ printf "zoo zar\n" >> passthrough_test.txt
   $ printf "foo test\n" >> passthrough_test.txt
