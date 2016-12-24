@@ -31,6 +31,9 @@ typedef struct {
     int ackmate;
     ag_pcre_re_t *ackmate_dir_filter;
     ag_pcre_extra_t *ackmate_dir_filter_extra;
+    int agrc_argc;
+    char **agrc_argv;      /* array of options gathered from agrc */
+    char **agrc_full_argv; /* full argv with agrc_argv prepended */
     size_t after;
     size_t before;
     enum case_behavior casing;

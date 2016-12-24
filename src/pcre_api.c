@@ -48,10 +48,10 @@ void ag_pcre_free_re(ag_pcre_re_t **re) {
  */
 void ag_pcre_free_extra(ag_pcre_extra_t **extra) {
     if (extra && *extra) {
-#ifndef HAVE_PCRE2
-        pcre_free(*extra);
-#else
+#ifdef HAVE_PCRE2
         pcre2_match_context_free(*extra);
+#else
+        pcre_free_study(*extra);
 #endif
         *extra = NULL;
     }

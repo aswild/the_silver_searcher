@@ -228,6 +228,10 @@ int main(int argc, char **argv) {
     }
     free(base_paths);
     free(paths);
+    for (i = 0; i < opts.agrc_argc; i++) {
+        free(opts.agrc_argv[i]);
+    }
+    free(opts.agrc_full_argv);
     if (find_skip_lookup) {
         free(find_skip_lookup);
     }

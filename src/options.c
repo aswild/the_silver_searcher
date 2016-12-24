@@ -442,11 +442,8 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             }
         }
     }
-    log_debug("use_agrc = %d", use_agrc);
-    if (use_agrc) {
-        int agrc_argc;
-        char **agrc_argv;
 
+    if (use_agrc) {
         if (agrc_file == NULL) {
             // check for AGRC environment var
             char *agrc_env = getenv("AGRC");
@@ -461,26 +458,27 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         }
 
         log_debug("Using agrc file '%s'", agrc_file);
-        get_opts_from_file(agrc_file, &agrc_argc, &agrc_argv);
-        if (agrc_argc) {
+        get_opts_from_file(agrc_file, &opts.agrc_argc, &opts.agrc_argv);
+        if (opts.agrc_argc) {
             // if we get arguments from .agrc, prepend them to argc/argv
-            int new_argc = argc + agrc_argc;
+            int new_argc = argc + opts.agrc_argc;
             char **new_argv = ag_malloc(new_argc * sizeof(char *));
 
             // leave argv[0] as-is
             new_argv[0] = argv[0];
             // prepend args from agrc (starting at argv[1])
-            for (i = 0; i < (size_t)agrc_argc; i++) {
-                new_argv[i + 1] = agrc_argv[i];
+            for (i = 0; i < (size_t)opts.agrc_argc; i++) {
+                new_argv[i + 1] = opts.agrc_argv[i];
             }
             // copy the rest of the old argv
             for (i = 1; i < (size_t)argc; i++) {
-                new_argv[agrc_argc + i] = argv[i];
+                new_argv[opts.agrc_argc + i] = argv[i];
             }
             argc = new_argc;
             argv = new_argv;
+            // remember so we can free during cleanup
+            opts.agrc_full_argv = new_argv;
         }
-        CHECK_AND_FREE(agrc_argv);
         CHECK_AND_FREE(agrc_file);
     }
     for (i = 0; i < (size_t)argc; i++) {
@@ -917,10 +915,10 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     char *path = NULL;
     char *base_path = NULL;
+    size_t path_index = 0;
 #ifdef PATH_MAX
     char *tmp = NULL;
 #endif
-    opts.paths_len = argc;
     if (argc > 0) {
         *paths = ag_calloc(sizeof(char *), argc + 1);
         *base_paths = ag_calloc(sizeof(char *), argc + 1);
@@ -931,7 +929,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             if (path_len > 1 && path[path_len - 1] == '/') {
                 path[path_len - 1] = '\0';
             }
-            (*paths)[i] = path;
 #ifdef PATH_MAX
             tmp = ag_malloc(PATH_MAX);
             base_path = realpath(path, tmp);
@@ -946,11 +943,24 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                     base_path[base_path_len] = '/';
                     base_path[base_path_len + 1] = '\0';
                 }
+
+                (*paths)[path_index] = path;
+                (*base_paths)[path_index] = base_path;
+                path_index++;
+            } else {
+                /* realpath() returns NULL if the path doesn't exist, so note that
+                 * here and never even try searching it
+                 */
+                log_err("Error resolving path %s: %s", path, strerror(errno));
+                free(path);
+#ifdef PATH_MAX
+                free(tmp);
+#endif
             }
-            (*base_paths)[i] = base_path;
         }
         /* Make sure we search these paths instead of stdin. */
         opts.search_stream = 0;
+        opts.paths_len = path_index;
     } else {
         path = ag_strdup(".");
         *paths = ag_malloc(sizeof(char *) * 2);
@@ -963,6 +973,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         (*base_paths)[0] = realpath(path, NULL);
 #endif
         i = 1;
+        opts.paths_len = 0;
     }
     (*paths)[i] = NULL;
     (*base_paths)[i] = NULL;
