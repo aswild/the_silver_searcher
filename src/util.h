@@ -31,6 +31,12 @@ FILE *out_fd;
         }                 \
     } while (0)
 
+#ifdef __clang__
+#define NO_SANITIZE_ALIGNMENT __attribute__((no_sanitize("alignment")))
+#else
+#define NO_SANITIZE_ALIGNMENT
+#endif
+
 void *ag_malloc(size_t size);
 void *ag_realloc(void *ptr, size_t size);
 void *ag_calloc(size_t nelem, size_t elsize);
