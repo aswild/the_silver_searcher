@@ -29,7 +29,8 @@ if test "`$GREP -c '\b-O' >/dev/null ; echo $?`" = "0" ; then
 fi
 
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow"
-CFLAGS="$CFLAGS -Wpointer-arith -Wcast-qual -Wmissing-prototypes -Wno-missing-braces -std=gnu89 -D_GNU_SOURCE"
+CFLAGS="$CFLAGS -Wpointer-arith -Wcast-qual -Wmissing-prototypes -Wno-missing-braces"
+CFLAGS="$CFLAGS -std=gnu99 -pedantic -D_GNU_SOURCE"
 LDFLAGS="$LDFLAGS"
 
 case $host in
@@ -93,13 +94,13 @@ AS_IF([test "x$enable_lzma" != "xno"], [
 
 AC_CHECK_DECL([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
 
+AC_CHECK_DECL([_WIN32], ag_win32_build="yes")
+AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])
+
 AC_CHECK_MEMBER([struct dirent.d_type], [AC_DEFINE([HAVE_DIRENT_DTYPE], [], [Have dirent struct member d_type])], [], [[#include <dirent.h>]])
 AC_CHECK_MEMBER([struct dirent.d_namlen], [AC_DEFINE([HAVE_DIRENT_DNAMLEN], [], [Have dirent struct member d_namlen])], [], [[#include <dirent.h>]])
 
 AC_CHECK_FUNCS(fgetln getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
-
-AC_CONFIG_FILES([Makefile the_silver_searcher.spec])
-AC_CONFIG_HEADERS([src/config.h])
 
 AC_CHECK_PROGS(
     [CLANG_FORMAT],
@@ -143,4 +144,6 @@ AM_COND_IF([USE_GITVERSION], [], [
     ])
 ])
 
+AC_CONFIG_FILES([Makefile the_silver_searcher.spec])
+AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT

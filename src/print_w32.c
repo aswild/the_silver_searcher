@@ -1,5 +1,3 @@
-#ifdef _WIN32
-
 #include "print.h"
 #include <io.h>
 #include <stdarg.h>
@@ -323,5 +321,3 @@ int fprintf_w32(FILE *fp, const char *format, ...) {
     }
     return ptr - buf;
 }
-
-#endif /* _WIN32 */

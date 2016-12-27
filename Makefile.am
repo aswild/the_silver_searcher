@@ -9,7 +9,6 @@ ag_SOURCES = \
 	src/options.c \
 	src/options.h \
 	src/print.c \
-	src/print_w32.c \
 	src/print.h \
 	src/scandir.c \
 	src/scandir.h \
@@ -27,6 +26,10 @@ ag_SOURCES = \
 	src/version.c \
 	src/version.h \
 	src/main.c
+
+if WIN32_BUILD
+ag_SOURCES += src/print_w32.c
+endif
 
 if HAVE_PCRE2
 ag_LDADD = ${PCRE2_LIBS}
