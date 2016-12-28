@@ -165,7 +165,8 @@ if [[ -n $CC ]]; then
 elif which clang &>/dev/null; then
     SANITIZE_CC="clang"
 else
-    echo "Warning: CC unset and clang not found"
+    echo "ERROR: CC unset and clang not found"
+    return 1
 fi
 
 if [[ -n $CFLAGS ]]; then
