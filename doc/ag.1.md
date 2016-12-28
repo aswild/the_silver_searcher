@@ -86,6 +86,9 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `-H --[no]heading`:
     Print filenames above matching contents.
 
+  * `--help-types`:
+    Alias for --list-file-types for compatibility with ack.
+
   * `--hidden`:
     Search hidden files. This option obeys ignored files.
 

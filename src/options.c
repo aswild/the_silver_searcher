@@ -307,6 +307,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "group", no_argument, &group, 1 },
         { "heading", no_argument, &opts.print_path, PATH_PRINT_TOP },
         { "help", no_argument, NULL, 'h' },
+        { "help-types", no_argument, &list_file_types, 1 },
         { "hidden", no_argument, &opts.search_hidden_files, 1 },
         { "ignore", required_argument, NULL, 0 },
         { "ignore-case", no_argument, NULL, 'i' },
