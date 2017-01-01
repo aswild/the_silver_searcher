@@ -139,9 +139,11 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `-p --path-to-ignore STRING`:
     Provide a path to a specific .ignore file.
 
-  * `--pager COMMAND`:
+  * `-P --pager=COMMAND`:
     Use a pager such as `less`. Use `--nopager` to override. This option
     is also ignored if output is piped to another program.
+    The pager selected is selected from (in order): the command line argument,
+    the PAGER environment variable, the command "less"
 
   * `--parallel`:
     Parse the input stream as a search term, not data to search. This is meant

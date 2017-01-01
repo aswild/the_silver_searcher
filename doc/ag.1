@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "AG" "1" "December 2016" "" ""
+.TH "AG" "1" "January 2017" "" ""
 .
 .SH "NAME"
 \fBag\fR \- The Silver Searcher\. Like ack, but faster\.
@@ -107,6 +107,10 @@ Only search files whose names match PATTERN\.
 Print filenames above matching contents\.
 .
 .TP
+\fB\-\-help\-types\fR
+Alias for \-\-list\-file\-types for compatibility with ack\.
+.
+.TP
 \fB\-\-hidden\fR
 Search hidden files\. This option obeys ignored files\.
 .
@@ -167,8 +171,8 @@ When recursing directories, don\'t scan dirs that reside on other storage device
 Provide a path to a specific \.ignore file\.
 .
 .TP
-\fB\-\-pager COMMAND\fR
-Use a pager such as \fBless\fR\. Use \fB\-\-nopager\fR to override\. This option is also ignored if output is piped to another program\.
+\fB\-P \-\-pager=COMMAND\fR
+Use a pager such as \fBless\fR\. Use \fB\-\-nopager\fR to override\. This option is also ignored if output is piped to another program\. The pager selected is selected from (in order): the command line argument, the PAGER environment variable, the command "less"
 .
 .TP
 \fB\-\-parallel\fR

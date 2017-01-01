@@ -70,7 +70,7 @@ Output Options:\n\
      --print-long-lines   Print matches on very long lines (Default: >2k characters)\n\
      --passthrough        When searching a stream, print all lines even if they\n\
                           don't match\n\
-     --pager[=<pager>]    Pipe output through a pager. Use PAGER from the environment\n\
+  -P --pager[=<pager>]    Pipe output through a pager. Use PAGER from the environment\n\
                           if not specified, or " DEFAULT_PAGER " if PAGER is unset.\n\
      --nopager            Don't use a pager.\n\
      --silent             Suppress all log messages, including errors\n\
@@ -352,7 +352,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "numbers", no_argument, &opts.print_line_numbers, 2 },
         { "only-matching", no_argument, NULL, 'o' },
         { "one-device", no_argument, &opts.one_dev, 1 },
-        { "pager", optional_argument, NULL, 0 },
+        { "pager", optional_argument, NULL, 'P' },
         { "parallel", no_argument, &opts.parallel, 1 },
         { "passthrough", no_argument, &opts.passthrough, 1 },
         { "passthru", no_argument, &opts.passthrough, 1 },
@@ -422,7 +422,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     // Check whether to exclude ~/.agrc by searching argc/argv for --no-agrc or --noagrc
     // Note, the optstr here must match the optstr used for main argument parsing
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:nop:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
         if (ch == 'D') {
             // enable debugging early to allow for debug messages during agrc parsing
             set_log_level(LOG_LEVEL_DEBUG);
@@ -491,7 +491,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     optind = 1;
     opterr = 1;
     // the optstring here must match the optstring used above when checking for [no]agrc
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:nop:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
         switch (ch) {
             case 'A':
                 if (optarg) {
@@ -578,6 +578,17 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'n':
                 opts.recurse_dirs = 0;
                 break;
+            case 'P':
+                if (optarg) {
+                    opts.pager = ag_strdup(optarg);
+                } else {
+                    opts.pager = getenv("PAGER");
+                    if (!opts.pager) {
+                        // if no PAGER in env, fall back to default
+                        opts.pager = DEFAULT_PAGER;
+                    }
+                }
+                break;
             case 'p':
                 opts.path_to_ignore = TRUE;
                 load_ignore_patterns(root_ignores, optarg);
@@ -659,19 +670,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                            strcmp(longopts[opt_index].name, "nopager") == 0) {
                     out_fd = stdout;
                     opts.pager = NULL;
-                    break;
-                } else if (strcmp(longopts[opt_index].name, "pager") == 0) {
-                    // WILD MOD START - if no pager specifed, read PAGER
-                    if (optarg) {
-                        opts.pager = ag_strdup(optarg);
-                    } else {
-                        opts.pager = getenv("PAGER");
-                        if (!opts.pager) {
-                            // if no PAGER in env, fall back to default
-                            opts.pager = DEFAULT_PAGER;
-                        }
-                    }
-                    // WILD MOD END
                     break;
                 } else if (strcmp(longopts[opt_index].name, "workers") == 0) {
                     opts.workers = atoi(optarg);
