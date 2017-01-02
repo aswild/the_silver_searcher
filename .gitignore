@@ -5,6 +5,7 @@
 .deps
 .dirstamp
 .DS_Store
+.version
 aclocal.m4
 ag
 ag.exe
