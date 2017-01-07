@@ -10,6 +10,14 @@ A code searching tool similar to `ack`, with a focus on speed.
 
 Do you know C? Want to improve ag? [I invite you to pair with me](http://geoff.greer.fm/2014/10/13/help-me-get-to-ag-10/).
 
+## What's Different in this Fork?
+
+* Support for pcre2 (selected by default if found, falls back to pcre1). (There's no noticeable performance difference
+  between pcre1 and pcre2)
+* Support for a `.agrc` file which may contain arbitrary options, one per line. Default is `~/.agrc`,
+  and can be set with `--agrc=<file>` on the command line
+* Various memory leaks fixed, plus a script for testing with [LLVM Sanitizers](https://github.com/google/sanitizers/wiki)
+* Various cosmetic and usability tweaks
 
 ## What's so great about Ag?
 
