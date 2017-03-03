@@ -34,7 +34,7 @@ Language types are output:
     --gettext           :  .po  .pot  .mo
     --glsl              :  .vert  .tesc  .tese  .geom  .frag  .comp
     --go                :  .go
-    --groovy            :  .groovy  .gtmpl  .gpp  .grunit
+    --groovy            :  .groovy  .gtmpl  .gpp  .grunit  .gradle
     --haml              :  .haml
     --haskell           :  .hs  .lhs
     --hh                :  .h
