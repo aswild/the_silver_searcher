@@ -51,11 +51,11 @@ PHONY =
 if USE_GITVERSION
 AG_VERSION := $(shell git describe --dirty=+ --always --tags)
 $(shell grep "^$(AG_VERSION)" .version >/dev/null 2>&1 || echo "$(AG_VERSION)" > .version)
-CLEANFILES = .version
+CLEANFILES = .version src/version.c
 
 src/version.c: .version
 	@rm -f src/version.c
-	@$(SED) "s/@AG_VERSION@/\"$(AG_VERSION)\"/" src/version.c.in >src/version.c
+	@$(SED) "s/@AG_VERSION@/\"$(AG_VERSION)\"/" $(srcdir)/src/version.c.in >src/version.c
 endif
 
 test: ag

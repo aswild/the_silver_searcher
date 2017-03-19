@@ -125,7 +125,7 @@ AS_IF([test "x$enable_gitversion" != "xno"], [
     AC_CHECK_PROG([ag_has_git], [git], [yes])
     AS_IF([test "x$ag_has_git" = "xyes"], [
         AC_MSG_CHECKING([Whether this is a git repo])
-        AS_IF([test -e "./.git" && git status --porcelain >/dev/null 2>&1], [
+        AS_IF([test -e "${srcdir}/.git" && git status --porcelain >/dev/null 2>&1], [
             AC_MSG_RESULT([yes])
             ag_use_gitversion="yes"
         ], [
@@ -137,10 +137,13 @@ AM_CONDITIONAL([USE_GITVERSION], [test "x$ag_use_gitversion" = "xyes"])
 AM_COND_IF([USE_GITVERSION], [], [
     dnl Logic to use USE_GITVERSION is handled in Makefile.in. If not using gitversion
     dnl then use sed to create version.c during configure
-    AS_IF([test -f "src/version.c.in"], [
+    dnl Only do this if version.c.in exists. If it doesn't assume we're building from a
+    dnl release tarball and version.c already exists
+    AS_IF([test -f "${srcdir}/src/version.c.in"], [
         AC_MSG_NOTICE([Creating version.c])
-        rm -f src/version.c
-        $SED 's/@AG_VERSION@/PACKAGE_VERSION/' src/version.c.in >src/version.c
+        rm -f ${srcdir}/src/version.c
+        mkdir -p src
+        $SED 's/@AG_VERSION@/PACKAGE_VERSION/' ${srcdir}/src/version.c.in >src/version.c
     ])
 ])
 
