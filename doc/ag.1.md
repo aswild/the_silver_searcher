@@ -160,6 +160,9 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `-Q --literal`:
     Do not parse PATTERN as a regular expression. Try to match it literally.
 
+  * `-q --silent`:
+    Suppress all log messages, including errors.
+
   * `-r --recurse`:
     Recurse into directories when searching. Default is true.
 
@@ -172,9 +175,6 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
 
   * `--search-binary`:
     Search binary files for matches.
-
-  * `--silent`:
-    Suppress all log messages, including errors.
 
   * `--stats`:
     Print stats (files scanned, time taken, etc).

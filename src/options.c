@@ -73,7 +73,7 @@ Output Options:\n\
   -P --pager[=<pager>]    Pipe output through a pager. Use PAGER from the environment\n\
                           if not specified, or " DEFAULT_PAGER " if PAGER is unset.\n\
      --nopager            Don't use a pager.\n\
-     --silent             Suppress all log messages, including errors\n\
+  -q --silent             Suppress all log messages, including errors\n\
      --stats              Print stats (files scanned, time taken, etc.)\n\
      --stats-only         Print stats and nothing else.\n\
                           (Same as --count when searching a single file)\n\
@@ -363,7 +363,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "search-binary", no_argument, &opts.search_binary_files, 1 },
         { "search-files", no_argument, &opts.search_stream, 0 },
         { "search-zip", no_argument, &opts.search_zip_files, 1 },
-        { "silent", no_argument, NULL, 0 },
+        { "silent", no_argument, NULL, 'q' },
         { "skip-vcs-ignores", no_argument, NULL, 'U' },
         { "smart-case", no_argument, NULL, 'S' },
         { "stats", no_argument, &opts.stats, 1 },
@@ -422,7 +422,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     // Check whether to exclude ~/.agrc by searching argc/argv for --no-agrc or --noagrc
     // Note, the optstr here must match the optstr used for main argument parsing
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
         if (ch == 'D') {
             // enable debugging early to allow for debug messages during agrc parsing
             set_log_level(LOG_LEVEL_DEBUG);
@@ -491,7 +491,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     optind = 1;
     opterr = 1;
     // the optstring here must match the optstring used above when checking for [no]agrc
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
         switch (ch) {
             case 'A':
                 if (optarg) {
@@ -600,6 +600,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'Q':
                 opts.literal = 1;
                 break;
+            case 'q':
+                set_log_level(LOG_LEVEL_NONE);
+                break;
             case 'R':
             case 'r':
                 opts.recurse_dirs = 1;
@@ -685,9 +688,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 } else if (strcmp(longopts[opt_index].name, "color-path") == 0) {
                     free(opts.color_path);
                     ag_asprintf(&opts.color_path, "\033[%sm", optarg);
-                    break;
-                } else if (strcmp(longopts[opt_index].name, "silent") == 0) {
-                    set_log_level(LOG_LEVEL_NONE);
                     break;
                 } else if (strcmp(longopts[opt_index].name, "stats-only") == 0) {
                     opts.print_filename_only = 1;
