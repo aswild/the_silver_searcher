@@ -77,9 +77,13 @@ run_sanitizer() {
     fi
 
     echo -e "\nCompiling for sanitizer '$sanitizer'"
+    local _build_dir=$PWD/build-$sanitizer
+    mkdir -p $_build_dir
+    cd $_build_dir
+
     [[ -f Makefile ]] && vrun make distclean
-    vrun ./configure $CONFIGOPTS CC=$SANITIZE_CC \
-                     CFLAGS="-g -O0 -fsanitize=$sanitizer $EXTRA_CFLAGS"
+    vrun ../configure $CONFIGOPTS CC=$SANITIZE_CC \
+                      CFLAGS="-g -O0 -fsanitize=$sanitizer $EXTRA_CFLAGS"
     if [[ $? != 0 ]]; then
         echo "ERROR: Failed to configure. Try setting CONFIGOPTS?"
         return 1
@@ -105,8 +109,12 @@ run_sanitizer() {
 
 run_valgrind() {
     echo "Compiling ag normally for use with valgrind"
+    local _build_dir=$PWD/build-valgrind
+    mkdir -p $_build_dir
+    cd $_build_dir
+
     [[ -f Makefile ]] && vrun make distclean
-    vrun ./configure $CONFIGOPTS
+    vrun ../configure $CONFIGOPTS
     if [[ $? != 0 ]]; then
         echo "ERROR: Failed to configure. Try setting CONFIGOPTS?"
         return 1
@@ -182,7 +190,7 @@ fi
 echo "Running sanitizers: ${run_sanitizers[*]}"
 failedsan=()
 for san in "${run_sanitizers[@]}"; do
-    run_sanitizer $san
+    ( run_sanitizer $san )
     if [[ $? != 0 ]]; then
         failedsan+=($san)
     fi
