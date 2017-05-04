@@ -59,9 +59,9 @@ src/version.c: .version
 endif
 
 test: ag
-	cram -v tests/*.t
+	AGPROG=$(PWD)/ag cram -v $(srcdir)/tests/*.t
 if HAS_CLANG_FORMAT
-	CLANG_FORMAT=${CLANG_FORMAT} ./format.sh test
+	CLANG_FORMAT=${CLANG_FORMAT} $(srcdir)/format.sh test
 else
 	@echo "clang-format is not available. Skipped clang-format test."
 endif
