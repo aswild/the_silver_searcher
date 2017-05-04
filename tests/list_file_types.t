@@ -27,6 +27,7 @@ Language types are output:
     --ebuild            :  .ebuild  .eclass
     --elisp             :  .el
     --elixir            :  .ex  .eex  .exs
+    --elm               :  .elm
     --erlang            :  .erl  .hrl
     --factor            :  .factor
     --fortran           :  .f  .f77  .f90  .f95  .f03  .for  .ftn  .fpp
@@ -42,7 +43,7 @@ Language types are output:
     --ini               :  .ini
     --jade              :  .jade
     --java              :  .java  .properties
-    --js                :  .js  .jsx  .vue
+    --js                :  .es6  .js  .jsx  .vue
     --json              :  .json
     --jsp               :  .jsp  .jspx  .jhtm  .jhtml
     --julia             :  .jl
@@ -99,6 +100,7 @@ Language types are output:
     --tt                :  .tt  .tt2  .ttml
     --toml              :  .toml
     --ts                :  .ts  .tsx
+    --twig              :  .twig
     --vala              :  .vala  .vapi
     --vb                :  .bas  .cls  .frm  .ctl  .vb  .resx
     --velocity          :  .vm  .vtl  .vsl
