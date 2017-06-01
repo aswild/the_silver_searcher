@@ -23,6 +23,11 @@ AX_PTHREAD(
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
 )
 
+# -Wextra on GCC 7 gives warnings for implicit case fallthrough in switch statements
+m4_include([m4/ax_check_compile_flag.m4])
+AX_CHECK_COMPILE_FLAG([-Wno-implicit-fallthrough], [use_wno_implicit_fallthrough="yes"], [], [-Wall -Wextra -Werror])
+AM_CONDITIONAL([USE_WNO_IMPLICIT_FALLTHROUGH], [test "x$use_wno_implicit_fallthrough" = "xyes"])
+
 case $host in
 *mingw*)
     AC_CHECK_LIB(shlwapi, main,, AC_MSG_ERROR(libshlwapi missing))

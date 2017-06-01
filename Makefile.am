@@ -37,6 +37,11 @@ ag_CFLAGS  += -Wall -Wextra -Wformat=2 -Wshadow -Wpointer-arith -Wcast-qual -Wmi
 ag_CFLAGS  += -Wno-format-nonliteral -Wno-missing-braces
 ag_CFLAGS  += $(PTHREAD_CFLAGS)
 
+# Suppress implicit fallthrough warnings on GCC 7
+if USE_WNO_IMPLICIT_FALLTHROUGH
+ag_CFLAGS  += -Wno-implicit-fallthrough
+endif
+
 ag_LDADD    = $(LZMA_LIBS) $(ZLIB_LIBS) $(PTHREAD_LIBS)
 
 if HAVE_PCRE2
