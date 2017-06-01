@@ -45,7 +45,7 @@ Language types are output:
     --java              :  .java  .properties
     --js                :  .es6  .js  .jsx  .vue
     --json              :  .json
-    --jsp               :  .jsp  .jspx  .jhtm  .jhtml
+    --jsp               :  .jsp  .jspx  .jhtm  .jhtml  .jspf  .tag  .tagf
     --julia             :  .jl
     --kotlin            :  .kt
     --less              :  .less

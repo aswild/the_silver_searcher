@@ -46,7 +46,6 @@ zshcompdir = $(datadir)/zsh/site-functions
 dist_zshcomp_DATA = _the_silver_searcher
 
 EXTRA_DIST = Makefile.w32 LICENSE NOTICE the_silver_searcher.spec README.md
-PHONY =
 
 if USE_GITVERSION
 AG_VERSION := $(shell git describe --dirty=+ --always --tags)
@@ -72,5 +71,4 @@ test_big: ag
 test_fail: ag
 	cram -v tests/fail/*.t
 
-PHONY += all test clean
-.PHONY : $(PHONY)
+.PHONY : all clean test test_big test_fail
