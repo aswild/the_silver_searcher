@@ -31,12 +31,21 @@ if WIN32_BUILD
 ag_SOURCES += src/print_w32.c
 endif
 
+ag_CPPFLAGS = -D_GNU_SOURCE
+ag_CFLAGS   = -std=gnu99 -pedantic
+ag_CFLAGS  += -Wall -Wextra -Wformat=2 -Wshadow -Wpointer-arith -Wcast-qual -Wmissing-prototypes
+ag_CFLAGS  += -Wno-format-nonliteral -Wno-missing-braces
+ag_CFLAGS  += $(PTHREAD_CFLAGS)
+
+ag_LDADD    = $(LZMA_LIBS) $(ZLIB_LIBS) $(PTHREAD_LIBS)
+
 if HAVE_PCRE2
-ag_LDADD = ${PCRE2_LIBS}
+ag_CFLAGS  += $(PCRE2_CFLAGS)
+ag_LDADD   += $(PCRE2_LIBS)
 else
-ag_LDADD = ${PCRE_LIBS}
+ag_CFLAGS  += $(PCRE_CFLAGS)
+ag_LDADD   += $(PCRE_LIBS)
 endif
-ag_LDADD += ${LZMA_LIBS} ${ZLIB_LIBS} $(PTHREAD_LIBS)
 
 dist_man_MANS = doc/ag.1
 
@@ -60,7 +69,7 @@ endif
 test: ag
 	AGPROG=$(PWD)/ag cram -v $(srcdir)/tests/*.t
 if HAS_CLANG_FORMAT
-	CLANG_FORMAT=${CLANG_FORMAT} $(srcdir)/format.sh test
+	CLANG_FORMAT=$(CLANG_FORMAT) $(srcdir)/format.sh test
 else
 	@echo "clang-format is not available. Skipped clang-format test."
 endif

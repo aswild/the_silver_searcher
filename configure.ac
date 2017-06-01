@@ -23,22 +23,10 @@ AX_PTHREAD(
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
 )
 
-# Run CFLAGS="-pg" ./configure if you want debug symbols
-if test "`$GREP -c '\b-O' >/dev/null ; echo $?`" = "0" ; then
-    CFLAGS="$CFLAGS -O2"
-fi
-
-CFLAGS="$CFLAGS $PTHREAD_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow"
-CFLAGS="$CFLAGS -Wpointer-arith -Wcast-qual -Wmissing-prototypes -Wno-missing-braces"
-CFLAGS="$CFLAGS -std=gnu99 -pedantic -D_GNU_SOURCE"
-LDFLAGS="$LDFLAGS"
-
 case $host in
 *mingw*)
     AC_CHECK_LIB(shlwapi, main,, AC_MSG_ERROR(libshlwapi missing))
 esac
-
-LIBS="$PTHREAD_LIBS $LIBS"
 
 ################### PCRE Check #####################
 
@@ -46,7 +34,6 @@ LIBS="$PTHREAD_LIBS $LIBS"
 AC_DEFUN([AG_PCRE_SETUP], [
          ag_have_pcre2="no"
          AC_DEFINE([HAVE_PCRE], [], [Use libpcre])
-         CFLAGS="$CFLAGS $PCRE_CFLAGS"
          AC_CHECK_DECL([PCRE_CONFIG_JIT], [AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])],
                        [], [#include <pcre.h>])
 ])
@@ -55,7 +42,6 @@ AC_DEFUN([AG_PCRE2_SETUP], [
          AC_DEFINE([HAVE_PCRE2], [], [Use libpcre2])
          AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for libpcre2])
          AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])
-         CFLAGS="$CFLAGS $PCRE2_CFLAGS"
 ])
 
 # checks which silently set a variable if failing rather than the default error
