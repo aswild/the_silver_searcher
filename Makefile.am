@@ -34,7 +34,7 @@ endif
 ag_CPPFLAGS = -D_GNU_SOURCE
 ag_CFLAGS   = -std=gnu99 -pedantic
 ag_CFLAGS  += -Wall -Wextra -Wformat=2 -Wshadow -Wpointer-arith -Wcast-qual -Wmissing-prototypes
-ag_CFLAGS  += -Wno-format-nonliteral -Wno-missing-braces
+ag_CFLAGS  += -Wno-format-nonliteral -Wno-missing-braces -Wno-implicit-fallthrough
 ag_CFLAGS  += $(PTHREAD_CFLAGS)
 
 ag_LDADD    = $(LZMA_LIBS) $(ZLIB_LIBS) $(PTHREAD_LIBS)
