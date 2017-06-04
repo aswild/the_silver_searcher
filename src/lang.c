@@ -37,6 +37,7 @@ lang_spec_t langs[] = {
     { "groovy", { "groovy", "gtmpl", "gpp", "grunit", "gradle" } },
     { "haml", { "haml" } },
     { "haskell", { "hs", "lhs" } },
+    { "haxe", { "hx" } },
     { "hh", { "h" } },
     { "html", { "htm", "html", "shtml", "xhtml" } },
     { "ini", { "ini" } },

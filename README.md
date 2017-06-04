@@ -50,7 +50,7 @@ I've written several blog posts showing how I've improved performance. These inc
 
 ## Installing
 
-### MacOS
+### macOS
 
     brew install the_silver_searcher
 
@@ -88,6 +88,10 @@ or
 
         zypper install the_silver_searcher
 
+* CentOS:
+        
+        yum install the_silver_searcher
+
 * SUSE Linux Enterprise: Follow [these simple instructions](https://software.opensuse.org/download.html?project=utilities&package=the_silver_searcher).
 
 
@@ -109,7 +113,7 @@ Run the relevant [`setup-*.exe`](https://cygwin.com/install.html), and select "t
 ### Building master
 
 1. Install dependencies (Automake, pkg-config, PCRE, LZMA):
-    * MacOS:
+    * macOS:
 
             brew install automake pkg-config pcre xz
         or

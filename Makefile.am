@@ -66,6 +66,9 @@ src/version.c: .version
 	@$(SED) "s/@AG_VERSION@/\"$(AG_VERSION)\"/" $(srcdir)/src/version.c.in >src/version.c
 endif
 
+all:
+	@$(MAKE) ag -r
+
 test: ag
 	AGPROG=$(PWD)/ag cram -v $(srcdir)/tests/*.t
 if HAS_CLANG_FORMAT
