@@ -6,21 +6,19 @@ AC_INIT(
     [https://github.com/ggreer/the_silver_searcher])
 
 AM_INIT_AUTOMAKE([no-define foreign subdir-objects])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PREREQ([2.59])
 AC_PROG_SED
 
-m4_ifdef(
-    [AM_SILENT_RULES],
-    [AM_SILENT_RULES([yes])])
-
 BASE_CFLAGS="-std=gnu99 -pedantic -D_GNU_SOURCE"
 BASE_CFLAGS="$BASE_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith"
 BASE_CFLAGS="$BASE_CFLAGS -Wcast-qual -Wmissing-prototypes -Wno-missing-braces -Wno-implicit-fallthrough"
 
 # Put user-defined CFLAGS ('-g -O2' by default) after ours so the user can override
+# All libarary-specific flags from the checks below are handled in Makefile.am
 CFLAGS="$BASE_CFLAGS $CFLAGS"
 
 m4_include([m4/ax_pthread.m4])
@@ -29,6 +27,7 @@ AX_PTHREAD(
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
 )
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+LIBS="$LIBS $PTHREAD_LIBS"
 
 case $host in
 *mingw*)
@@ -41,7 +40,6 @@ esac
 AC_DEFUN([AG_PCRE_SETUP], [
          ag_have_pcre2="no"
          AC_DEFINE([HAVE_PCRE], [], [Use libpcre])
-         CFLAGS="$CFLAGS $PCRE_CFLAGS"
          AC_CHECK_DECL([PCRE_CONFIG_JIT], [AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])],
                        [], [#include <pcre.h>])
 ])
@@ -50,7 +48,6 @@ AC_DEFUN([AG_PCRE2_SETUP], [
          AC_DEFINE([HAVE_PCRE2], [], [Use libpcre2])
          AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for libpcre2])
          AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])
-         CFLAGS="$CFLAGS $PCRE2_CFLAGS"
 ])
 
 # checks which silently set a variable if failing rather than the default error
@@ -76,7 +73,7 @@ AC_ARG_ENABLE([zlib],
 
 AS_IF([test "x$enable_zlib" != "xno"], [
     AC_CHECK_HEADERS([zlib.h])
-    AC_SEARCH_LIBS([inflate], [zlib, z])
+    PKG_CHECK_MODULES([ZLIB], [zlib])
 ])
 
 AC_ARG_ENABLE([lzma],
@@ -87,7 +84,7 @@ AS_IF([test "x$enable_lzma" != "xno"], [
     PKG_CHECK_MODULES([LZMA], [liblzma])
 ])
 
-AC_CHECK_DECL([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
+AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
 
 AC_CHECK_DECL([_WIN32], ag_win32_build="yes")
 AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])

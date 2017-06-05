@@ -31,12 +31,19 @@ if WIN32_BUILD
 ag_SOURCES += src/print_w32.c
 endif
 
+# library-specific CFLAGS/LIBS for ag, except for pthreads, which
+# need to be in configure's flags for later checks
+# These will be included before the values set in configure
+ag_CFLAGS  = $(LZMA_CFLAGS) $(ZLIB_CFLAGS)
+ag_LDADD   = $(LZMA_LIBS) $(ZLIB_LIBS)
+
 if HAVE_PCRE2
-ag_LDADD = $(PCRE2_LIBS)
+ag_CFLAGS += $(PCRE2_CFLAGS)
+ag_LDADD  += $(PCRE2_LIBS)
 else
-ag_LDADD = $(PCRE_LIBS)
+ag_CFLAGS += $(PCRE_CFLAGS)
+ag_LDADD  += $(PCRE_LIBS)
 endif
-ag_LDADD += $(LZMA_LIBS) $(ZLIB_LIBS) $(PTHREAD_LIBS)
 
 dist_man_MANS = doc/ag.1
 
