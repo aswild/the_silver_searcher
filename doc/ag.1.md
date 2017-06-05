@@ -126,7 +126,8 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
     Don't recurse into directories.
 
   * `--[no]numbers`:
-    Print line numbers. Default is to omit line numbers when searching streams.
+    Print line numbers. Default is to omit line numbers when searching streams or
+    a single file.
 
   * `-o --only-matching`:
     Print only the matching part of the lines.

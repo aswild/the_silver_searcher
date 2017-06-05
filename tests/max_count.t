@@ -18,7 +18,7 @@ Max match of 1:
 
   $ ag --max-count 1 blah blah.txt
   ERR: Too many matches in blah.txt. Skipping the rest of this file.
-  1:blah
+  blah
 
 Max match of 10, one file:
 

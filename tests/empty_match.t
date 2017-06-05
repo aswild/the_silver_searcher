@@ -10,7 +10,7 @@ Zero-length match on an empty file should fail silently with return code 1
 
 A genuine zero-length match should succeed:
   $ ag "^" nonempty.txt
-  1:foo
+  foo
 
 Empty files should be listed with --unrestricted --files-with-matches (-ul)
   $ ag -lu --stats | sed '$d' | sort # Remove the last line about timing which will differ

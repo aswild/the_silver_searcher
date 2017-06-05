@@ -7,15 +7,15 @@ Setup:
 Smart case by default:
 
   $ ag foo sample
-  1:Foo
+  Foo
   $ ag FOO sample
   [1]
   $ ag 'f.o' sample
-  1:Foo
+  Foo
   $ ag Foo sample
-  1:Foo
+  Foo
   $ ag 'F.o' sample
-  1:Foo
+  Foo
 
 Case sensitive mode:
 
@@ -26,18 +26,18 @@ Case sensitive mode:
   $ ag -s 'f.o' sample
   [1]
   $ ag -s Foo sample
-  1:Foo
+  Foo
   $ ag -s 'F.o' sample
-  1:Foo
+  Foo
 
 Case insensitive mode:
 
   $ ag fOO -i sample
-  1:Foo
+  Foo
   $ ag fOO --ignore-case sample
-  1:Foo
+  Foo
   $ ag 'f.o' -i sample
-  1:Foo
+  Foo
 
 Case insensitive file regex
 

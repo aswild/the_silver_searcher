@@ -14,14 +14,14 @@ Matches should contain colors:
 --nocolor should suppress colors:
 
   $ ag --nocolor foo blah.txt
-  1:foo
+  foo
 
 --invert-match should suppress colors:
 
   $ ag --invert-match foo blah.txt
-  2:bar
+  bar
 
 -v is the same as --invert-match
 
   $ ag -v foo blah.txt
-  2:bar
+  bar
