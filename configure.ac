@@ -85,6 +85,7 @@ AS_IF([test "x$enable_lzma" != "xno"], [
 ])
 
 AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
+AC_CHECK_HEADERS([sys/cpuset.h])
 
 AC_CHECK_DECL([_WIN32], ag_win32_build="yes")
 AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])
@@ -92,7 +93,7 @@ AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])
 AC_CHECK_MEMBER([struct dirent.d_type], [AC_DEFINE([HAVE_DIRENT_DTYPE], [], [Have dirent struct member d_type])], [], [[#include <dirent.h>]])
 AC_CHECK_MEMBER([struct dirent.d_namlen], [AC_DEFINE([HAVE_DIRENT_DNAMLEN], [], [Have dirent struct member d_namlen])], [], [[#include <dirent.h>]])
 
-AC_CHECK_FUNCS(fgetln getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
+AC_CHECK_FUNCS(fgetln fopencookie getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
 
 AC_CHECK_PROGS(
     [CLANG_FORMAT],

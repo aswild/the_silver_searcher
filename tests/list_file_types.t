@@ -171,6 +171,9 @@ Language types are output:
     --mathematica
         .m  .wl
   
+    --md
+        .markdown  .mdown  .mdwn  .mkdn  .mkd  .md
+  
     --mercury
         .m  .moo
   
@@ -200,6 +203,9 @@ Language types are output:
   
     --pike
         .pike  .pmod
+  
+    --plist
+        .plist
   
     --plone
         .pt  .cpt  .metadata  .cpy  .py  .xml  .zcml
@@ -322,7 +328,7 @@ Language types are output:
         .wadl
   
     --xml
-        .xml  .dtd  .xsl  .xslt  .ent  .tld
+        .xml  .dtd  .xsl  .xslt  .ent  .tld  .plist
   
     --yaml
         .yaml  .yml
