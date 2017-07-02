@@ -27,7 +27,7 @@
 
 #if HAVE_FOPENCOOKIE
 
-#define min(a, b) ({				\
+#define min(a, b) __extension__({	\
 	__typeof (a) _a = (a);			\
 	__typeof (b) _b = (b);			\
 	_a < _b ? _a : _b; })
