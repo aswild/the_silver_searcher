@@ -798,12 +798,12 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         size_t lang_index;
         printf("The following file types are supported:\n");
         for (lang_index = 0; lang_index < lang_count; lang_index++) {
-            printf("  --%-18s:", langs[lang_index].name);
+            printf("  --%s\n    ", langs[lang_index].name);
             int j;
             for (j = 0; j < MAX_EXTENSIONS && langs[lang_index].extensions[j]; j++) {
                 printf("  .%s", langs[lang_index].extensions[j]);
             }
-            printf("\n");
+            printf("\n\n");
         }
         exit(0);
     }
