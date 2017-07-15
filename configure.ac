@@ -13,7 +13,7 @@ AM_PROG_CC_C_O
 AC_PREREQ([2.59])
 AC_PROG_SED
 
-BASE_CFLAGS="-std=gnu99 -pedantic -D_GNU_SOURCE"
+BASE_CFLAGS="-std=gnu99 -D_GNU_SOURCE"
 BASE_CFLAGS="$BASE_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith"
 BASE_CFLAGS="$BASE_CFLAGS -Wcast-qual -Wmissing-prototypes -Wno-missing-braces -Wno-implicit-fallthrough"
 
