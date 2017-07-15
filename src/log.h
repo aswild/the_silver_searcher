@@ -21,7 +21,9 @@ enum log_level {
 
 void set_log_level(enum log_level threshold);
 
-void log_debug(const char *fmt, ...);
+void _log_debug(const char *fmt, ...);
+#define log_debug(fmt, args...) _log_debug("%s:%d: " fmt, __func__, __LINE__, ##args)
+
 void log_msg(const char *fmt, ...);
 void log_warn(const char *fmt, ...);
 void log_err(const char *fmt, ...);
