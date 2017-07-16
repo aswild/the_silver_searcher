@@ -8,5 +8,5 @@ Setup:
 Test that the ignore pattern got picked up:
 
   $ ag --debug . | grep PATTERN_MARKER
-  DEBUG: added ignore pattern PATTERN_MARKER to root ignores
+  DEBUG: .*: added ignore pattern PATTERN_MARKER to root ignores (re)
 
