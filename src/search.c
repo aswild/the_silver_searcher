@@ -2,6 +2,11 @@
 #include "print.h"
 #include "scandir.h"
 
+#ifdef __LINUX__
+#define is_procfile(path) (strncmp((path), "/proc", 5) == 0)
+#define is_sysfile(path) (strncmp((path), "/sys", 4) == 0)
+#endif
+
 void search_buf(const char *buf, const size_t buf_len,
                 const char *dir_full_path) {
     int binary = -1; /* 1 = yes, 0 = no, -1 = don't know */
@@ -300,7 +305,11 @@ void search_file(const char *file_full_path) {
 
     f_len = statbuf.st_size;
 
+#ifdef __LINUX__
+    if (f_len == 0 && !is_procfile(file_full_path)) {
+#else
     if (f_len == 0) {
+#endif
         if (opts.query[0] == '.' && opts.query_len == 1 && !opts.literal && opts.search_all_files && opts.print_filename_only) {
             search_buf(buf, f_len, file_full_path);
         } else {
@@ -334,7 +343,50 @@ void search_file(const char *file_full_path) {
     }
 #else
 
+#ifdef __LINUX__
+    if (is_procfile(file_full_path)) {
+        // /proc files can't be mmap'd and show up as zero-length. Sometimes we can lseek them to get the size and sometimes we can't
+        ssize_t bytes_read = 0;
+        f_len = lseek(fd, 0, SEEK_END);
+        if (f_len != -1) {
+            // lseek succeeded, so we know how much to read
+            lseek(fd, 0, SEEK_SET);
+            buf = ag_malloc(f_len);
+            bytes_read = read(fd, buf, f_len);
+            if ((off_t)bytes_read != f_len) {
+                die("expected to read %u bytes but read %u", f_len, bytes_read);
+            }
+        } else {
+            // lseek failed, so use the last-resort of dynamically reallocating the buffer until we've read as much as we can
+            size_t buf_size = 4096;
+            buf = ag_malloc(buf_size);
+            while (TRUE) {
+                bytes_read += read(fd, buf + bytes_read, buf_size - bytes_read);
+                if (bytes_read < 0) {
+                    die("Unable to read %s", file_full_path);
+                } else if ((size_t)bytes_read < buf_size) {
+                    break; // assume we hit the end
+                } else {
+                    // realloc the buffer and keep reading
+                    buf_size *= 2;
+                    buf = ag_realloc(buf, buf_size);
+                }
+            }
+        }
+        log_debug("%s: read %d bytes", file_full_path, bytes_read);
+        f_len = (off_t)bytes_read;
+    } else if (is_sysfile(file_full_path)) {
+        // /sys files can't be mmap'd, and reading them might return less than the expected amount
+        buf = ag_malloc(f_len);
+        ssize_t bytes_read = read(fd, buf, f_len);
+        if (bytes_read < 0) {
+            die("Unable to read %s", file_full_path);
+        }
+        f_len = (off_t)bytes_read; // update file size with the actual amount we read
+    } else if (opts.mmap) {
+#else
     if (opts.mmap) {
+#endif // __LINUX__
         buf = mmap(0, f_len, PROT_READ, MAP_PRIVATE, fd, 0);
         if (buf == MAP_FAILED) {
             log_err("File %s failed to load: %s.", file_full_path, strerror(errno));
@@ -385,7 +437,13 @@ cleanup:
 #ifdef _WIN32
         UnmapViewOfFile(buf);
 #else
+#ifdef __LINUX__
+        if (is_procfile(file_full_path) || is_sysfile(file_full_path)) {
+            free(buf);
+        } else if (opts.mmap) {
+#else
         if (opts.mmap) {
+#endif
             if (buf != MAP_FAILED) {
                 munmap(buf, f_len);
             }

@@ -29,9 +29,14 @@ AX_PTHREAD(
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 LIBS="$LIBS $PTHREAD_LIBS"
 
-case $host in
-*mingw*)
-    AC_CHECK_LIB(shlwapi, main,, AC_MSG_ERROR(libshlwapi missing))
+AC_CANONICAL_HOST
+case "$host_os" in
+    *mingw*)
+        AC_CHECK_LIB(shlwapi, main,, AC_MSG_ERROR(libshlwapi missing))
+        ;;
+    *linux*)
+        AC_DEFINE([__LINUX__], [], [Building for Linux (not OSX/cygwin/mingw)])
+        ;;
 esac
 
 ################### PCRE Check #####################
