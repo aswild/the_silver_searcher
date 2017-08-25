@@ -168,10 +168,13 @@ char *make_lang_regex(const char **ext_array, size_t num_exts, const char **name
         regex_length += name_length;
     }
 
-    if (num_exts > 0)
+    if (num_exts > 0) {
         regex[regex_length++] = ')';
+    }
     regex[regex_length++] = '$';
     regex[regex_length++] = 0;
+
+    log_debug("generated lang regex len %d '%s'", regex_length, regex);
 
     return regex;
 }
