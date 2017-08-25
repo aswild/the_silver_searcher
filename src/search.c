@@ -373,7 +373,7 @@ void search_file(const char *file_full_path) {
                 }
             }
         }
-        log_debug("%s: read %d bytes", file_full_path, bytes_read);
+        log_debug("%s: read %zu", file_full_path, bytes_read);
         f_len = (off_t)bytes_read;
     } else if (is_sysfile(file_full_path)) {
         // /sys files can't be mmap'd, and reading them might return less than the expected amount

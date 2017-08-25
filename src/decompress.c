@@ -22,7 +22,7 @@ const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
  *
  * zpipe.c: example of proper use of zlib's inflate() and deflate()
  *    Not copyrighted -- provided to the public domain
- *    Version 1.4  11 December 2005  Mark Adler 
+ *    Version 1.4  11 December 2005  Mark Adler
  */
 static void *decompress_zlib(const void *buf, const int buf_len,
                              const char *dir_full_path, int *new_buf_len) {
@@ -60,7 +60,7 @@ static void *decompress_zlib(const void *buf, const int buf_len,
             result = (unsigned char *)realloc(result, result_size * sizeof(unsigned char));
             if (result == NULL) {
                 free(tmp_result);
-                log_err("Unable to allocate %d bytes to decompress file %s", result_size * sizeof(unsigned char), dir_full_path);
+                log_err("Unable to allocate %zu bytes to decompress file %s", result_size * sizeof(unsigned char), dir_full_path);
                 inflateEnd(&stream);
                 goto error_out;
             }
@@ -149,7 +149,7 @@ static void *decompress_lzma(const void *buf, const int buf_len,
             result = (unsigned char *)realloc(result, result_size * sizeof(unsigned char));
             if (result == NULL) {
                 free(tmp_result);
-                log_err("Unable to allocate %d bytes to decompress file %s", result_size * sizeof(unsigned char), dir_full_path);
+                log_err("Unable to allocate %zu bytes to decompress file %s", result_size * sizeof(unsigned char), dir_full_path);
                 goto error_out;
             }
 
@@ -220,7 +220,7 @@ ag_compression_type is_zipped(const void *buf, const int buf_len) {
     /* Zip magic numbers
      * compressed file: { 0x1F, 0x9B }
      * http://en.wikipedia.org/wiki/Compress
-     * 
+     *
      * gzip file:       { 0x1F, 0x8B }
      * http://www.gzip.org/zlib/rfc-gzip.html#file-format
      *
