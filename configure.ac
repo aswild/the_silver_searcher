@@ -21,12 +21,16 @@ BASE_CFLAGS="$BASE_CFLAGS -Wcast-qual -Wmissing-prototypes -Wno-missing-braces -
 # All libarary-specific flags from the checks below are handled in Makefile.am
 CFLAGS="$BASE_CFLAGS $CFLAGS"
 
+# pthreads check. Note that if -Werror is in CFLAGS, the pthreads checks always fail, so temporarily remove it
+save_cflags="$CFLAGS"
+dnl an extra set of brackets is needed because of m4 bracket quoting insanity
+CFLAGS=`echo "$save_cflags" | $SED 's/-Werror[[^[:space:]]]*//g'`
 m4_include([m4/ax_pthread.m4])
 AX_PTHREAD(
     [AC_CHECK_HEADERS([pthread.h])],
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
 )
-CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+CFLAGS="$save_cflags $PTHREAD_CFLAGS"
 LIBS="$LIBS $PTHREAD_LIBS"
 
 AC_CANONICAL_HOST
