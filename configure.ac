@@ -1,6 +1,6 @@
 AC_INIT(
     [the_silver_searcher],
-    [2.0.0-wild],
+    [2.1.0-wild],
     [https://github.com/ggreer/the_silver_searcher/issues],
     [the_silver_searcher],
     [https://github.com/ggreer/the_silver_searcher])
@@ -94,7 +94,7 @@ AS_IF([test "x$enable_lzma" != "xno"], [
 ])
 
 AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
-AC_CHECK_HEADERS([sys/cpuset.h])
+AC_CHECK_HEADERS([sys/cpuset.h err.h])
 
 AC_CHECK_DECL([_WIN32], ag_win32_build="yes")
 AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])

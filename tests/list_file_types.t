@@ -12,6 +12,9 @@ Language types are output:
     --ada
         .ada  .adb  .ads
   
+    --asciidoc
+        .adoc  .ad  .asc  .asciidoc
+  
     --asm
         .asm  .s
   
@@ -63,6 +66,9 @@ Language types are output:
     --delphi
         .pas  .int  .dfm  .nfm  .dof  .dpk  .dpr  .dproj  .groupproj  .bdsgroup  .bdsproj
   
+    --dot
+        .dot  .gv
+  
     --ebuild
         .ebuild  .eclass
   
@@ -102,6 +108,9 @@ Language types are output:
     --haml
         .haml
   
+    --handlebars
+        .hbs
+  
     --haskell
         .hs  .lhs
   
@@ -116,6 +125,9 @@ Language types are output:
   
     --ini
         .ini
+  
+    --ipython
+        .ipynb
   
     --jade
         .jade
@@ -183,6 +195,9 @@ Language types are output:
     --nim
         .nim
   
+    --nix
+        .nix
+  
     --objc
         .m  .h
   
@@ -194,6 +209,9 @@ Language types are output:
   
     --octave
         .m
+  
+    --org
+        .org
   
     --parrot
         .pir  .pasm  .pmc  .ops  .pod  .pg  .tg
