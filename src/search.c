@@ -354,7 +354,7 @@ void search_file(const char *file_full_path) {
             buf = ag_malloc(f_len);
             bytes_read = read(fd, buf, f_len);
             if ((off_t)bytes_read != f_len) {
-                die("expected to read %u bytes but read %u", f_len, bytes_read);
+                die("expected to read %zu bytes but read %zu", f_len, bytes_read);
             }
         } else {
             // lseek failed, so use the last-resort of dynamically reallocating the buffer until we've read as much as we can
@@ -401,7 +401,7 @@ void search_file(const char *file_full_path) {
         buf = ag_malloc(f_len);
         size_t bytes_read = read(fd, buf, f_len);
         if ((off_t)bytes_read != f_len) {
-            die("expected to read %u bytes but read %u", f_len, bytes_read);
+            die("expected to read %zu bytes but read %zu", f_len, bytes_read);
         }
     }
 #endif

@@ -10,7 +10,7 @@ typedef struct {
     const char *names[MAX_NAMES];
 } lang_spec_t;
 
-extern lang_spec_t langs[];
+extern const lang_spec_t langs[];
 
 /**
  Return the language count.

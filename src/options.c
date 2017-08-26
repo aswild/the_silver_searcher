@@ -283,7 +283,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     init_options();
 
-    option_t base_longopts[] = {
+    const option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
         { "ackmate-dir-filter", required_argument, NULL, 0 },
         { "affinity", no_argument, &opts.use_thread_affinity, 1 },

@@ -4,7 +4,7 @@
 #include "lang.h"
 #include "util.h"
 
-lang_spec_t langs[] = {
+const lang_spec_t langs[] = {
     { "actionscript", { "as", "mxml" }, {} },
     { "ada", { "ada", "adb", "ads" }, {} },
     { "asciidoc", { "adoc", "ad", "asc", "asciidoc" }, {} },

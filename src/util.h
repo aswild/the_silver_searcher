@@ -37,6 +37,15 @@ FILE *out_fd;
 #define NO_SANITIZE_ALIGNMENT
 #endif
 
+// GCC attribute to produce -Wformat warnings for printf-like functions
+#ifdef __GNUC__
+#define PRINTF_ATTR __attribute__((format(printf, 1, 2)))
+#define PRINTF_ATTR_2 __attribute__((format(printf, 2, 3)))
+#else
+#define PRINTF_ATTR
+#define PRINTF_ATTR_2
+#endif
+
 void *ag_malloc(size_t size);
 void *ag_realloc(void *ptr, size_t size);
 void *ag_calloc(size_t nelem, size_t elsize);
@@ -99,9 +108,9 @@ int is_directory(const char *path, const struct dirent *d);
 int is_symlink(const char *path, const struct dirent *d);
 int is_named_pipe(const char *path, const struct dirent *d);
 
-void die(const char *fmt, ...);
+void die(const char *fmt, ...) PRINTF_ATTR;
 
-void ag_asprintf(char **ret, const char *fmt, ...);
+void ag_asprintf(char **ret, const char *fmt, ...) PRINTF_ATTR_2;
 
 ssize_t buf_getline(const char **line, const char *buf, const size_t buf_len, const size_t buf_offset);
 
