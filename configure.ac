@@ -51,12 +51,16 @@ AC_DEFUN([AG_PCRE_SETUP], [
          AC_DEFINE([HAVE_PCRE], [], [Use libpcre])
          AC_CHECK_DECL([PCRE_CONFIG_JIT], [AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])],
                        [], [#include <pcre.h>])
+         CFLAGS="$CFLAGS $PCRE_CFLAGS"
+         LIBS="$LIBS $PCRE_LIBS"
 ])
 AC_DEFUN([AG_PCRE2_SETUP], [
          ag_have_pcre2="yes"
          AC_DEFINE([HAVE_PCRE2], [], [Use libpcre2])
          AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for libpcre2])
          AC_DEFINE([USE_PCRE_JIT], [], [Use PCRE JIT])
+         CFLAGS="$CFLAGS $PCRE2_CFLAGS"
+         LIBS="$LIBS $PCRE2_LIBS"
 ])
 
 # checks which silently set a variable if failing rather than the default error
@@ -81,16 +85,20 @@ AC_ARG_ENABLE([zlib],
     AS_HELP_STRING([--disable-zlib], [Disable zlib compressed search support]))
 
 AS_IF([test "x$enable_zlib" != "xno"], [
-    AC_CHECK_HEADERS([zlib.h])
     PKG_CHECK_MODULES([ZLIB], [zlib])
+    CFLAGS="$CFLAGS $ZLIB_CFLAGS"
+    LIBS="$LIBS $ZLIB_LIBS"
+    AC_CHECK_HEADERS([zlib.h])
 ])
 
 AC_ARG_ENABLE([lzma],
     AS_HELP_STRING([--disable-lzma], [Disable lzma compressed search support]))
 
 AS_IF([test "x$enable_lzma" != "xno"], [
-    AC_CHECK_HEADERS([lzma.h])
     PKG_CHECK_MODULES([LZMA], [liblzma])
+    CFLAGS="$CFLAGS $LZMA_CFLAGS"
+    LIBS="$LIBS $LZMA_LIBS"
+    AC_CHECK_HEADERS([lzma.h])
 ])
 
 AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
