@@ -25,13 +25,11 @@ ag_SOURCES = \
 	src/pcre_api.h \
 	src/version.c \
 	src/version.h \
+	src/zfile.c \
 	src/main.c
 
 if WIN32_BUILD
 ag_SOURCES += src/print_w32.c
-endif
-if HAVE_FOPENCOOKIE
-ag_SOURCES += src/zfile.c
 endif
 
 dist_man_MANS = doc/ag.1

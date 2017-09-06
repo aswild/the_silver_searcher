@@ -110,11 +110,7 @@ AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])
 AC_CHECK_MEMBER([struct dirent.d_type], [AC_DEFINE([HAVE_DIRENT_DTYPE], [], [Have dirent struct member d_type])], [], [[#include <dirent.h>]])
 AC_CHECK_MEMBER([struct dirent.d_namlen], [AC_DEFINE([HAVE_DIRENT_DNAMLEN], [], [Have dirent struct member d_namlen])], [], [[#include <dirent.h>]])
 
-AC_CHECK_FUNCS(fgetln getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
-
-AC_ARG_ENABLE([zipstream], AS_HELP_STRING([--enable-zipstream], [Enable compressed stream searching support]))
-AS_IF([test "x$enable_zipstream" = "xyes"], [AC_CHECK_FUNCS([fopencookie])])
-AM_CONDITIONAL([HAVE_FOPENCOOKIE], [test "x$ac_cv_func_fopencookie" = "xyes"])
+AC_CHECK_FUNCS(fgetln fopencookie getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
 
 AC_CHECK_PROGS(
     [CLANG_FORMAT],
