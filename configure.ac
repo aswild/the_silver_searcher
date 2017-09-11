@@ -43,6 +43,35 @@ case "$host_os" in
         ;;
 esac
 
+dnl adl_RECURSIVE_EVAL(VALUE, RESULT)
+dnl =================================
+dnl Interpolate the VALUE in loop until it doesn't change,
+dnl and set the result to $RESULT.
+dnl WARNING: It's easy to get an infinite loop with some unsane input.
+dnl from http://ac-archive.sourceforge.net/adl/relpaths.html
+AC_DEFUN([adl_RECURSIVE_EVAL],
+[_lcl_receval="$1"
+$2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+     test "x$exec_prefix" = xNONE && exec_prefix="${prefix}"
+     _lcl_receval_old=''
+     while test "[$]_lcl_receval_old" != "[$]_lcl_receval"; do
+       _lcl_receval_old="[$]_lcl_receval"
+       eval _lcl_receval="\"[$]_lcl_receval\""
+     done
+     echo "[$]_lcl_receval")`])
+
+# Add ${libdir}/pkgconfig to PKG_CONFIG_PATH if it exists. This helps when libraries
+# were installed to /usr/local/lib, which isn't searched by pkg-config by default
+adl_RECURSIVE_EVAL([${libdir}], libdir_expanded)
+if test -d "${libdir_expanded}/pkgconfig"; then
+    if test -n "${PKG_CONFIG_PATH}"; then
+        PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${libdir_expanded}/pkgconfig"
+    else
+        PKG_CONFIG_PATH="${libdir_expanded}/pkgconfig"
+    fi
+    export PKG_CONFIG_PATH
+fi
+
 ################### PCRE Check #####################
 
 # actions to take when a PCRE lib is found
