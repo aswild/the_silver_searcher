@@ -310,7 +310,7 @@ zfile_read(void *cookie_, char *buf, size_t size) {
 #elif defined(HAVE_LZMA_H)
             (0)
 #endif
-                ) {
+        ) {
             cookie->eof = true;
             break;
         }
