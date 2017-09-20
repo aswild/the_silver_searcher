@@ -178,9 +178,9 @@ void generate_hash(const char *find, const size_t f_len, uint8_t *h_table, const
 const char *boyer_moore_strnstr(const char *s, const char *find, const size_t s_len, const size_t f_len,
                                 const size_t alpha_skip_lookup[], const size_t *find_skip_lookup, const int case_insensitive) {
     ssize_t i;
-    size_t pos = f_len - 1;
+    ssize_t pos = f_len - 1;
 
-    while (pos < s_len) {
+    while (pos < (ssize_t)s_len) {
         for (i = f_len - 1; i >= 0 && (case_insensitive ? tolower(s[pos]) : s[pos]) == find[i]; pos--, i--) {
         }
         if (i < 0) {
