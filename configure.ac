@@ -47,7 +47,7 @@ case "$host_os" in
         AC_CHECK_LIB(shlwapi, main,, AC_MSG_ERROR(libshlwapi missing))
         ;;
     *linux*)
-        AC_DEFINE([__LINUX__], [], [Building for Linux (not OSX/cygwin/mingw)])
+        AC_DEFINE([OS_LINUX], [], [Building for Linux (not OSX/cygwin/mingw)])
         ;;
 esac
 

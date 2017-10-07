@@ -2,7 +2,7 @@
 #include "print.h"
 #include "scandir.h"
 
-#ifdef __LINUX__
+#ifdef OS_LINUX
 #define is_procfile(path) (strncmp((path), "/proc", 5) == 0)
 #define is_sysfile(path) (strncmp((path), "/sys", 4) == 0)
 #endif
@@ -305,7 +305,7 @@ void search_file(const char *file_full_path) {
 
     f_len = statbuf.st_size;
 
-#ifdef __LINUX__
+#ifdef OS_LINUX
     if (f_len == 0 && !is_procfile(file_full_path)) {
 #else
     if (f_len == 0) {
@@ -343,7 +343,7 @@ void search_file(const char *file_full_path) {
     }
 #else
 
-#ifdef __LINUX__
+#ifdef OS_LINUX
     if (is_procfile(file_full_path)) {
         // /proc files can't be mmap'd and show up as zero-length. Sometimes we can lseek them to get the size and sometimes we can't
         ssize_t bytes_read = 0;
@@ -386,7 +386,7 @@ void search_file(const char *file_full_path) {
     } else if (opts.mmap) {
 #else
     if (opts.mmap) {
-#endif // __LINUX__
+#endif // OS_LINUX
         buf = mmap(0, f_len, PROT_READ, MAP_PRIVATE, fd, 0);
         if (buf == MAP_FAILED) {
             log_err("File %s failed to load: %s.", file_full_path, strerror(errno));
@@ -437,7 +437,7 @@ cleanup:
 #ifdef _WIN32
         UnmapViewOfFile(buf);
 #else
-#ifdef __LINUX__
+#ifdef OS_LINUX
         if (is_procfile(file_full_path) || is_sysfile(file_full_path)) {
             free(buf);
         } else if (opts.mmap) {
