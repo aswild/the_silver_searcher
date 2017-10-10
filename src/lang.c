@@ -8,7 +8,7 @@ const lang_spec_t langs[] = {
     { "actionscript", { "as", "mxml" }, {} },
     { "ada", { "ada", "adb", "ads" }, {} },
     { "asciidoc", { "adoc", "ad", "asc", "asciidoc" }, {} },
-    { "asm", { "asm", "s" }, {} },
+    { "asm", { "asm", "s", "S" }, {} },
     { "batch", { "bat", "cmd" }, {} },
     { "bb", { "bb", "bbappend", "bbclass", "inc", "conf" }, {} },      // WILD ADD
     { "bitbake", { "bb", "bbappend", "bbclass", "inc", "conf" }, {} }, // WILD MOD (add .conf)

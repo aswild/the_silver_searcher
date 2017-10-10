@@ -16,7 +16,7 @@ Language types are output:
         .adoc  .ad  .asc  .asciidoc
   
     --asm
-        .asm  .s
+        .asm  .s  .S
   
     --batch
         .bat  .cmd
