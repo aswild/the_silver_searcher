@@ -45,7 +45,7 @@ dist_zshcomp_DATA = _the_silver_searcher
 EXTRA_DIST = Makefile.w32 LICENSE NOTICE the_silver_searcher.spec README.md
 
 if USE_GITVERSION
-AG_VERSION := $(shell git describe --dirty=+ --always --tags)
+AG_VERSION := $(shell git -C "$(srcdir)" describe --dirty=+ --always --tags)
 $(shell grep "^$(AG_VERSION)" .version >/dev/null 2>&1 || echo "$(AG_VERSION)" > .version)
 CLEANFILES = .version src/version.c
 
