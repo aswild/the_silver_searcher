@@ -147,10 +147,12 @@ AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])
 AC_CHECK_MEMBER([struct dirent.d_type], [AC_DEFINE([HAVE_DIRENT_DTYPE], [], [Have dirent struct member d_type])], [], [[#include <dirent.h>]])
 AC_CHECK_MEMBER([struct dirent.d_namlen], [AC_DEFINE([HAVE_DIRENT_DNAMLEN], [], [Have dirent struct member d_namlen])], [], [[#include <dirent.h>]])
 
-AC_CHECK_FUNCS(fgetln fopencookie getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
+AC_CHECK_FUNCS(fgetln getline realpath strlcpy strndup vasprintf madvise posix_fadvise pthread_setaffinity_np pledge)
 
 # Only build zfile.c if we need it
-AM_CONDITIONAL([USE_FOPENCOOKIE], [(test "$ac_cv_func_fopencookie" = "yes") &&
+AC_ARG_ENABLE([fopencookie], [AS_HELP_STRING([--enable-fopencookie], [Search compressed files as streams])])
+AS_IF([test "$enable_fopencookie" = "yes"], [AC_CHECK_FUNCS(fopencookie)])
+AM_CONDITIONAL([USE_FOPENCOOKIE], [test "$enable_fopencookie" = "yes" && test "$ac_cv_func_fopencookie" = "yes" &&
                                    (test "$ac_cv_header_zlib_h" = "yes" || test "$ac_cv_header_lzma_h" = "yes")])
 AM_COND_IF([USE_FOPENCOOKIE], [AC_DEFINE([USE_FOPENCOOKIE], [], [Use fopencookie streaming in zfile.c])])
 
