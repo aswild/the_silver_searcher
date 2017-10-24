@@ -15,6 +15,9 @@ Language types are output:
     --asciidoc
         .adoc  .ad  .asc  .asciidoc
   
+    --apl
+        .apl
+  
     --asm
         .asm  .s  .S
   
@@ -123,11 +126,17 @@ Language types are output:
     --html
         .htm  .html  .shtml  .xhtml
   
+    --idris
+        .idr  .ipkg  .lidr
+  
     --ini
         .ini
   
     --ipython
         .ipynb
+  
+    --j
+        .ijs
   
     --jade
         .jade
