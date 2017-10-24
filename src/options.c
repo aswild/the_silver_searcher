@@ -276,8 +276,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     option_t *longopts;
     char *lang_regex = NULL;
     size_t *ext_index = NULL;
-    char *extensions = NULL;
-    size_t num_exts = 0;
 
     init_options();
 
@@ -751,18 +749,13 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     }
 
     if (has_filetype) {
-        num_exts = combine_file_extensions(ext_index, lang_num, &extensions);
-        lang_regex = make_lang_regex(extensions, num_exts);
+        lang_regex = make_lang_regex(ext_index, lang_num);
+        log_debug("Got lang regex '%s'", lang_regex);
         ag_pcre_compile(&opts.file_search_regex, &opts.file_search_regex_extra, lang_regex, 0, 0);
     }
 
-    if (extensions) {
-        free(extensions);
-    }
     free(ext_index);
-    if (lang_regex) {
-        free(lang_regex);
-    }
+    free(lang_regex);
     free(longopts);
 
     argc -= optind;
@@ -801,7 +794,12 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             printf("  --%s\n    ", langs[lang_index].name);
             int j;
             for (j = 0; j < MAX_EXTENSIONS && langs[lang_index].extensions[j]; j++) {
-                printf("  .%s", langs[lang_index].extensions[j]);
+                const char *ext = langs[lang_index].extensions[j];
+                if (ext[0] == '^') {
+                    printf("  %s", ext);
+                } else {
+                    printf("  .%s", ext);
+                }
             }
             printf("\n\n");
         }

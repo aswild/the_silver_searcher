@@ -17,7 +17,7 @@ const lang_spec_t langs[] = {
     { "cfmx", { "cfc", "cfm", "cfml" } },
     { "chpl", { "chpl" } },
     { "clojure", { "clj", "cljs", "cljc", "cljx" } },
-    { "cmake", { "cmake" } },
+    { "cmake", { "^CMakeLists\\.txt", "cmake" } },
     { "coffee", { "coffee", "cjsx" } },
     { "cpp", { "cpp", "cc", "C", "cxx", "m", "hpp", "hh", "h", "H", "hxx", "tpp" } },
     { "crystal", { "cr", "ecr" } },
@@ -59,7 +59,7 @@ const lang_spec_t langs[] = {
     { "log", { "log" } },
     { "lua", { "lua" } },
     { "m4", { "m4" } },
-    { "make", { "Makefiles", "mk", "mak" } },
+    { "make", { "^Makefile(\\.[^/]+)?", "Makefiles", "mk", "mak" } },
     { "mako", { "mako" } },
     { "markdown", { "markdown", "mdown", "mdwn", "mkdn", "mkd", "md" } },
     { "mason", { "mas", "mhtml", "mpl", "mtxt" } },
@@ -126,64 +126,65 @@ size_t get_lang_count() {
     return sizeof(langs) / sizeof(lang_spec_t);
 }
 
-char *make_lang_regex(char *ext_array, size_t num_exts) {
-    int regex_capacity = 100;
-    char *regex = ag_malloc(regex_capacity);
-    int regex_length = 3;
-    int subsequent = 0;
-    char *extension;
+char *make_lang_regex(size_t *ext_index, size_t len) {
+    char *ext_regex = NULL;
+    char *name_regex = NULL;
+    size_t ext_size, name_size;
+    size_t ext_pos, name_pos;
+    size_t ext_count = 0, name_count = 0;
     size_t i;
 
-    strcpy(regex, "\\.(");
-
-    for (i = 0; i < num_exts; ++i) {
-        extension = ext_array + i * SINGLE_EXT_LEN;
-        int extension_length = strlen(extension);
-        while (regex_length + extension_length + 3 + subsequent > regex_capacity) {
-            regex_capacity *= 2;
-            regex = ag_realloc(regex, regex_capacity);
-        }
-        if (subsequent) {
-            regex[regex_length++] = '|';
-        } else {
-            subsequent = 1;
-        }
-        strcpy(regex + regex_length, extension);
-        regex_length += extension_length;
-    }
-
-    regex[regex_length++] = ')';
-    regex[regex_length++] = '$';
-    regex[regex_length++] = 0;
-
-    log_debug("generated lang regex len %d '%s'", regex_length, regex);
-
-    return regex;
-}
-
-size_t combine_file_extensions(size_t *extension_index, size_t len, char **exts) {
-    /* Keep it fixed as 100 for the reason that if you have more than 100
-     * file types to search, you'd better search all the files.
-     * */
-    size_t ext_capacity = 100;
-    (*exts) = (char *)ag_malloc(ext_capacity * SINGLE_EXT_LEN);
-    memset((*exts), 0, ext_capacity * SINGLE_EXT_LEN);
-    size_t num_of_extensions = 0;
-
-    size_t i;
-    for (i = 0; i < len; ++i) {
+    // to avoid repeating the '\.' every time for an extension, generate separate regexes
+    // for the extensions and filename patterns
+    // note: the regex from this function is matched against the full path name (relative to the base_path
+    // specified on the command line) and not just the filename. When individual files are given on the command
+    // line, the file search regex isn't even checked, so for filename checks we can always match against a '/'
+    // before the pattern to keep this from matching everything in a directory which matches a filename pattern
+    ext_pos = ag_dsprintf(&ext_regex, &ext_size, 0, "\\.(");
+    name_pos = ag_dsprintf(&name_regex, &name_size, 0, "/(");
+    for (i = 0; i < len; i++) {
         size_t j = 0;
-        const char *ext = langs[extension_index[i]].extensions[j];
-        do {
-            if (num_of_extensions == ext_capacity) {
-                break;
+        const char *ext = langs[ext_index[i]].extensions[j];
+        while (ext != NULL) {
+            if (ext[0] == '^') {
+                name_pos += ag_dsprintf(&name_regex, &name_size, name_pos, "%s|", ext + 1);
+                name_count++;
+            } else {
+                ext_pos += ag_dsprintf(&ext_regex, &ext_size, ext_pos, "%s|", ext);
+                ext_count++;
             }
-            char *pos = (*exts) + num_of_extensions * SINGLE_EXT_LEN;
-            strncpy(pos, ext, strlen(ext));
-            ++num_of_extensions;
-            ext = langs[extension_index[i]].extensions[++j];
-        } while (ext);
+
+            // the list of extensions will be null-terminated only if there are less than MAX_EXTENSIONS
+            // defined for a particular filetype, therefore make sure we don't accidentally overflow
+            if (++j >= MAX_EXTENSIONS)
+                break;
+            ext = langs[ext_index[i]].extensions[j];
+        }
     }
 
-    return num_of_extensions;
+    // drop the trailing '|' in both regexes
+    if (ext_count > 0)
+        ext_pos--;
+    if (name_count > 0)
+        name_pos--;
+
+    // finish off the regexes
+    ext_pos += ag_dsprintf(&ext_regex, &ext_size, ext_pos, ")$");
+    name_pos += ag_dsprintf(&name_regex, &name_size, name_pos, ")$");
+
+    // if only one type of extension, just return that. otherwise combine them
+    if (name_count == 0) {
+        free(name_regex);
+        return ext_regex;
+    } else if (ext_count == 0) {
+        free(ext_regex);
+        return name_regex;
+    } else {
+        size_t outsize = strlen(name_regex) + strlen(ext_regex) + 2;
+        char *outbuf = ag_malloc(outsize);
+        snprintf(outbuf, outsize, "%s|%s", ext_regex, name_regex);
+        free(name_regex);
+        free(ext_regex);
+        return outbuf;
+    }
 }
