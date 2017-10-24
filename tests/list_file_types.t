@@ -43,7 +43,7 @@ Language types are output:
         .clj  .cljs  .cljc  .cljx
   
     --cmake
-        CMakeLists.txt  .cmake
+        .cmake
   
     --coffee
         .coffee  .cjsx
@@ -169,7 +169,7 @@ Language types are output:
         .m4
   
     --make
-        Makefile  .Makefiles  .mk  .mak
+        .Makefiles  .mk  .mak
   
     --mako
         .mako
@@ -248,9 +248,6 @@ Language types are output:
   
     --racket
         .rkt  .ss  .scm
-  
-    --rake
-        Rakefile
   
     --restructuredtext
         .rst
