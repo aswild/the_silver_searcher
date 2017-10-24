@@ -38,12 +38,14 @@ FILE *out_fd;
 #endif
 
 // GCC attribute to produce -Wformat warnings for printf-like functions
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #define PRINTF_ATTR __attribute__((format(printf, 1, 2)))
 #define PRINTF_ATTR_2 __attribute__((format(printf, 2, 3)))
+#define PRINTF_ATTR_3 __attribute__((format(printf, 4, 5)))
 #else
 #define PRINTF_ATTR
 #define PRINTF_ATTR_2
+#define PRINTF_ATTR_3
 #endif
 
 void *ag_malloc(size_t size);
@@ -111,6 +113,7 @@ int is_named_pipe(const char *path, const struct dirent *d);
 void die(const char *fmt, ...) PRINTF_ATTR;
 
 void ag_asprintf(char **ret, const char *fmt, ...) PRINTF_ATTR_2;
+int ag_dsprintf(char **buf, size_t *bufsize, size_t pos, const char *fmt, ...) PRINTF_ATTR_3;
 
 ssize_t buf_getline(const char **line, const char *buf, const size_t buf_len, const size_t buf_offset);
 

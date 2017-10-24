@@ -521,6 +521,54 @@ void ag_asprintf(char **ret, const char *fmt, ...) {
     va_end(args);
 }
 
+/* printf into a string in *buf starting pos bytes into the string.
+ * If needed, realloc *buf and update *bufsize.
+ * Basically this is a dynamic reallocating version of snprintf(buf + pos, bufsize, fmt, ...)
+ * If *buf is NULL, allocate an initial buffer.
+ * Returns the number of characters written, excluding the nullbyte (same as snprintf)
+ */
+int ag_dsprintf(char **buf, size_t *bufsize, size_t pos, const char *fmt, ...) {
+    va_list args, args2;
+    int count;
+
+    if (buf == NULL) {
+        die("NULL pointer passed to ag_dsprintf");
+    }
+
+    if (*buf == NULL) {
+        *bufsize = 128;
+        *buf = ag_malloc(*bufsize);
+    }
+
+    // make sure that pos is inside buf. if this happens we're almost guaranteed
+    // to call vsnprintf the second time
+    if (pos > (*bufsize - 1)) {
+        *bufsize = pos;
+        *buf = ag_realloc(*buf, *bufsize);
+    }
+
+    va_start(args, fmt);
+    // copy the arg list since we might need to call vsnprintf again
+    va_copy(args2, args);
+    count = vsnprintf(*buf + pos, *bufsize - pos, fmt, args);
+    va_end(args);
+
+    if ((size_t)count < (*bufsize - pos)) {
+        // there was enough space in buf, so we're done
+        return count;
+    }
+
+    // realloc the buffer. double it to make extra space for subsequent calls while still
+    // making sure there's at least enough room for the string to print now
+    *bufsize = ag_max(pos + count + 1, *bufsize * 2);
+    *buf = ag_realloc(*buf, *bufsize);
+    count = vsnprintf(*buf + pos, *bufsize - pos, fmt, args2);
+    if ((size_t)count >= (*bufsize - pos)) {
+        die("ag_dsprintf unexpected truncation (bufsize=%zu pos=%zu count=%d)", *bufsize, pos, count);
+    }
+    return count;
+}
+
 void die(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
