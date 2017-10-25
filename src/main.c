@@ -211,17 +211,18 @@ int main(int argc, char **argv) {
         double time_diff = ((long)stats.time_end.tv_sec * 1000000 + stats.time_end.tv_usec) -
                            ((long)stats.time_start.tv_sec * 1000000 + stats.time_start.tv_usec);
         time_diff /= 1000000;
-        char friendly_bytes[32];
-        memset(friendly_bytes, 0, sizeof(friendly_bytes));
+        char friendly_bytes[32] = { 0 };
         if (stats.total_bytes > (1 << 21)) {
             snprintf(friendly_bytes, sizeof(friendly_bytes), " (%.3f MB)", (double)stats.total_bytes / (double)(1 << 20));
         }
 
-        printf("%ld matches\n", stats.total_matches);
-        printf("%ld files contained matches\n", stats.total_file_matches);
-        printf("%ld files searched\n", stats.total_files);
-        printf("%ld bytes searched%s\n", stats.total_bytes, friendly_bytes);
-        printf("%f seconds\n", time_diff);
+        // flush stdout so that stderr output comes after it
+        fflush(stdout);
+        fprintf(stderr, "%ld matches\n", stats.total_matches);
+        fprintf(stderr, "%ld files contained matches\n", stats.total_file_matches);
+        fprintf(stderr, "%ld files searched\n", stats.total_files);
+        fprintf(stderr, "%ld bytes searched%s\n", stats.total_bytes, friendly_bytes);
+        fprintf(stderr, "%f seconds\n", time_diff);
         pthread_mutex_destroy(&stats_mtx);
     }
 

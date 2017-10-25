@@ -12,4 +12,4 @@ if [[ $FORCE_AUTOGEN == y ]] || [[ ! -f ./configure ]]; then
     ./autogen.sh
 fi
 ./configure "$@"
-make -j4
+make -j$(nproc)
