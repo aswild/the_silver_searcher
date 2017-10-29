@@ -79,7 +79,7 @@ typedef unsigned char uint8_t;
 #define uthash_fatal(msg) exit(-1) /* fatal error (out of memory,etc) */
 #endif
 #ifndef uthash_malloc
-#define uthash_malloc(sz) malloc(sz) /* malloc fcn                      */
+#define uthash_malloc(sz) ag_malloc(sz) /* malloc fcn                      */
 #endif
 #ifndef uthash_free
 #define uthash_free(ptr, sz) free(ptr) /* free fcn                        */
@@ -457,24 +457,34 @@ typedef unsigned char uint8_t;
         switch (_hj_k) {                                                                                                         \
             case 11:                                                                                                             \
                 hashv += ((unsigned)_hj_key[10] << 24);                                                                          \
+                /* fallthrough */                                                                                                \
             case 10:                                                                                                             \
                 hashv += ((unsigned)_hj_key[9] << 16);                                                                           \
+                /* fallthrough */                                                                                                \
             case 9:                                                                                                              \
                 hashv += ((unsigned)_hj_key[8] << 8);                                                                            \
+                /* fallthrough */                                                                                                \
             case 8:                                                                                                              \
                 _hj_j += ((unsigned)_hj_key[7] << 24);                                                                           \
+                /* fallthrough */                                                                                                \
             case 7:                                                                                                              \
                 _hj_j += ((unsigned)_hj_key[6] << 16);                                                                           \
+                /* fallthrough */                                                                                                \
             case 6:                                                                                                              \
                 _hj_j += ((unsigned)_hj_key[5] << 8);                                                                            \
+                /* fallthrough */                                                                                                \
             case 5:                                                                                                              \
                 _hj_j += _hj_key[4];                                                                                             \
+                /* fallthrough */                                                                                                \
             case 4:                                                                                                              \
                 _hj_i += ((unsigned)_hj_key[3] << 24);                                                                           \
+                /* fallthrough */                                                                                                \
             case 3:                                                                                                              \
                 _hj_i += ((unsigned)_hj_key[2] << 16);                                                                           \
+                /* fallthrough */                                                                                                \
             case 2:                                                                                                              \
                 _hj_i += ((unsigned)_hj_key[1] << 8);                                                                            \
+                /* fallthrough */                                                                                                \
             case 1:                                                                                                              \
                 _hj_i += _hj_key[0];                                                                                             \
         }                                                                                                                        \

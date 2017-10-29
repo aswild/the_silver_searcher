@@ -18,14 +18,6 @@ BASE_CFLAGS="-std=gnu99 -D_GNU_SOURCE"
 BASE_CFLAGS="$BASE_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith"
 BASE_CFLAGS="$BASE_CFLAGS -Wcast-qual -Wmissing-prototypes -Wno-missing-braces"
 
-# Ignore GCC 7's implicit fallthrough in switch blocks
-if echo "$CC" | $GREP -q gcc; then
-    _gccver=`"$CC" -dumpversion | cut -d. -f1`
-    if test "`expr $_gccver '>=' 7`" = "1"; then
-        BASE_CFLAGS="$BASE_CFLAGS -Wno-implicit-fallthrough"
-    fi
-fi
-
 # Put user-defined CFLAGS ('-g -O2' by default) after ours so the user can override
 CFLAGS="$BASE_CFLAGS $CFLAGS"
 

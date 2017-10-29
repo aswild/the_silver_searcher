@@ -550,7 +550,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'g':
                 needs_query = accepts_query = 0;
                 opts.match_files = 1;
-            /* Fall through so regex is built */
+            /* fall through */
             case 'G':
                 if (file_search_regex) {
                     log_err("File search regex (-g or -G) already specified.");
@@ -724,6 +724,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 }
 
                 log_err("option %s does not take a value", longopts[opt_index].name);
+                /* fall through */
             default:
                 usage();
                 exit(1);
