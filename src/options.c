@@ -121,6 +121,7 @@ Search Options:\n\
                           uppercase characters (Enabled by default)\n\
      --search-binary      Search binary files for matches\n\
   -t --all-text           Search all text files (doesn't include hidden files)\n\
+     --as-text            Process binary files as if they were text\n\
   -u --unrestricted       Search all files (ignore .ignore, .gitignore, etc.;\n\
                           searches binary and hidden files as well)\n\
   -U --skip-vcs-ignores   Ignore VCS ignore files\n\
@@ -208,6 +209,7 @@ void init_options(void) {
     opts.color_line_number = ag_strdup(color_line_number);
     opts.use_thread_affinity = TRUE;
     opts.invert_file_search_regex = FALSE;
+    opts.search_as_text = FALSE;
 }
 
 void cleanup_options(void) {
@@ -310,6 +312,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "after", optional_argument, NULL, 'A' },
         { "agrc", required_argument, NULL, 0 },
         { "all-text", no_argument, NULL, 't' },
+        { "as-text", no_argument, &opts.search_as_text, TRUE },
         { "all-types", no_argument, NULL, 'a' },
         { "before", optional_argument, NULL, 'B' },
         { "break", no_argument, &opts.print_break, 1 },
