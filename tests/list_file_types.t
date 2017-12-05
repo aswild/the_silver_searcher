@@ -265,7 +265,7 @@ Language types are output:
         .rs
   
     --r
-        .R  .Rmd  .Rnw  .Rtex  .Rrst
+        .r  .R  .Rmd  .Rnw  .Rtex  .Rrst
   
     --rdoc
         .rdoc
