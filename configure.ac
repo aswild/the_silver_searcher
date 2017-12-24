@@ -208,3 +208,25 @@ AM_COND_IF([USE_GITVERSION], [], [
 AC_CONFIG_FILES([Makefile the_silver_searcher.spec])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT
+
+# pretty-print options to the console
+AM_COND_IF([HAVE_PCRE2], [ag_pcre_string="pcre2"], [ag_pcre_string="pcre1"])
+AM_COND_IF([USE_GITVERSION],
+           dnl note the git version command should match Makefile.am
+           [ag_version=`git -C "${srcdir}" describe --dirty=+ --always --tags`],
+           [ag_version="$VERSION"])
+
+cat <<EOF
+
+The Silver Searcher $ag_version configuration summary:
+
+    Install prefix          ${prefix}
+    C compiler              ${CC}
+    C compiler flags        ${CFLAGS}
+    Linker flags/libraries  `echo "${LDFLAGS} ${LIBS}" | ${SED} 's/^ \+//g; s/ \+$//g'`
+
+    PCRE version            ${ag_pcre_string}
+    zlib decompression      ${ag_found_zlib}
+    lzma decompression      ${ag_found_lzma}
+
+EOF
