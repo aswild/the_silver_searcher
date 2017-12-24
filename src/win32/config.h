@@ -1,2 +1,2 @@
-#define HAVE_LZMA_H
+#define USE_LZMA
 #define HAVE_PTHREAD_H

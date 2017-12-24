@@ -148,10 +148,10 @@ void print_version(void) {
 #ifdef HAVE_PCRE2
     pcre2 = '+';
 #endif
-#ifdef HAVE_LZMA_H
+#ifdef USE_LZMA
     lzma = '+';
 #endif
-#ifdef HAVE_ZLIB_H
+#ifdef USE_ZLIB
     zlib = '+';
 #endif
 

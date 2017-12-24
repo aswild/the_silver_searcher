@@ -3,7 +3,7 @@
 
 #include "decompress.h"
 
-#ifdef HAVE_LZMA_H
+#ifdef USE_LZMA
 #include <lzma.h>
 
 /*  http://tukaani.org/xz/xz-file-format.txt */
@@ -12,7 +12,7 @@ const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
 #endif
 
 
-#ifdef HAVE_ZLIB_H
+#ifdef USE_ZLIB
 #define ZLIB_CONST 1
 #include <zlib.h>
 
@@ -120,7 +120,7 @@ static void *decompress_zip(const void *buf, const int buf_len,
 }
 
 
-#ifdef HAVE_LZMA_H
+#ifdef USE_LZMA
 static void *decompress_lzma(const void *buf, const int buf_len,
                              const char *dir_full_path, int *new_buf_len) {
     lzma_stream stream = LZMA_STREAM_INIT;
@@ -191,7 +191,7 @@ error_out:
 void *decompress(const ag_compression_type zip_type, const void *buf, const int buf_len,
                  const char *dir_full_path, int *new_buf_len) {
     switch (zip_type) {
-#ifdef HAVE_ZLIB_H
+#ifdef USE_ZLIB
         case AG_GZIP:
             return decompress_zlib(buf, buf_len, dir_full_path, new_buf_len);
 #endif
@@ -199,7 +199,7 @@ void *decompress(const ag_compression_type zip_type, const void *buf, const int 
             return decompress_lzw(buf, buf_len, dir_full_path, new_buf_len);
         case AG_ZIP:
             return decompress_zip(buf, buf_len, dir_full_path, new_buf_len);
-#ifdef HAVE_LZMA_H
+#ifdef USE_LZMA
         case AG_XZ:
             return decompress_lzma(buf, buf_len, dir_full_path, new_buf_len);
 #endif
@@ -237,7 +237,7 @@ ag_compression_type is_zipped(const void *buf, const int buf_len) {
     if (buf_len >= 2) {
         if (buf_c[0] == 0x1F) {
             if (buf_c[1] == 0x8B) {
-#ifdef HAVE_ZLIB_H
+#ifdef USE_ZLIB
                 log_debug("Found gzip-based stream");
                 return AG_GZIP;
 #endif
@@ -256,7 +256,7 @@ ag_compression_type is_zipped(const void *buf, const int buf_len) {
         }
     }
 
-#ifdef HAVE_LZMA_H
+#ifdef USE_LZMA
     if (buf_len >= 6) {
         if (memcmp(XZ_HEADER_MAGIC, buf_c, 6) == 0) {
             log_debug("Found xz based stream");
