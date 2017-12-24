@@ -110,24 +110,36 @@ AS_CASE([$with_pcre2],
 
 AM_CONDITIONAL([HAVE_PCRE2], [test "x$ag_have_pcre2" = "xyes"])
 
+##### ZLIB #####
 AC_ARG_ENABLE([zlib],
     AS_HELP_STRING([--disable-zlib], [Disable zlib compressed search support]))
-
 AS_IF([test "x$enable_zlib" != "xno"], [
-    PKG_CHECK_MODULES([ZLIB], [zlib])
-    CFLAGS="$CFLAGS $ZLIB_CFLAGS"
-    LIBS="$LIBS $ZLIB_LIBS"
-    AC_CHECK_HEADERS([zlib.h])
+    PKG_CHECK_MODULES([ZLIB], [zlib], [ag_found_zlib="yes"], [ag_found_zlib="no"])
+    AS_IF([test "x$ag_found_zlib" = "xyes"], [
+          CFLAGS="$CFLAGS $ZLIB_CFLAGS"
+          LIBS="$LIBS $ZLIB_LIBS"
+          AC_CHECK_HEADERS([zlib.h], [], [AC_MSG_ERROR([pkg-config found zlib but zlib.h couldn't be found])])
+    ])
+])
+AS_IF([test "x$ag_found_zlib" = "xyes"],
+      [AC_DEFINE([USE_ZLIB], [], [Enable zlib/gzip decompression])],
+      [AS_IF([test "x$enable_zlib" = "xyes"], [AC_MSG_ERROR([--enable-zlib was specified but zlib couldn't be found])])
 ])
 
+##### LZMA #####
 AC_ARG_ENABLE([lzma],
     AS_HELP_STRING([--disable-lzma], [Disable lzma compressed search support]))
-
 AS_IF([test "x$enable_lzma" != "xno"], [
-    PKG_CHECK_MODULES([LZMA], [liblzma])
-    CFLAGS="$CFLAGS $LZMA_CFLAGS"
-    LIBS="$LIBS $LZMA_LIBS"
-    AC_CHECK_HEADERS([lzma.h])
+    PKG_CHECK_MODULES([LZMA], [liblzma], [ag_found_lzma="yes"], [ag_found_lzma="no"])
+    AS_IF([test "x$ag_found_lzma" = "xyes"], [
+          CFLAGS="$CFLAGS $LZMA_CFLAGS"
+          LIBS="$LIBS $LZMA_LIBS"
+          AC_CHECK_HEADERS([lzma.h], [], [AC_MSG_ERROR([pkg-config found lzma but lzma.h couldn't be found])])
+    ])
+])
+AS_IF([test "x$ag_found_lzma" = "xyes"],
+      [AC_DEFINE([USE_LZMA], [], [Enable lzma/gzip decompression])],
+      [AS_IF([test "x$enable_lzma" = "xyes"], [AC_MSG_ERROR([--enable-lzma was specified but lzma couldn't be found])])
 ])
 
 AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
