@@ -14,13 +14,6 @@ AC_PREREQ([2.59])
 AC_PROG_SED
 AC_PROG_GREP
 
-BASE_CFLAGS="-std=gnu99 -D_GNU_SOURCE"
-BASE_CFLAGS="$BASE_CFLAGS -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith"
-BASE_CFLAGS="$BASE_CFLAGS -Wcast-qual -Wmissing-prototypes -Wno-missing-braces"
-
-# Put user-defined CFLAGS ('-g -O2' by default) after ours so the user can override
-CFLAGS="$BASE_CFLAGS $CFLAGS"
-
 # pthreads check. Note that if -Werror is in CFLAGS, the pthreads checks always fail, so temporarily remove it
 save_cflags="$CFLAGS"
 dnl an extra set of brackets is needed because of m4 bracket quoting insanity
