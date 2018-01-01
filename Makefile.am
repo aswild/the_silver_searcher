@@ -40,7 +40,7 @@ endif
 
 dist_man_MANS = doc/ag.1
 
-bashcompdir = $(pkgdatadir)/completions
+bashcompdir = $(datadir)/bash-completion/completions
 dist_bashcomp_DATA = ag.bashcomp.sh
 zshcompdir = $(datadir)/zsh/site-functions
 dist_zshcomp_DATA = _the_silver_searcher
