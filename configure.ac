@@ -153,6 +153,10 @@ AM_CONDITIONAL([USE_FOPENCOOKIE], [test "$enable_fopencookie" = "yes" && test "$
                                    (test "$ac_cv_header_zlib_h" = "yes" || test "$ac_cv_header_lzma_h" = "yes")])
 AM_COND_IF([USE_FOPENCOOKIE], [AC_DEFINE([USE_FOPENCOOKIE], [], [Use fopencookie streaming in zfile.c])])
 
+AC_CHECK_PROGS([CRAM], [cram], [no])
+AM_CONDITIONAL([HAS_CRAM], [test x$CRAM != xno])
+AM_COND_IF([HAS_CRAM], [], [AC_MSG_WARN([cram not found, test suite is disabled])])
+
 AC_CHECK_PROGS(
     [CLANG_FORMAT],
     [clang-format-3.8 clang-format-3.7 clang-format-3.6 clang-format],

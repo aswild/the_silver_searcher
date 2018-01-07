@@ -58,7 +58,11 @@ src/version.c: .version
 endif
 
 test: ag
+if HAS_CRAM
 	AGPROG=$(PWD)/ag cram -v $(srcdir)/tests/*.t
+else
+	@echo "cram is not available. Skipped test suite."
+endif
 if HAS_CLANG_FORMAT
 	CLANG_FORMAT=$(CLANG_FORMAT) $(srcdir)/format.sh test
 else
