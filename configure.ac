@@ -159,13 +159,12 @@ AM_COND_IF([HAS_CRAM], [], [AC_MSG_WARN([cram not found, test suite is disabled]
 
 AC_CHECK_PROGS(
     [CLANG_FORMAT],
-    [clang-format-3.8 clang-format-3.7 clang-format-3.6 clang-format],
+    [clang-format clang-format-5.0 clang-format-4.0 clang-format-3.8],
     [no]
 )
 AM_CONDITIONAL([HAS_CLANG_FORMAT], [test x$CLANG_FORMAT != xno])
 AM_COND_IF(
-    [HAS_CLANG_FORMAT],
-    [AC_MSG_NOTICE([clang-format found. 'make test' will detect improperly-formatted files.])],
+    [HAS_CLANG_FORMAT], [],
     [AC_MSG_WARN([clang-format not found. 'make test' will not detect improperly-formatted files.])]
 )
 
