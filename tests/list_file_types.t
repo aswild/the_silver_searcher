@@ -51,6 +51,9 @@ Language types are output:
     --coffee
         .coffee  .cjsx
   
+    --coq
+        .coq  .g  .v
+  
     --cpp
         .cpp  .cc  .C  .cxx  .m  .hpp  .hh  .h  .H  .hxx  .tpp
   
@@ -68,6 +71,9 @@ Language types are output:
   
     --delphi
         .pas  .int  .dfm  .nfm  .dof  .dpk  .dpr  .dproj  .groupproj  .bdsgroup  .bdsproj
+  
+    --dlang
+        .d  .di
   
     --dot
         .dot  .gv
@@ -135,6 +141,9 @@ Language types are output:
     --ipython
         .ipynb
   
+    --isabelle
+        .thy
+  
     --j
         .ijs
   
@@ -143,6 +152,9 @@ Language types are output:
   
     --java
         .java  .properties
+  
+    --jinja2
+        .j2
   
     --js
         .es6  .js  .jsx  .vue
@@ -314,6 +326,9 @@ Language types are output:
   
     --tex
         .tex  .cls  .sty
+  
+    --tla
+        .tla
   
     --tt
         .tt  .tt2  .ttml

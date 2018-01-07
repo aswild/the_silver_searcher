@@ -218,10 +218,10 @@ int main(int argc, char **argv) {
 
         // flush stdout so that stderr output comes after it
         fflush(stdout);
-        fprintf(stderr, "%ld matches\n", stats.total_matches);
-        fprintf(stderr, "%ld files contained matches\n", stats.total_file_matches);
-        fprintf(stderr, "%ld files searched\n", stats.total_files);
-        fprintf(stderr, "%ld bytes searched%s\n", stats.total_bytes, friendly_bytes);
+        fprintf(stderr, "%zu matches\n", stats.total_matches);
+        fprintf(stderr, "%zu files contained matches\n", stats.total_file_matches);
+        fprintf(stderr, "%zu files searched\n", stats.total_files);
+        fprintf(stderr, "%zu bytes searched%s\n", stats.total_bytes, friendly_bytes);
         fprintf(stderr, "%f seconds\n", time_diff);
         pthread_mutex_destroy(&stats_mtx);
     }
