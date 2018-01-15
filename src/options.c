@@ -18,9 +18,11 @@
 #include "util.h"
 #include "version.h"
 
-const char *color_line_number = "\033[1;33m"; /* bold yellow */
-const char *color_match = "\033[30;43m";      /* black with yellow background */
-const char *color_path = "\033[1;32m";        /* bold green */
+cli_options opts;
+
+static const char *color_line_number = "\033[1;33m"; /* bold yellow */
+static const char *color_match = "\033[30;43m";      /* black with yellow background */
+static const char *color_path = "\033[1;32m";        /* bold green */
 
 /* TODO: try to obey out_fd? */
 void usage(void) {

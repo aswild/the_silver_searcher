@@ -1,7 +1,7 @@
 // version.h
 
-#ifndef __VERSION_H__
-#define __VERSION_H__
+#ifndef VERSION_H
+#define VERSION_H
 
 extern const char *AG_VERSION;
 

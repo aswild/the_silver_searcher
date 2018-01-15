@@ -11,7 +11,7 @@
 #include "log.h"
 #include "options.h"
 
-FILE *out_fd;
+extern FILE *out_fd;
 
 #ifndef TRUE
 #define TRUE 1
@@ -42,10 +42,12 @@ FILE *out_fd;
 #define PRINTF_ATTR __attribute__((format(printf, 1, 2)))
 #define PRINTF_ATTR_2 __attribute__((format(printf, 2, 3)))
 #define PRINTF_ATTR_3 __attribute__((format(printf, 4, 5)))
+#define NORETURN __attribute__((noreturn))
 #else
 #define PRINTF_ATTR
 #define PRINTF_ATTR_2
 #define PRINTF_ATTR_3
+#define NORETURN
 #endif
 
 void *ag_malloc(size_t size);
@@ -69,7 +71,7 @@ typedef struct {
 } ag_stats;
 
 
-ag_stats stats;
+extern ag_stats stats;
 
 /* Union to translate between chars and words without violating strict aliasing */
 typedef union {
@@ -110,7 +112,7 @@ int is_directory(const char *path, const struct dirent *d);
 int is_symlink(const char *path, const struct dirent *d);
 int is_named_pipe(const char *path, const struct dirent *d);
 
-void die(const char *fmt, ...) PRINTF_ATTR;
+void die(const char *fmt, ...) PRINTF_ATTR NORETURN;
 
 void ag_asprintf(char **ret, const char *fmt, ...) PRINTF_ATTR_2;
 int ag_dsprintf(char **buf, size_t *bufsize, size_t pos, const char *fmt, ...) PRINTF_ATTR_3;

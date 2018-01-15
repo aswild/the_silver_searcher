@@ -14,13 +14,13 @@
 #define fprintf(...) fprintf_w32(__VA_ARGS__)
 #endif
 
-int first_file_match = 1;
+static int first_file_match = 1;
 
-const char *color_reset = "\033[0m\033[K";
+static const char *color_reset = "\033[0m\033[K";
 
-const char *truncate_marker = " [...]";
+static const char *truncate_marker = " [...]";
 
-__thread struct print_context {
+static __thread struct print_context {
     size_t line;
     char **context_prev_lines;
     size_t prev_line;

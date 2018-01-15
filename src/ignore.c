@@ -19,8 +19,10 @@
 #define fnmatch(x, y, z) (!PathMatchSpec(y, x))
 #else
 #include <fnmatch.h>
-const int fnmatch_flags = FNM_PATHNAME;
+static const int fnmatch_flags = FNM_PATHNAME;
 #endif
+
+ignores *root_ignores;
 
 /* TODO: build a huge-ass list of files we want to ignore by default (build cache stuff, pyc files, etc) */
 

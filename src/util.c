@@ -21,6 +21,9 @@
     }                                     \
     return ptr;
 
+FILE *out_fd;
+ag_stats stats;
+
 void *ag_malloc(size_t size) {
     void *ptr = malloc(size);
     CHECK_AND_RETURN(ptr)
@@ -166,7 +169,7 @@ void generate_hash(const char *find, const size_t f_len, uint8_t *h_table, const
             // Find next free cell
             for (h = word.as_word % H_SIZE; h_table[h]; h = (h + 1) % H_SIZE)
                 ;
-            h_table[h] = i + 1;
+            h_table[h] = (uint8_t)i + 1;
             // Don't add capital letters if case sensitive
             if (case_sensitive)
                 break;
@@ -220,7 +223,7 @@ NO_SANITIZE_ALIGNMENT const char *hash_strnstr(const char *s, const char *find, 
         size_t i;
         const char *R = s + s_i;
         for (i = 0; i < f_len; i++) {
-            char s_c = case_sensitive ? R[i] : tolower(R[i]);
+            char s_c = (char)(case_sensitive ? R[i] : tolower(R[i]));
             if (s_c != find[i])
                 goto next_start;
         }
@@ -597,7 +600,7 @@ char *fgetln(FILE *fp, size_t *lenp) {
             buf = newbuf;
             used = nsize;
         }
-        buf[len++] = c;
+        buf[len++] = (char)c;
         if (c == '\n') {
             break;
         }

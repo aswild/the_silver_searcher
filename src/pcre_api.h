@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-#ifndef __PCRE_API_H__
-#define __PCRE_API_H__
+#ifndef PCRE_API_H
+#define PCRE_API_H
 
 #include "config.h"
 
@@ -118,4 +118,4 @@ void ag_pcre_compile(ag_pcre_re_t **re, ag_pcre_extra_t **re_extra, char *q,
 int ag_pcre_match(ag_pcre_re_t *re, ag_pcre_extra_t *extra, const char *buf, int length,
                   int offset, int options, int *ovector, int ovecsize);
 
-#endif // __PCRE_API_H__
+#endif // PCRE_API_H
