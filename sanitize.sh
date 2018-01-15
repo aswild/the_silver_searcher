@@ -82,7 +82,7 @@ run_sanitizer() {
     cd $_build_dir
 
     [[ -f Makefile ]] && vrun make distclean
-    vrun ../configure $CONFIGOPTS CC=$SANITIZE_CC \
+    vrun ../configure $CONFIGOPTS ac_cv_prog_CLANG_FORMAT=no CC=$SANITIZE_CC \
                       CFLAGS="-g -O0 -fsanitize=$sanitizer $EXTRA_CFLAGS"
     if [[ $? != 0 ]]; then
         echo "ERROR: Failed to configure. Try setting CONFIGOPTS?"
@@ -114,7 +114,7 @@ run_valgrind() {
     cd $_build_dir
 
     [[ -f Makefile ]] && vrun make distclean
-    vrun ../configure $CONFIGOPTS
+    vrun ../configure ac_cv_prog_CLANG_FORMAT=no $CONFIGOPTS
     if [[ $? != 0 ]]; then
         echo "ERROR: Failed to configure. Try setting CONFIGOPTS?"
         return 1
