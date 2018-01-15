@@ -203,6 +203,8 @@ void cleanup_options(void) {
     ag_pcre_free_extra(&opts.ackmate_dir_filter_extra);
     ag_pcre_free_re(&opts.file_search_regex);
     ag_pcre_free_extra(&opts.file_search_regex_extra);
+    ag_pcre_free_re(&opts.filetype_regex);
+    ag_pcre_free_extra(&opts.filetype_regex_extra);
 }
 
 /*
@@ -754,7 +756,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     if (has_filetype) {
         lang_regex = make_lang_regex(ext_index, lang_num);
         log_debug("Got lang regex '%s'", lang_regex);
-        ag_pcre_compile(&opts.file_search_regex, &opts.file_search_regex_extra, lang_regex, 0, 0);
+        ag_pcre_compile(&opts.filetype_regex, &opts.filetype_regex_extra, lang_regex, 0, 0);
     }
 
     free(ext_index);

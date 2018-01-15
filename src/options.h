@@ -41,6 +41,8 @@ typedef struct {
     int match_files;
     ag_pcre_re_t *file_search_regex;
     ag_pcre_extra_t *file_search_regex_extra;
+    ag_pcre_re_t *filetype_regex;
+    ag_pcre_extra_t *filetype_regex_extra;
     int color;
     char *color_line_number;
     char *color_match;
