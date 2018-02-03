@@ -656,14 +656,14 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
         if (!is_directory(path, dir)) {
             if (opts.file_search_regex || opts.filetype_regex) {
                 bool filename_matched = true;
-                if (opts.file_search_regex) {
-                    rc = ag_pcre_match(opts.file_search_regex, NULL, dir_full_path, strlen(dir_full_path),
+                if (opts.filetype_regex) {
+                    rc = ag_pcre_match(opts.filetype_regex, NULL, dir_full_path, strlen(dir_full_path),
                                        0, 0, offset_vector, 3);
                     if (rc < 0)
                         filename_matched = false;
                 }
-                if (opts.filetype_regex) {
-                    rc = ag_pcre_match(opts.filetype_regex, NULL, dir_full_path, strlen(dir_full_path),
+                if (opts.file_search_regex) {
+                    rc = ag_pcre_match(opts.file_search_regex, NULL, dir_full_path, strlen(dir_full_path),
                                        0, 0, offset_vector, 3);
                     if (rc < 0)
                         filename_matched = false;
@@ -675,7 +675,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
                 } else if (opts.match_files) {
                     log_debug("match_files: file_search_regex/filetype_regex matched for %s.", dir_full_path);
                     pthread_mutex_lock(&print_mtx);
-                    print_path(dir_full_path, opts.path_sep);
+                    print_path_match(dir_full_path, opts.path_sep, (int *)&offset_vector);
                     pthread_mutex_unlock(&print_mtx);
                     opts.match_found = 1;
                     goto cleanup;

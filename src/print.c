@@ -100,11 +100,11 @@ void print_trailing_context(const char *path, const char *buf, size_t n) {
     }
 }
 
-void print_path(const char *path, const char sep) {
+void print_path_match(const char *_path, const char sep, int *match_ovec) {
     if (opts.print_path == PATH_PRINT_NOTHING && !opts.vimgrep) {
         return;
     }
-    path = normalize_path(path);
+    const char *path = normalize_path(_path);
 
     if (opts.ackmate) {
         fprintf(out_fd, ":%s%c", path, sep);
@@ -112,7 +112,31 @@ void print_path(const char *path, const char sep) {
         fprintf(out_fd, "%s%c", path, sep);
     } else {
         if (opts.color) {
-            fprintf(out_fd, "%s%s%s%c", opts.color_path, path, color_reset, sep);
+            if (match_ovec) {
+                // Color only the matching part of the path, used by the -g option.
+                // This only works when using opts.match_files (-g option), not when combining
+                // -l and -G, which is otherwise equivalent but goes through the whole search_buf
+                // process and the path match details are lost by the time we get here
+                int ovec0 = match_ovec[0];
+                int ovec1 = match_ovec[1];
+                size_t orig_pathlen = strlen(_path);
+                size_t pathlen = strlen(path);
+                if (pathlen < orig_pathlen) {
+                    // normalize_path might have stripped a couple characters from the start (like ./)
+                    // so adjust the ovec values accordingly
+                    ovec0 -= orig_pathlen - pathlen;
+                    ovec1 -= orig_pathlen - pathlen;
+                }
+
+                int prematch_len = ovec0;
+                const char *match_start = path + ovec0;
+                int match_len = ovec1 - ovec0;
+                const char *postmatch_start = match_start + match_len;
+                fprintf(out_fd, "%.*s%s%.*s%s%s%c", prematch_len, path, opts.color_match,
+                        match_len, match_start, color_reset, postmatch_start, sep);
+            } else {
+                fprintf(out_fd, "%s%s%s%c", opts.color_path, path, color_reset, sep);
+            }
         } else {
             fprintf(out_fd, "%s%c", path, sep);
         }
