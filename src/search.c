@@ -266,7 +266,12 @@ void search_file(const char *file_full_path) {
 
     rv = stat(file_full_path, &statbuf);
     if (rv != 0) {
-        log_err("Skipping %s: Error fstat()ing file.", file_full_path);
+        rv = lstat(file_full_path, &statbuf);
+        if (S_ISLNK(statbuf.st_mode)) {
+            log_debug("Skipping %s: broken symlink", file_full_path);
+        } else {
+            log_err("Skipping %s: Error fstat()ing file.", file_full_path);
+        }
         goto cleanup;
     }
 
@@ -291,7 +296,12 @@ void search_file(const char *file_full_path) {
     // repeating stat check with file handle to prevent TOCTOU issue
     rv = fstat(fd, &statbuf);
     if (rv != 0) {
-        log_err("Skipping %s: Error fstat()ing file.", file_full_path);
+        rv = lstat(file_full_path, &statbuf);
+        if (S_ISLNK(statbuf.st_mode)) {
+            log_debug("Skipping %s: broken symlink", file_full_path);
+        } else {
+            log_err("Skipping %s: Error fstat()ing file.", file_full_path);
+        }
         goto cleanup;
     }
 
