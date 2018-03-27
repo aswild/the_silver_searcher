@@ -102,7 +102,6 @@ extern cli_options opts;
 
 typedef struct option option_t;
 
-void usage(void);
 void print_version(void);
 
 void init_options(void);

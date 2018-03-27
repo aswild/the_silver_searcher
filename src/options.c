@@ -24,17 +24,28 @@ static const char *color_line_number = "\033[1;33m"; /* bold yellow */
 static const char *color_match = "\033[30;43m";      /* black with yellow background */
 static const char *color_path = "\033[1;32m";        /* bold green */
 
-/* TODO: try to obey out_fd? */
-void usage(void) {
-    printf("\n");
-    printf("Usage: ag [FILE-TYPE] [OPTIONS] PATTERN [PATH]\n\n");
+static void short_usage(FILE *fp) {
+    const char short_usage_text[] = "\
+Usage: ag [FILE-TYPE] [OPTIONS] PATTERN [PATH]\n\
+\n\
+  Recursively search for PATTERN in PATH.\n\
+  Like grep or ack, but faster.\n\
+\n\
+See `ag --help` or ag(1) for more information\n\
+";
 
-    printf("  Recursively search for PATTERN in PATH.\n");
-    printf("  Like grep or ack, but faster.\n\n");
+    fputs(short_usage_text, fp);
+}
 
-    printf("Example:\n  ag -i foo /bar/\n\n");
-
-    printf("\
+static void usage(FILE *fp) {
+    const char usage_text[] = "\
+\nUsage: ag [FILE-TYPE] [OPTIONS] PATTERN [PATH]\n\
+\n\
+  Recursively search for PATTERN in PATH.\n\
+  Like grep or ack, but faster.\n\
+\n\
+Example:\n  ag -i foo /bar/\n\
+\n\
 Output Options:\n\
      --ackmate            Print results in AckMate-parseable format\n\
   -A --after [LINES]      Print lines after match (Default: 2)\n\
@@ -47,14 +58,14 @@ Output Options:\n\
      --color-line-number  Color codes for line numbers (Default: 1;33)\n\
      --color-match        Color codes for result match numbers (Default: 30;43)\n\
      --color-path         Color codes for path names (Default: 1;32)\n\
-");
+"
 #ifdef _WIN32
-    printf("\
+"\
      --color-win-ansi     Use ansi colors on Windows even where we can use native\n\
                           (pager/pipe colors are ansi regardless) (Default: off)\n\
-");
+"
 #endif
-    printf("\
+"\
      --column             Print column numbers in results\n\
      --[no]filename       Print file names (Enabled unless searching a single file)\n\
   -H --[no]heading        Print file names before each file's matches\n\
@@ -125,8 +136,8 @@ Other Options:\n\
      --agrc=<agrc-path>   Load options (one per line) from <agrc-path>\n\
                           (default is $HOME/.agrc)\n\
      --no-agrc            Don't use an agrc file\n\
-\n");
-    printf("File Types:\n\
+\n\
+File Types:\n\
 The search can be restricted to certain types of files. Example:\n\
   ag --html needle\n\
   - Searches for 'needle' in files with suffix .htm, .html, .shtml or .xhtml.\n\
@@ -134,7 +145,10 @@ The search can be restricted to certain types of files. Example:\n\
 For a list of supported file types run:\n\
   ag --list-file-types\n\n\
 ag was originally created by Geoff Greer. More information (and the latest release)\n\
-can be found at http://geoff.greer.fm/ag\n");
+can be found at http://geoff.greer.fm/ag\n\
+";
+
+    fputs(usage_text, fp);
 }
 
 void print_version(void) {
@@ -404,7 +418,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     longopts[full_len - 1] = (option_t){ NULL, 0, NULL, 0 };
 
     if (argc < 2) {
-        usage();
+        short_usage(stderr);
         cleanup_ignore(root_ignores);
         cleanup_options();
         exit(1);
@@ -563,7 +577,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'G':
                 if (file_search_regex) {
                     log_err("File search regex (-g, -G, or -X) already specified.");
-                    usage();
+                    short_usage(stderr);
                     exit(1);
                 }
                 file_search_regex = ag_strdup(optarg);
@@ -658,7 +672,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'X':
                 if (file_search_regex) {
                     log_err("File search regex (-g, -G, or -X) already specified.");
-                    usage();
+                    short_usage(stderr);
                     exit(1);
                 }
                 file_search_regex = ag_strdup(optarg);
@@ -745,7 +759,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 log_err("option %s does not take a value", longopts[opt_index].name);
             /* fall through */
             default:
-                usage();
+                short_usage(stderr);
                 exit(1);
         }
     }
@@ -798,7 +812,10 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 #endif
 
     if (help) {
-        usage();
+        usage(out_fd);
+        if (opts.pager) {
+            pclose(out_fd);
+        }
         exit(0);
     }
 
