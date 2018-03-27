@@ -220,6 +220,10 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `-W --width NUM`:
     Truncate match lines after NUM characters.
 
+  * `-X --invert-file-search-regex PATTERN`:
+    Like -G, but only search files whose names do not match PATTERN.
+    File-type searches are still used and not inverted.
+
   * `-z --search-zip`:
     Search contents of compressed files. Currently, gz and xz are supported.
     This option requires that ag is built with lzma and zlib.

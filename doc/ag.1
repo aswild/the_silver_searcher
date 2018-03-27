@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "AG" "1" "January 2018" "" ""
+.TH "AG" "1" "March 2018" "" ""
 .
 .SH "NAME"
 \fBag\fR \- The Silver Searcher\. Like ack, but faster\.
@@ -262,6 +262,10 @@ Use NUM worker threads\. Default is the number of CPU cores, with a max of 8\.
 .TP
 \fB\-W \-\-width NUM\fR
 Truncate match lines after NUM characters\.
+.
+.TP
+\fB\-X \-\-invert\-file\-search\-regex PATTERN\fR
+Like \-G, but only search files whose names do not match PATTERN\. File\-type searches are still used and not inverted\.
 .
 .TP
 \fB\-z \-\-search\-zip\fR

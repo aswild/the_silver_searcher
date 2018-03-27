@@ -116,6 +116,9 @@ Search Options:\n\
   -v --invert-match\n\
   -w --word-regexp        Only match whole words\n\
   -W --width NUM          Truncate match lines after NUM characters\n\
+  -X --invert-file-search-regex PATTERN\n\
+                          Like -G, but only search files whose names do not match PATTERN.\n\
+                          File-type searches are still used and not inverted.\n\
   -z --search-zip         Search contents of compressed (e.g., gzip) files\n\
 \n\
 Other Options:\n\
@@ -188,6 +191,7 @@ void init_options(void) {
     opts.color_match = ag_strdup(color_match);
     opts.color_line_number = ag_strdup(color_line_number);
     opts.use_thread_affinity = TRUE;
+    opts.invert_file_search_regex = FALSE;
 }
 
 void cleanup_options(void) {
@@ -382,6 +386,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "width", required_argument, NULL, 'W' },
         { "word-regexp", no_argument, NULL, 'w' },
         { "workers", required_argument, NULL, 0 },
+        { "invert-file-search-regex", required_argument, NULL, 'X' },
     };
 
     lang_count = get_lang_count();
@@ -430,7 +435,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     // Check whether to exclude ~/.agrc by searching argc/argv for --no-agrc or --noagrc
     // Note, the optstr here must match the optstr used for main argument parsing
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:X:z0", longopts, &opt_index)) != -1) {
         if (ch == 'D') {
             // enable debugging early to allow for debug messages during agrc parsing
             set_log_level(LOG_LEVEL_DEBUG);
@@ -499,7 +504,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     optind = 1;
     opterr = 1;
     // the optstring here must match the optstring used above when checking for [no]agrc
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:X:z0", longopts, &opt_index)) != -1) {
         switch (ch) {
             case 'A':
                 if (optarg) {
@@ -557,7 +562,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             /* fall through */
             case 'G':
                 if (file_search_regex) {
-                    log_err("File search regex (-g or -G) already specified.");
+                    log_err("File search regex (-g, -G, or -X) already specified.");
                     usage();
                     exit(1);
                 }
@@ -649,6 +654,15 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 if (num_end == optarg || *num_end != '\0' || errno == ERANGE) {
                     die("Invalid width\n");
                 }
+                break;
+            case 'X':
+                if (file_search_regex) {
+                    log_err("File search regex (-g, -G, or -X) already specified.");
+                    usage();
+                    exit(1);
+                }
+                file_search_regex = ag_strdup(optarg);
+                opts.invert_file_search_regex = 1;
                 break;
             case 'z':
                 opts.search_zip_files = 1;

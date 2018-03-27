@@ -672,11 +672,16 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
                     if (rc < 0)
                         filename_matched = false;
                 }
-                if (opts.file_search_regex) {
+                if (filename_matched && opts.file_search_regex) {
                     rc = ag_pcre_match(opts.file_search_regex, NULL, dir_full_path, strlen(dir_full_path),
                                        0, 0, offset_vector, 3);
+
+                    /* XOR between finding a match and inverting that regex. Either but not both means
+                     * to continue searching the file */
                     if (rc < 0)
-                        filename_matched = false;
+                        filename_matched = !!(opts.invert_file_search_regex);
+                    else
+                        filename_matched = !(opts.invert_file_search_regex);
                 }
 
                 if (!filename_matched) { /* no match */
