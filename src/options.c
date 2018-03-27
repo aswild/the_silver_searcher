@@ -176,7 +176,7 @@ void init_options(void) {
 #else
     opts.mmap = TRUE;
 #endif
-    opts.multiline = TRUE;
+    opts.multiline = FALSE;
     opts.width = 0;
     opts.path_sep = '\n';
     opts.print_break = TRUE;

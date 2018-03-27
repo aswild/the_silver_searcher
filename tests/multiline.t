@@ -7,7 +7,7 @@ Setup:
 
 Multiline:
 
-  $ ag 'wh[^w]+er' .
+  $ ag --multiline 'wh[^w]+er' .
   blah.txt:1:what
   blah.txt:2:ever
   blah.txt:3:whatever
@@ -19,5 +19,5 @@ No multiline:
 
 Multiline explicit:
 
-  $ ag '^wh[^w\n]+er$' .
+  $ ag --multiline '^wh[^w\n]+er$' .
   blah.txt:3:whatever
