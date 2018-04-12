@@ -66,7 +66,7 @@ const lang_spec_t langs[] = {
     { "log", { "log" } },
     { "lua", { "lua" } },
     { "m4", { "m4" } },
-    { "make", { "^Makefile(\\.[^/]+)?", "Makefiles", "mk", "mak" } },
+    { "make", { "^Makefile(\\.[^/]+)?", "Makefiles", "mk", "mak", "make" } },
     { "mako", { "mako" } },
     { "markdown", { "markdown", "mdown", "mdwn", "mkdn", "mkd", "md" } },
     { "mason", { "mas", "mhtml", "mpl", "mtxt" } },

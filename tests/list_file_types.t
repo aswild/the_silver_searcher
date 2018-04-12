@@ -190,7 +190,7 @@ Language types are output:
         .m4
   
     --make
-        ^Makefile(\.[^/]+)?  .Makefiles  .mk  .mak
+        ^Makefile(\.[^/]+)?  .Makefiles  .mk  .mak  .make
   
     --mako
         .mako
