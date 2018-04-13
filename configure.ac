@@ -159,7 +159,7 @@ AM_COND_IF([HAS_CRAM], [], [AC_MSG_WARN([cram not found, test suite is disabled]
 
 AC_CHECK_PROGS(
     [CLANG_FORMAT],
-    [clang-format clang-format-5.0 clang-format-4.0 clang-format-3.8],
+    [clang-format clang-format-6.0 clang-format-5.0 clang-format-4.0 clang-format-3.8],
     [no]
 )
 AM_CONDITIONAL([HAS_CLANG_FORMAT], [test x$CLANG_FORMAT != xno])

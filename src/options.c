@@ -38,6 +38,7 @@ See `ag --help` or ag(1) for more information\n\
 }
 
 static void usage(FILE *fp) {
+    // clang-format off
     const char usage_text[] = "\
 \nUsage: ag [FILE-TYPE] [OPTIONS] PATTERN [PATH]\n\
 \n\
@@ -147,6 +148,7 @@ For a list of supported file types run:\n\
 ag was originally created by Geoff Greer. More information (and the latest release)\n\
 can be found at http://geoff.greer.fm/ag\n\
 ";
+    // clang-format on
 
     fputs(usage_text, fp);
 }
