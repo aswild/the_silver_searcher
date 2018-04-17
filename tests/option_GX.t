@@ -7,11 +7,11 @@ Setup:
 
 Search for lines matching "hello" in log files
 
-  $ ag -G '\.log' hello
+  $ ag -G '\.log' hello .
   file2.log:1:hello
 
 Search for lines matching "hello" in non-log files
 
-  $ ag -X '\.log' hello
-  file3.md:1:hello
+  $ ag -X '\.log' hello . | sort
   file1.txt:1:hello
+  file3.md:1:hello
