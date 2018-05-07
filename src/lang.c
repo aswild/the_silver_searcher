@@ -29,6 +29,7 @@ const lang_spec_t langs[] = {
     { "delphi", { "pas", "int", "dfm", "nfm", "dof", "dpk", "dpr", "dproj", "groupproj", "bdsgroup", "bdsproj" } },
     { "dlang", { "d", "di" } },
     { "dot", { "dot", "gv" } },
+    { "dts", { "dts", "dtsi" } },
     { "ebuild", { "ebuild", "eclass" } },
     { "elisp", { "el" } },
     { "elixir", { "ex", "eex", "exs" } },
