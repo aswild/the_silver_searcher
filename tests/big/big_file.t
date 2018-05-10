@@ -5,7 +5,7 @@ Setup and create really big file:
 
 Search a big file:
 
-  $ $TESTDIR/../../ag --nocolor --workers=1 --parallel hello $TESTDIR/big_file.txt
+  $ $TESTDIR/../../ag --nocolor --numbers --workers=1 --parallel hello $TESTDIR/big_file.txt
   33554432:hello1073741824
   67108864:hello2147483648
   100663296:hello3221225472

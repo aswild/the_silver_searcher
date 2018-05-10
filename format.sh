@@ -4,6 +4,8 @@ function usage() {
     echo "Usage: $0 test|reformat"
 }
 
+cd "$(dirname "$0")"
+
 if [ $# -eq 0 ]
 then
     usage
@@ -22,7 +24,7 @@ then
     exit 1
 fi
 
-SOURCE_FILES=$(git ls-files $(dirname $0)/src/ | grep '\.[ch]$')
+SOURCE_FILES=$(git ls-files src/ | grep '\.[ch]$')
 
 if [ "$1" == "reformat" ]
 then
