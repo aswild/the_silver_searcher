@@ -154,17 +154,23 @@ AM_CONDITIONAL([USE_FOPENCOOKIE], [test "$enable_fopencookie" = "yes" && test "$
 AM_COND_IF([USE_FOPENCOOKIE], [AC_DEFINE([USE_FOPENCOOKIE], [], [Use fopencookie streaming in zfile.c])])
 
 AC_CHECK_PROGS([CRAM], [cram], [no])
-AM_CONDITIONAL([HAS_CRAM], [test x$CRAM != xno])
-AM_COND_IF([HAS_CRAM], [], [AC_MSG_WARN([cram not found, test suite is disabled])])
+AM_CONDITIONAL([HAVE_CRAM], [test x$CRAM != xno])
+AM_COND_IF([HAVE_CRAM], [], [AC_MSG_WARN([cram not found, test suite is disabled])])
+
+# List the tests during configure time, because we can't use wildcards in Makefile.am.
+# Note these must be relative to ${srcdir} but not contain ${srcdir} or else the log/trs
+# files will get created in ${srcdir} instead of ${builddir}.
+CRAM_TESTS="`(cd ${srcdir}; ls -1 tests/*.t) | tr '\n' ' '`"
+AC_SUBST([CRAM_TESTS])
 
 AC_CHECK_PROGS(
     [CLANG_FORMAT],
     [clang-format clang-format-6.0 clang-format-5.0 clang-format-4.0 clang-format-3.8],
     [no]
 )
-AM_CONDITIONAL([HAS_CLANG_FORMAT], [test x$CLANG_FORMAT != xno])
+AM_CONDITIONAL([HAVE_CLANG_FORMAT], [test x$CLANG_FORMAT != xno])
 AM_COND_IF(
-    [HAS_CLANG_FORMAT], [],
+    [HAVE_CLANG_FORMAT], [],
     [AC_MSG_WARN([clang-format not found. 'make test' will not detect improperly-formatted files.])]
 )
 

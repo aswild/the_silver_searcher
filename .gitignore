@@ -21,6 +21,8 @@ config.status
 config.sub
 configure
 depcomp
+format.log
+format.trs
 gmon.out
 install-sh
 Makefile
@@ -29,6 +31,7 @@ missing
 src/config.h*
 src/version.c
 stamp-h1
+test-suite.log
 tests/*.err
 tests/big/*.err
 tests/big/big_file.txt

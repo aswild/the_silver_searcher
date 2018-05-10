@@ -57,22 +57,49 @@ src/version.c: .version
 	@$(SED) "s/@AG_VERSION@/\"$(AG_VERSION)\"/" $(srcdir)/src/version.c.in >src/version.c
 endif
 
-test: ag
-if HAS_CRAM
-	AGPROG=$(PWD)/ag cram -v $(srcdir)/tests/*.t
+#
+# TEST SUITE
+#
+# Always define all the tests, but some will be skipped if cram or clang-format
+# is unavailable. As a slight hack, define .sh as a test extension to get format.sh
+TESTS = $(CRAM_TESTS) format.sh
+TEST_EXTENSIONS = .t .sh
+
+# Use a customized test driver which prints the test command's output when a test fails.
+# have to set all three of these or Automake will still try to use its built-in version
+LOG_DRIVER = $(srcdir)/tests/test-driver
+T_LOG_DRIVER = $(LOG_DRIVER)
+SH_LOG_DRIVER = $(LOG_DRIVER)
+
+# Environment variables exported for all tests
+AM_TESTS_ENVIRONMENT  = AGPROG='$(abs_builddir)/ag'; export AGPROG;
+AM_TESTS_ENVIRONMENT += CLANG_FORMAT='$(CLANG_FORMAT)'; export CLANG_FORMAT;
+
+# Check program availability to determine how to actually run the tests.
+# Exit code 77 means to skip a test
+if HAVE_CRAM
+T_LOG_COMPILER = $(CRAM)
+AM_T_LOG_FLAGS = -v
 else
-	@echo "cram is not available. Skipped test suite."
+T_LOG_COMPILER = $(SHELL)
+AM_T_LOG_FLAGS = -c 'echo "cram is not available: skip test"; exit 77'
 endif
-if HAS_CLANG_FORMAT
-	CLANG_FORMAT=$(CLANG_FORMAT) $(srcdir)/format.sh test
+
+if HAVE_CLANG_FORMAT
+SH_LOG_COMPILER = $(srcdir)/format.sh
+AM_SH_LOG_FLAGS = test
 else
-	@echo "clang-format is not available. Skipped clang-format test."
+SH_LOG_COMPILER = $(SHELL)
+AM_SH_LOG_FLAGS = -c 'echo "clang-format is not available: skip test"; exit 77'
 endif
 
-test_big: ag
-	cram -v tests/big/*.t
+# backwards-compatible alias and one-off special tests
+test: check
 
-test_fail: ag
-	cram -v tests/fail/*.t
+test_big: all
+	$(AM_TESTS_ENVIRONMENT) $(T_LOG_COMPILER) $(AM_T_LOG_FLAGS) $(srcdir)/tests/big/*.t
 
-.PHONY : all clean test test_big test_fail
+test_fail: all
+	$(AM_TESTS_ENVIRONMENT) $(T_LOG_COMPILER) $(AM_T_LOG_FLAGS) $(srcdir)/tests/fail/*.t
+
+.PHONY: test test_big test_fail
