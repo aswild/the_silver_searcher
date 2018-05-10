@@ -12,6 +12,9 @@ Language types are output:
     --ada
         .ada  .adb  .ads
   
+    --am
+        ^Makefile\.am  ^configure\.ac
+  
     --asciidoc
         .adoc  .ad  .asc  .asciidoc
   

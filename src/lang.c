@@ -7,6 +7,7 @@
 const lang_spec_t langs[] = {
     { "actionscript", { "as", "mxml" } },
     { "ada", { "ada", "adb", "ads" } },
+    { "am", { "^Makefile\\.am", "^configure\\.ac" } },
     { "asciidoc", { "adoc", "ad", "asc", "asciidoc" } },
     { "apl", { "apl" } },
     { "asm", { "asm", "s", "S" } },
