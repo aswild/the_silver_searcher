@@ -2,6 +2,7 @@
 
 Jenkins Test!
 test 2
+test 3
 
 A code searching tool similar to `ack`, with a focus on speed.
 
