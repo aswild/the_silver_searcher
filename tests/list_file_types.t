@@ -127,7 +127,7 @@ Language types are output:
         .hbs
   
     --haskell
-        .hs  .lhs
+        .hs  .hsig  .lhs
   
     --haxe
         .hx
@@ -330,6 +330,9 @@ Language types are output:
     --sql
         .sql  .ctl
   
+    --stata
+        .do  .ado
+  
     --stylus
         .styl
   
@@ -338,6 +341,9 @@ Language types are output:
   
     --tcl
         .tcl  .itcl  .itk
+  
+    --terraform
+        .tf  .tfvars
   
     --tex
         .tex  .cls  .sty

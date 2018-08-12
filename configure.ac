@@ -1,6 +1,6 @@
 AC_INIT(
     [the_silver_searcher],
-    [2.1.0-wild],
+    [2.2.0-wild],
     [https://github.com/aswild/the_silver_searcher/issues],
     [the_silver_searcher],
     [https://github.com/aswild/the_silver_searcher])
