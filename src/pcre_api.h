@@ -81,10 +81,6 @@
 #define AG_PCRE_CONFIG_STACKRECURSE  AG_PCRE_PREFIX(CONFIG_STACKRECURSE)
 // clang-format on
 
-// Stringification Macros
-#define AG_STRINGIFY(s) AG_STRINGIFY_(s)
-#define AG_STRINGIFY_(s) #s
-
 /******************************************************************************
  * TYPES
  ******************************************************************************/

@@ -25,7 +25,9 @@ const char *ag_pcre_version(void) {
 #ifndef HAVE_PCRE2
     return pcre_version();
 #else
-    return AG_STRINGIFY(PCRE2_MAJOR) "." AG_STRINGIFY(PCRE2_MINOR) " " AG_STRINGIFY(PCRE2_DATE);
+    static char buf[32]; // static buffer so we can return it
+    pcre2_config(PCRE2_CONFIG_VERSION, buf);
+    return buf;
 #endif
 }
 
