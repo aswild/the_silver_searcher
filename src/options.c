@@ -305,6 +305,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     init_options();
 
+    const char optstring[] = "A::aB::C::cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:X:z0";
     const option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
         { "ackmate-dir-filter", required_argument, NULL, 0 },
@@ -454,7 +455,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     // Check whether to exclude ~/.agrc by searching argc/argv for --no-agrc or --noagrc
     // Note, the optstr here must match the optstr used for main argument parsing
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:X:z0", longopts, &opt_index)) != -1) {
+    // set opterr to 0 to disable getopt from printing duplicate error messages on this first pass
+    opterr = 0;
+    while ((ch = getopt_long(argc, argv, optstring, longopts, &opt_index)) != -1) {
         if (ch == 'D') {
             // enable debugging early to allow for debug messages during agrc parsing
             set_log_level(LOG_LEVEL_DEBUG);
@@ -522,16 +525,15 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     // reset after getopt_long call above
     optind = 1;
     opterr = 1;
-    // the optstring here must match the optstring used above when checking for [no]agrc
-    while ((ch = getopt_long(argc, argv, "A:aB:C:cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:X:z0", longopts, &opt_index)) != -1) {
+    while ((ch = getopt_long(argc, argv, optstring, longopts, &opt_index)) != -1) {
         switch (ch) {
             case 'A':
                 if (optarg) {
                     opts.after = strtol(optarg, &num_end, 10);
                     if (num_end == optarg || *num_end != '\0' || errno == ERANGE) {
-                        /* This arg must be the search string instead of the after length */
-                        optind--;
-                        opts.after = DEFAULT_AFTER_LEN;
+                        log_err("Invalid numeric value for -A/--after: %s", optarg);
+                        short_usage(stderr);
+                        exit(1);
                     }
                 } else {
                     opts.after = DEFAULT_AFTER_LEN;
@@ -545,9 +547,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 if (optarg) {
                     opts.before = strtol(optarg, &num_end, 10);
                     if (num_end == optarg || *num_end != '\0' || errno == ERANGE) {
-                        /* This arg must be the search string instead of the before length */
-                        optind--;
-                        opts.before = DEFAULT_BEFORE_LEN;
+                        log_err("Invalid numeric value for -B/--before option: %s", optarg);
+                        short_usage(stderr);
+                        exit(1);
                     }
                 } else {
                     opts.before = DEFAULT_BEFORE_LEN;
@@ -557,9 +559,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 if (optarg) {
                     opts.context = strtol(optarg, &num_end, 10);
                     if (num_end == optarg || *num_end != '\0' || errno == ERANGE) {
-                        /* This arg must be the search string instead of the context length */
-                        optind--;
-                        opts.context = DEFAULT_CONTEXT_LEN;
+                        log_err("Invalid numeric value for -C/--context option: %s", optarg);
+                        short_usage(stderr);
+                        exit(1);
                     }
                 } else {
                     opts.context = DEFAULT_CONTEXT_LEN;
