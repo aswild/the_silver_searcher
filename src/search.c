@@ -162,7 +162,6 @@ int search_buf(const char *buf, const size_t buf_len,
                         break;
                     }
                     offset_vector = pcre2_get_ovector_pointer(mdata);
-                    size_t line_to_buf = buf_offset + line_offset;
                     log_debug("Regex match found. File %s, offset %zu bytes.", dir_full_path, offset_vector[0]);
                     line_offset = offset_vector[1];
                     if (offset_vector[0] == offset_vector[1]) {
@@ -172,8 +171,8 @@ int search_buf(const char *buf, const size_t buf_len,
 
                     realloc_matches(&matches, &matches_size, matches_len + matches_spare);
 
-                    matches[matches_len].start = offset_vector[0] + line_to_buf;
-                    matches[matches_len].end = offset_vector[1] + line_to_buf;
+                    matches[matches_len].start = offset_vector[0] + buf_offset;
+                    matches[matches_len].end = offset_vector[1] + buf_offset;
                     matches_len++;
 
                     if (opts.max_matches_per_file > 0 && matches_len >= opts.max_matches_per_file) {
