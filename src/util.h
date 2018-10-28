@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <dirent.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +11,8 @@
 #include "config.h"
 #include "log.h"
 #include "options.h"
+
+#include <pcre2.h>
 
 extern FILE *out_fd;
 
@@ -25,29 +28,27 @@ extern FILE *out_fd;
 
 #define CHECK_AND_FREE(x) \
     do {                  \
-        if (x != NULL) {  \
-            free(x);      \
-            x = NULL;     \
-        }                 \
+        free(x);          \
+        x = NULL;         \
     } while (0)
 
 #ifdef __clang__
-#define NO_SANITIZE_ALIGNMENT __attribute__((no_sanitize("alignment")))
 #else
-#define NO_SANITIZE_ALIGNMENT
 #endif
 
-// GCC attribute to produce -Wformat warnings for printf-like functions
 #if defined(__GNUC__) || defined(__clang__)
-#define PRINTF_ATTR __attribute__((format(printf, 1, 2)))
-#define PRINTF_ATTR_2 __attribute__((format(printf, 2, 3)))
-#define PRINTF_ATTR_3 __attribute__((format(printf, 4, 5)))
-#define NORETURN __attribute__((noreturn))
+// GCC/clang attributes, don't forget to #undef them at the bottom of this file
+// clang-format off
+#define ALWAYS_INLINE           __attribute__((always_inline))
+#define FORMAT_PRINTF(a, b)     __attribute__((format(printf, a, b)))
+#define NORETURN                __attribute__((noreturn))
+#define NO_SANITIZE_ALIGNMENT   __attribute__((no_sanitize("alignment")))
+// clang-format on
 #else
-#define PRINTF_ATTR
-#define PRINTF_ATTR_2
-#define PRINTF_ATTR_3
+#define ALWAYS_INLINE
+#define FORMAT_PRINTF(a, b)
 #define NORETURN
+#define NO_SANITIZE_ALIGNMENT
 #endif
 
 void *ag_malloc(size_t size);
@@ -93,11 +94,28 @@ size_t ag_min(size_t a, size_t b);
 
 const char *boyer_moore_strnstr(const char *s, const char *find, const size_t s_len, const size_t f_len,
                                 const size_t alpha_skip_lookup[], const size_t *find_skip_lookup, const int case_insensitive);
+
+NO_SANITIZE_ALIGNMENT
 const char *hash_strnstr(const char *s, const char *find, const size_t s_len, const size_t f_len, uint8_t *h_table, const int case_sensitive);
 
 size_t invert_matches(const char *buf, const size_t buf_len, match_t matches[], size_t matches_len);
 void realloc_matches(match_t **matches, size_t *matches_size, size_t matches_len);
 
+const char *ag_pcre2_version(void);
+pcre2_code *ag_pcre2_compile(const char *q, uint32_t pcre_opts, bool use_jit);
+static inline void ag_pcre2_free(pcre2_code **re) {
+    if (re && *re) {
+        pcre2_code_free(*re);
+        *re = NULL;
+    }
+}
+
+// convenience wrapper for pcre2_match, sets the match context to NULL and
+// casts the subject to PCRE2_SPTR to avoid pointer-signedness warnings
+static inline ALWAYS_INLINE int ag_pcre2_match(const pcre2_code *code, const char *subject, size_t length, size_t startoffset,
+                                               uint32_t options, pcre2_match_data *match_data) {
+    return pcre2_match(code, (PCRE2_SPTR)subject, length, startoffset, options, match_data, NULL);
+}
 
 int is_binary(const void *buf, const size_t buf_len);
 int is_regex(const char *query);
@@ -113,10 +131,10 @@ int is_directory(const char *path, const struct dirent *d);
 int is_symlink(const char *path, const struct dirent *d);
 int is_named_pipe(const char *path, const struct dirent *d);
 
-void die(const char *fmt, ...) PRINTF_ATTR NORETURN;
+void die(const char *fmt, ...) FORMAT_PRINTF(1, 2) NORETURN;
 
-void ag_asprintf(char **ret, const char *fmt, ...) PRINTF_ATTR_2;
-int ag_dsprintf(char **buf, size_t *bufsize, size_t pos, const char *fmt, ...) PRINTF_ATTR_3;
+void ag_asprintf(char **ret, const char *fmt, ...) FORMAT_PRINTF(2, 3);
+int ag_dsprintf(char **buf, size_t *bufsize, size_t pos, const char *fmt, ...) FORMAT_PRINTF(4, 5);
 
 #ifndef HAVE_FGETLN
 char *fgetln(FILE *fp, size_t *lenp);
@@ -133,5 +151,11 @@ size_t strlcpy(char *dest, const char *src, size_t size);
 #ifndef HAVE_VASPRINTF
 int vasprintf(char **ret, const char *fmt, va_list args);
 #endif
+
+// undefine gcc attribute macros
+#undef ALWAYS_INLINE
+#undef FORMAT_PRINTF
+#undef NORETURN
+#undef NO_SANITIZE_ALIGNMENT
 
 #endif

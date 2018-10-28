@@ -24,8 +24,6 @@ ag_SOURCES = \
 	src/decompress.c \
 	src/decompress.h \
 	src/uthash.h \
-	src/pcre_api.c \
-	src/pcre_api.h \
 	src/version.c \
 	src/version.h \
 	src/main.c

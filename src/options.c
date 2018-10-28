@@ -13,10 +13,11 @@
 #include "lang.h"
 #include "log.h"
 #include "options.h"
-#include "pcre_api.h"
 #include "print.h"
 #include "util.h"
 #include "version.h"
+
+#include <pcre2.h>
 
 cli_options opts;
 
@@ -155,21 +156,11 @@ can be found at http://geoff.greer.fm/ag\n\
 }
 
 void print_version(void) {
-    char jit = '-';
-    char pcre2 = '-';
+    char jit = opts.use_jit ? '+' : '-';
+    char pcre2 = '+';
     char lzma = '-';
     char zlib = '-';
 
-#ifdef USE_PCRE_JIT
-    int use_jit = 0;
-    ag_pcre_config(AG_PCRE_CONFIG_JIT, &use_jit);
-    if (use_jit) {
-        jit = '+';
-    }
-#endif
-#ifdef HAVE_PCRE2
-    pcre2 = '+';
-#endif
 #ifdef USE_LZMA
     lzma = '+';
 #endif
@@ -178,7 +169,7 @@ void print_version(void) {
 #endif
 
     printf("ag version %s\n", AG_VERSION);
-    printf("pcre version %s\n", ag_pcre_version());
+    printf("pcre version %s\n", ag_pcre2_version());
     printf("Features:\n");
     printf("  %cjit %cpcre2 %clzma %czlib\n", jit, pcre2, lzma, zlib);
 }
@@ -210,6 +201,12 @@ void init_options(void) {
     opts.use_thread_affinity = TRUE;
     opts.invert_file_search_regex = FALSE;
     opts.search_as_text = FALSE;
+
+    uint32_t use_jit = 0;
+    if (pcre2_config(PCRE2_CONFIG_JIT, &use_jit) < 0) {
+        log_warn("pcre2_config failed to get PCRE2_CONFIG_JIT. JIT regex matching will be disabled");
+    }
+    opts.use_jit = !!use_jit;
 }
 
 void cleanup_options(void) {
@@ -219,14 +216,10 @@ void cleanup_options(void) {
     CHECK_AND_FREE(opts.query);
 
     // Note, ag_pcre_free_* will do NULL checks and set the pointer to NULL after freeing
-    ag_pcre_free_re(&opts.re);
-    ag_pcre_free_extra(&opts.re_extra);
-    ag_pcre_free_re(&opts.ackmate_dir_filter);
-    ag_pcre_free_extra(&opts.ackmate_dir_filter_extra);
-    ag_pcre_free_re(&opts.file_search_regex);
-    ag_pcre_free_extra(&opts.file_search_regex_extra);
-    ag_pcre_free_re(&opts.filetype_regex);
-    ag_pcre_free_extra(&opts.filetype_regex_extra);
+    ag_pcre2_free(&opts.re);
+    ag_pcre2_free(&opts.ackmate_dir_filter);
+    ag_pcre2_free(&opts.file_search_regex);
+    ag_pcre2_free(&opts.filetype_regex);
 }
 
 /*
@@ -694,7 +687,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 break;
             case 0: /* Long option */
                 if (strcmp(longopts[opt_index].name, "ackmate-dir-filter") == 0) {
-                    ag_pcre_compile(&opts.ackmate_dir_filter, &opts.ackmate_dir_filter_extra, optarg, 0, 0);
+                    opts.ackmate_dir_filter = ag_pcre2_compile(optarg, 0, opts.use_jit);
                     break;
                 } else if (strcmp(longopts[opt_index].name, "depth") == 0) {
                     opts.max_search_depth = atoi(optarg);
@@ -777,23 +770,23 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
     }
 
     if (file_search_regex) {
-        int pcre_opts = 0;
+        uint32_t pcre_opts = 0;
         if (opts.casing == CASE_INSENSITIVE || (opts.casing == CASE_SMART && is_lowercase(file_search_regex))) {
-            pcre_opts |= AG_PCRE_CASELESS;
+            pcre_opts |= PCRE2_CASELESS;
         }
         if (opts.word_regexp) {
             char *old_file_search_regex = file_search_regex;
             ag_asprintf(&file_search_regex, "\\b%s\\b", file_search_regex);
             free(old_file_search_regex);
         }
-        ag_pcre_compile(&opts.file_search_regex, &opts.file_search_regex_extra, file_search_regex, pcre_opts, 0);
+        opts.file_search_regex = ag_pcre2_compile(file_search_regex, pcre_opts, opts.use_jit);
         free(file_search_regex);
     }
 
     if (has_filetype) {
         lang_regex = make_lang_regex(ext_index, lang_num);
         log_debug("Got lang regex '%s'", lang_regex);
-        ag_pcre_compile(&opts.filetype_regex, &opts.filetype_regex_extra, lang_regex, 0, 0);
+        opts.filetype_regex = ag_pcre2_compile(lang_regex, 0, opts.use_jit);
     }
 
     free(ext_index);

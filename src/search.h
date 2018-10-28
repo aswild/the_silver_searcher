@@ -27,10 +27,11 @@
 #include "ignore.h"
 #include "log.h"
 #include "options.h"
-#include "pcre_api.h"
 #include "print.h"
 #include "uthash.h"
 #include "util.h"
+
+#include <pcre2.h>
 
 extern size_t alpha_skip_lookup[256];
 extern size_t *find_skip_lookup;

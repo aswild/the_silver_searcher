@@ -12,8 +12,7 @@ Do you know C? Want to improve ag? [I invite you to pair with me](http://geoff.g
 
 ## What's Different in this Fork?
 
-* Support for pcre2 (selected by default if found, falls back to pcre1). (There's no noticeable performance difference
-  between pcre1 and pcre2)
+* Requires libpcre2, pcre version 1 is no longer supported
 * Support for a `.agrc` file which may contain arbitrary options, one per line. Default is `~/.agrc`,
   and can be set with `--agrc=<file>` on the command line
 * Various memory leaks fixed, plus a script for testing with [LLVM Sanitizers](https://github.com/google/sanitizers/wiki)

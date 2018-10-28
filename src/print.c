@@ -100,7 +100,7 @@ void print_trailing_context(const char *path, const char *buf, size_t n) {
     }
 }
 
-void print_path_match(const char *_path, const char sep, int *match_ovec) {
+void print_path_match(const char *_path, const char sep, size_t *match_ovec) {
     if (opts.print_path == PATH_PRINT_NOTHING && !opts.vimgrep) {
         return;
     }
@@ -117,8 +117,8 @@ void print_path_match(const char *_path, const char sep, int *match_ovec) {
                 // This only works when using opts.match_files (-g option), not when combining
                 // -l and -G, which is otherwise equivalent but goes through the whole search_buf
                 // process and the path match details are lost by the time we get here
-                int ovec0 = match_ovec[0];
-                int ovec1 = match_ovec[1];
+                size_t ovec0 = match_ovec[0];
+                size_t ovec1 = match_ovec[1];
                 size_t orig_pathlen = strlen(_path);
                 size_t pathlen = strlen(path);
                 if (pathlen < orig_pathlen) {

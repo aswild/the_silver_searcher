@@ -2,9 +2,12 @@
 #define OPTIONS_H
 
 #include <getopt.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 
-#include "pcre_api.h"
+#include "config.h"
+
+#include <pcre2.h>
 
 #define DEFAULT_AFTER_LEN 2
 #define DEFAULT_BEFORE_LEN 2
@@ -29,8 +32,7 @@ enum path_print_behavior {
 
 typedef struct {
     int ackmate;
-    ag_pcre_re_t *ackmate_dir_filter;
-    ag_pcre_extra_t *ackmate_dir_filter_extra;
+    pcre2_code *ackmate_dir_filter;
     int agrc_argc;
     char **agrc_argv;      /* array of options gathered from agrc */
     char **agrc_full_argv; /* full argv with agrc_argv prepended */
@@ -39,11 +41,9 @@ typedef struct {
     enum case_behavior casing;
     const char *file_search_string;
     int match_files;
-    ag_pcre_re_t *file_search_regex;
-    ag_pcre_extra_t *file_search_regex_extra;
+    pcre2_code *file_search_regex;
     int invert_file_search_regex;
-    ag_pcre_re_t *filetype_regex;
-    ag_pcre_extra_t *filetype_regex_extra;
+    pcre2_code *filetype_regex;
     int color;
     char *color_line_number;
     char *color_match;
@@ -73,8 +73,7 @@ typedef struct {
     int print_line_numbers;
     int print_long_lines; /* TODO: support this in print.c */
     int passthrough;
-    ag_pcre_re_t *re;
-    ag_pcre_extra_t *re_extra;
+    pcre2_code *re;
     int recurse_dirs;
     int search_all_files;
     int skip_vcs_ignores;
@@ -92,6 +91,7 @@ typedef struct {
     char *pager;
     int paths_len;
     int parallel;
+    bool use_jit;
     int use_thread_affinity;
     int vimgrep;
     size_t width;

@@ -8,6 +8,8 @@
 #include "config.h"
 #include "util.h"
 
+#include <pcre2.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #define flockfile(x)
@@ -204,7 +206,7 @@ const char *boyer_moore_strnstr(const char *s, const char *find, const size_t s_
 
 // Clang's -fsanitize=alignment (included in -fsanitize=undefined) will flag
 // the intentional unaligned access here, so suppress it for this function
-NO_SANITIZE_ALIGNMENT const char *hash_strnstr(const char *s, const char *find, const size_t s_len, const size_t f_len, uint8_t *h_table, const int case_sensitive) {
+const char *hash_strnstr(const char *s, const char *find, const size_t s_len, const size_t f_len, uint8_t *h_table, const int case_sensitive) {
     if (s_len < f_len)
         return NULL;
 
@@ -312,6 +314,35 @@ void realloc_matches(match_t **matches, size_t *matches_size, size_t matches_len
     /* TODO: benchmark initial size of matches. 100 may be too small/big */
     *matches_size = *matches ? *matches_size * 2 : 100;
     *matches = ag_realloc(*matches, *matches_size * sizeof(match_t));
+}
+
+const char *ag_pcre2_version(void) {
+    static char ver_buf[32] = { 0 }; // static buffer so we can return it
+    if (!ver_buf[0]) {
+        pcre2_config(PCRE2_CONFIG_VERSION, ver_buf);
+    }
+    return ver_buf;
+}
+
+pcre2_code *ag_pcre2_compile(const char *q, uint32_t pcre_opts, bool use_jit) {
+    int err = 0;
+    size_t err_offset;
+    pcre2_code *re;
+
+    re = pcre2_compile((PCRE2_SPTR)q, PCRE2_ZERO_TERMINATED, pcre_opts, &err, &err_offset, NULL);
+    if (re == NULL) {
+        PCRE2_UCHAR err_buf[128] = { 0 };
+        pcre2_get_error_message(err, err_buf, sizeof(err_buf));
+        die("Bad regex! pcre_compile() failed at position %zu: %s\nIf you meant to search for a literal string, run ag with -Q",
+            err_offset, err_buf);
+    }
+
+    if (use_jit) {
+        if (pcre2_jit_compile(re, PCRE2_JIT_COMPLETE)) {
+            log_warn("PCRE2 JIT compilation failed!");
+        }
+    }
+    return re;
 }
 
 /* This function is very hot. It's called on every file. */

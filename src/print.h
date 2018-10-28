@@ -7,7 +7,7 @@ void print_init_context(void);
 void print_cleanup_context(void);
 void print_context_append(const char *line, size_t len);
 void print_trailing_context(const char *path, const char *buf, size_t n);
-void print_path_match(const char *path, const char sep, int *match_ovec);
+void print_path_match(const char *path, const char sep, size_t *match_ovec);
 static inline void print_path(const char *path, const char sep) {
     print_path_match(path, sep, NULL);
 }

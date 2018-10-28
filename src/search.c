@@ -36,6 +36,7 @@ int search_buf(const char *buf, const size_t buf_len,
         }
     }
 
+    pcre2_match_data *mdata = NULL;
     size_t matches_len = 0;
     match_t *matches;
     size_t matches_size;
@@ -117,11 +118,17 @@ int search_buf(const char *buf, const size_t buf_len,
             }
         }
     } else {
-        int offset_vector[3];
+        mdata = pcre2_match_data_create(1, NULL);
+        size_t *offset_vector;
+        if (mdata == NULL) {
+            log_err("Failed to allocated pcre match_data for %s! Skipping this file", dir_full_path);
+            goto multiline_done;
+        }
         if (opts.multiline) {
             while (buf_offset < buf_len &&
-                   (ag_pcre_match(opts.re, opts.re_extra, buf, buf_len, buf_offset, 0, offset_vector, 3)) >= 0) {
-                log_debug("Regex match found. File %s, offset %i bytes.", dir_full_path, offset_vector[0]);
+                   (ag_pcre2_match(opts.re, buf, buf_len, buf_offset, 0, mdata)) >= 0) {
+                offset_vector = pcre2_get_ovector_pointer(mdata);
+                log_debug("Regex match found. File %s, offset %zu bytes.", dir_full_path, offset_vector[0]);
                 buf_offset = offset_vector[1];
                 if (offset_vector[0] == offset_vector[1]) {
                     ++buf_offset;
@@ -150,12 +157,13 @@ int search_buf(const char *buf, const size_t buf_len,
 
                 size_t line_offset = 0;
                 while (line_offset < line_len) {
-                    int rv = ag_pcre_match(opts.re, opts.re_extra, line, line_len, line_offset, 0, offset_vector, 3);
+                    int rv = ag_pcre2_match(opts.re, line, line_len, line_offset, 0, mdata);
                     if (rv < 0) {
                         break;
                     }
+                    offset_vector = pcre2_get_ovector_pointer(mdata);
                     size_t line_to_buf = buf_offset + line_offset;
-                    log_debug("Regex match found. File %s, offset %i bytes.", dir_full_path, offset_vector[0]);
+                    log_debug("Regex match found. File %s, offset %zu bytes.", dir_full_path, offset_vector[0]);
                     line_offset = offset_vector[1];
                     if (offset_vector[0] == offset_vector[1]) {
                         ++line_offset;
@@ -179,6 +187,9 @@ int search_buf(const char *buf, const size_t buf_len,
     }
 
 multiline_done:
+    if (mdata != NULL) {
+        pcre2_match_data_free(mdata);
+    }
 
     if (opts.invert_match) {
         matches_len = invert_matches(buf, buf_len, matches, matches_len);
@@ -437,7 +448,7 @@ void search_file(const char *file_full_path) {
                 die("Failed to read %s: %s", file_full_path, strerror(errno));
             }
             // Optimization: If skipping binary files, don't read the whole buffer before checking if binary or not.
-            if (is_binary(buf, f_len)) {
+            if (is_binary(buf, bytes_read)) {
                 log_debug("File %s is binary. Skipping...", file_full_path);
                 goto cleanup;
             }
@@ -607,6 +618,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
     int results = 0;
     size_t base_path_len = 0;
     const char *path_start = path;
+    pcre2_match_data *mdata = NULL;
 
     char *dir_full_path = NULL;
     const char *ignore_file = NULL;
@@ -668,7 +680,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
         goto search_dir_cleanup;
     }
 
-    int offset_vector[3];
+    mdata = pcre2_match_data_create(1, NULL);
     int rc = 0;
     work_queue_t *queue_item;
 
@@ -700,14 +712,12 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
             if (opts.file_search_regex || opts.filetype_regex) {
                 bool filename_matched = true;
                 if (opts.filetype_regex) {
-                    rc = ag_pcre_match(opts.filetype_regex, NULL, dir_full_path, strlen(dir_full_path),
-                                       0, 0, offset_vector, 3);
+                    rc = ag_pcre2_match(opts.filetype_regex, dir_full_path, strlen(dir_full_path), 0, 0, mdata);
                     if (rc < 0)
                         filename_matched = false;
                 }
                 if (filename_matched && opts.file_search_regex) {
-                    rc = ag_pcre_match(opts.file_search_regex, NULL, dir_full_path, strlen(dir_full_path),
-                                       0, 0, offset_vector, 3);
+                    rc = ag_pcre2_match(opts.file_search_regex, dir_full_path, strlen(dir_full_path), 0, 0, mdata);
 
                     /* XOR between finding a match and inverting that regex. Either but not both means
                      * to continue searching the file */
@@ -723,7 +733,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
                 } else if (opts.match_files) {
                     log_debug("match_files: file_search_regex/filetype_regex matched for %s.", dir_full_path);
                     pthread_mutex_lock(&print_mtx);
-                    print_path_match(dir_full_path, opts.path_sep, (int *)&offset_vector);
+                    print_path_match(dir_full_path, opts.path_sep, pcre2_get_ovector_pointer(mdata));
                     pthread_mutex_unlock(&print_mtx);
                     opts.match_found = 1;
                     goto cleanup;
@@ -779,6 +789,9 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
     }
 
 search_dir_cleanup:
+    if (mdata != NULL) {
+        pcre2_match_data_free(mdata);
+    }
     check_symloop_leave(&current_dirkey);
     free(dir_list);
     dir_list = NULL;

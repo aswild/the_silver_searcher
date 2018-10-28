@@ -10,9 +10,10 @@
 #include "ignore.h"
 #include "log.h"
 #include "options.h"
-#include "pcre_api.h"
 #include "scandir.h"
 #include "util.h"
+
+#include <pcre2.h>
 
 #ifdef _WIN32
 #include <shlwapi.h>
@@ -205,7 +206,13 @@ static int ackmate_dir_match(const char *dir_name) {
         return 0;
     }
     /* we just care about the match, not where the matches are */
-    return ag_pcre_match(opts.ackmate_dir_filter, NULL, dir_name, strlen(dir_name), 0, 0, NULL, 0);
+    pcre2_match_data *mdata = pcre2_match_data_create(1, NULL);
+    if (mdata == NULL) {
+        die("%s: pcre2_match_data_create failed", __func__);
+    }
+    int rc = ag_pcre2_match(opts.ackmate_dir_filter, dir_name, strlen(dir_name), 0, 0, mdata);
+    pcre2_match_data_free(mdata);
+    return rc;
 }
 
 /* This is the hottest code in Ag. 10-15% of all execution time is spent here */

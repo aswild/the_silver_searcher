@@ -9,7 +9,8 @@
 #endif
 
 #include "config.h"
-#include "pcre_api.h"
+
+#include <pcre2.h>
 
 #ifdef HAVE_SYS_CPUSET_H
 #include <sys/cpuset.h>
@@ -37,8 +38,7 @@ int main(int argc, char **argv) {
     char **base_paths = NULL;
     char **paths = NULL;
     int i;
-    int pcre_opts = AG_PCRE_MULTILINE;
-    int use_jit = 0;
+    uint32_t pcre_opts = PCRE2_MULTILINE;
     worker_t *workers = NULL;
     int workers_len;
     int num_cores;
@@ -57,17 +57,11 @@ int main(int argc, char **argv) {
     out_fd = stdout;
 
     parse_options(argc, argv, &base_paths, &paths);
-    log_debug("PCRE Version: %s", ag_pcre_version());
+    log_debug("PCRE Version: %s", ag_pcre2_version());
     if (opts.stats) {
         memset(&stats, 0, sizeof(stats));
         gettimeofday(&(stats.time_start), NULL);
     }
-
-#ifdef USE_PCRE_JIT
-    if (ag_pcre_config(AG_PCRE_CONFIG_JIT, &use_jit)) {
-        use_jit = TRUE;
-    }
-#endif
 
 #ifdef _WIN32
     {
@@ -129,7 +123,7 @@ int main(int argc, char **argv) {
         }
     } else {
         if (opts.casing == CASE_INSENSITIVE) {
-            pcre_opts |= AG_PCRE_CASELESS;
+            pcre_opts |= PCRE2_CASELESS;
         }
         if (opts.word_regexp) {
             char *word_regexp_query;
@@ -138,7 +132,7 @@ int main(int argc, char **argv) {
             opts.query = word_regexp_query;
             opts.query_len = strlen(opts.query);
         }
-        ag_pcre_compile(&opts.re, &opts.re_extra, opts.query, pcre_opts, use_jit);
+        opts.re = ag_pcre2_compile(opts.query, pcre_opts, opts.use_jit);
     }
 
     if (opts.search_stream) {
