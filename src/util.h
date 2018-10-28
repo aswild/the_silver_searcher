@@ -118,8 +118,6 @@ void die(const char *fmt, ...) PRINTF_ATTR NORETURN;
 void ag_asprintf(char **ret, const char *fmt, ...) PRINTF_ATTR_2;
 int ag_dsprintf(char **buf, size_t *bufsize, size_t pos, const char *fmt, ...) PRINTF_ATTR_3;
 
-ssize_t buf_getline(const char **line, const char *buf, const size_t buf_len, const size_t buf_offset);
-
 #ifndef HAVE_FGETLN
 char *fgetln(FILE *fp, size_t *lenp);
 #endif

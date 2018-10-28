@@ -141,11 +141,13 @@ int search_buf(const char *buf, const size_t buf_len,
             }
         } else {
             while (buf_offset < buf_len) {
-                const char *line;
-                size_t line_len = buf_getline(&line, buf, buf_len, buf_offset);
-                if (!line) {
-                    break;
+                const char *const line = buf + buf_offset;
+                const char *line_end = memchr(line, '\n', buf_len - buf_offset);
+                if (!line_end) {
+                    line_end = buf + buf_len;
                 }
+                const size_t line_len = line_end - line;
+
                 size_t line_offset = 0;
                 while (line_offset < line_len) {
                     int rv = ag_pcre_match(opts.re, opts.re_extra, line, line_len, line_offset, 0, offset_vector, 3);
