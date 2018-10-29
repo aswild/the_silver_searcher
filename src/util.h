@@ -42,14 +42,27 @@ extern FILE *out_fd;
 #define ALWAYS_INLINE           __attribute__((always_inline))
 #define FORMAT_PRINTF(a, b)     __attribute__((format(printf, a, b)))
 #define NORETURN                __attribute__((noreturn))
-#define NO_SANITIZE_ALIGNMENT   __attribute__((no_sanitize("alignment")))
 // clang-format on
 #else
 #define ALWAYS_INLINE
 #define FORMAT_PRINTF(a, b)
 #define NORETURN
+#endif
+
+// disable ubsan's alignment checks for hash_strnstr which intentionally
+// does unaligned access
+#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#if defined(__clang__) || (defined(__GNUC__) && GCC_VERSION >= 80100)
+// clang and GCC 8.1 support no_sanitize("alignment")
+#define NO_SANITIZE_ALIGNMENT __attribute__((no_sanitize("alignment")))
+#elif defined(__GNUC__) && GCC_VERSION >= 40900
+// gcc 4.9 supports ubsan and no_sanitize_undefined
+#define NO_SANITIZE_ALIGNMENT __attribute__((no_sanitize_undefined))
+#else
+// older versions have no ubsan
 #define NO_SANITIZE_ALIGNMENT
 #endif
+#undef GCC_VERSION
 
 void *ag_malloc(size_t size);
 void *ag_realloc(void *ptr, size_t size);
