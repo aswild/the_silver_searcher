@@ -22,7 +22,7 @@ const lang_spec_t langs[] = {
     { "cmake", { "^CMakeLists\\.txt", "cmake" } },
     { "coffee", { "coffee", "cjsx" } },
     { "coq", { "coq", "g", "v" } },
-    { "cpp", { "cpp", "cc", "C", "cxx", "m", "hpp", "hh", "h", "H", "hxx", "tpp" } },
+    { "cpp", { "cpp", "cc", "cxx", "hpp", "hh", "h", "hxx" } },
     { "crystal", { "cr", "ecr" } },
     { "csharp", { "cs" } },
     { "css", { "css" } },

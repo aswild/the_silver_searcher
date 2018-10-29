@@ -58,7 +58,7 @@ Language types are output:
         .coq  .g  .v
   
     --cpp
-        .cpp  .cc  .C  .cxx  .m  .hpp  .hh  .h  .H  .hxx  .tpp
+        .cpp  .cc  .cxx  .hpp  .hh  .h  .hxx
   
     --crystal
         .cr  .ecr
