@@ -511,7 +511,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         CHECK_AND_FREE(agrc_file);
     }
     for (i = 0; i < (size_t)argc; i++) {
-        log_debug("argv[%lu] = '%s'", i, argv[i]);
+        log_debug("argv[%zu] = '%s'", i, argv[i]);
     }
 
     char *file_search_regex = NULL;

@@ -108,7 +108,7 @@ int search_buf(const char *buf, const size_t buf_len,
             matches[matches_len].start = match_ptr - buf;
             matches[matches_len].end = matches[matches_len].start + opts.query_len;
             buf_offset = matches[matches_len].end;
-            log_debug("Match found. File %s, offset %lu bytes.", dir_full_path, matches[matches_len].start);
+            log_debug("Match found. File %s, offset %zu bytes.", dir_full_path, matches[matches_len].start);
             matches_len++;
             match_ptr += opts.query_len;
 
@@ -393,7 +393,7 @@ void search_file(const char *file_full_path) {
             buf = ag_malloc(f_len);
             bytes_read = read(fd, buf, f_len);
             if ((off_t)bytes_read != f_len) {
-                die("expected to read %zu bytes but read %zu", f_len, bytes_read);
+                die("expected to read %zu bytes but read %zu", (size_t)f_len, bytes_read);
             }
         } else {
             // lseek failed, so use the last-resort of dynamically reallocating the buffer until we've read as much as we can
@@ -460,7 +460,7 @@ void search_file(const char *file_full_path) {
             bytes_read += r;
         }
         if (bytes_read != f_len) {
-            die("File %s read(): expected to read %zu bytes but read %zu", file_full_path, f_len, bytes_read);
+            die("File %s read(): expected to read %zu bytes but read %zu", file_full_path, (size_t)f_len, bytes_read);
         }
     }
 #endif
