@@ -5,12 +5,13 @@ AC_INIT(
     [the_silver_searcher],
     [https://github.com/aswild/the_silver_searcher])
 
+AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([no-define foreign subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_PROG_CC
 AM_PROG_CC_C_O
-AC_PREREQ([2.59])
+AC_PREREQ([2.64])
 AC_PROG_SED
 AC_PROG_GREP
 
@@ -18,13 +19,13 @@ AC_PROG_GREP
 save_cflags="$CFLAGS"
 dnl an extra set of brackets is needed because of m4 bracket quoting insanity
 CFLAGS=`echo "$save_cflags" | $SED 's/-Werror[[^[:space:]]]*//g'`
-m4_include([m4/ax_pthread.m4])
 AX_PTHREAD(
     [AC_CHECK_HEADERS([pthread.h])],
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
 )
-CFLAGS="$save_cflags $PTHREAD_CFLAGS"
-LIBS="$LIBS $PTHREAD_LIBS"
+CFLAGS="$save_cflags"
+AW_APPEND_CFLAGS([$PTHREAD_CFLAGS])
+AW_APPEND_LIBS([$PTHREAD_LIBS])
 
 AC_CANONICAL_HOST
 case "$host_os" in
@@ -69,8 +70,8 @@ fi
 # pcre1 is no longer supported, only pcre2
 PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [
     AC_DEFINE([PCRE2_CODE_UNIT_WIDTH], [8], [8-byte characters for pcre2])
-    CFLAGS="$CFLAGS $PCRE2_CFLAGS"
-    LIBS="$LIBS $PCRE2_LIBS"
+    AW_APPEND_CFLAGS([$PCRE2_CFLAGS])
+    AW_APPEND_LIBS([$PCRE2_LIBS])
     AC_CHECK_HEADERS([pcre2.h], [], [AC_MSG_ERROR([pkg-config found libpcre2-8 but pcre2.h couldn't be found])])
 ])
 
@@ -80,8 +81,8 @@ AC_ARG_ENABLE([zlib],
 AS_IF([test "x$enable_zlib" != "xno"], [
     PKG_CHECK_MODULES([ZLIB], [zlib], [ag_found_zlib="yes"], [ag_found_zlib="no"])
     AS_IF([test "x$ag_found_zlib" = "xyes"], [
-          CFLAGS="$CFLAGS $ZLIB_CFLAGS"
-          LIBS="$LIBS $ZLIB_LIBS"
+          AW_APPEND_CFLAGS([$ZLIB_CFLAGS])
+          AW_APPEND_LIBS([$ZLIB_LIBS])
           AC_CHECK_HEADERS([zlib.h], [], [AC_MSG_ERROR([pkg-config found zlib but zlib.h couldn't be found])])
     ])
 ])
@@ -96,8 +97,8 @@ AC_ARG_ENABLE([lzma],
 AS_IF([test "x$enable_lzma" != "xno"], [
     PKG_CHECK_MODULES([LZMA], [liblzma], [ag_found_lzma="yes"], [ag_found_lzma="no"])
     AS_IF([test "x$ag_found_lzma" = "xyes"], [
-          CFLAGS="$CFLAGS $LZMA_CFLAGS"
-          LIBS="$LIBS $LZMA_LIBS"
+          AW_APPEND_CFLAGS([$LZMA_CFLAGS])
+          AW_APPEND_LIBS([$LZMA_LIBS])
           AC_CHECK_HEADERS([lzma.h], [], [AC_MSG_ERROR([pkg-config found lzma but lzma.h couldn't be found])])
     ])
 ])
@@ -178,6 +179,10 @@ AM_COND_IF([USE_GITVERSION], [], [
     ])
 ])
 
+AW_STRIP_FLAGS([CFLAGS])
+AW_STRIP_FLAGS([LDFLAGS])
+AW_STRIP_FLAGS([LIBS])
+
 AC_CONFIG_FILES([Makefile the_silver_searcher.spec])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT
@@ -195,8 +200,10 @@ The Silver Searcher $ag_version configuration summary:
 
     Install prefix          ${prefix}
     C compiler              ${CC}
+    C preprocessor flags    ${CPPFLAGS}
     C compiler flags        ${CFLAGS}
-    Linker flags/libraries  `echo "${LDFLAGS} ${LIBS}" | ${SED} 's/^ \+//g; s/ \+$//g'`
+    Linker flags            ${LDFLAGS}
+    Linker libraries        ${LIBS}
 
     PCRE version            ${ag_pcre_string}
     zlib decompression      ${ag_found_zlib}
