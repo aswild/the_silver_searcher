@@ -14,9 +14,15 @@ then
     AC_SEARCH_OPTS="-I /usr/local/share/aclocal"
 fi
 
+if [ "$1" = "-f" ] || [ "$1" = "--force" ]; then
+    force=--force
+else
+    force=
+fi
+
 # shellcheck disable=2086
 set -x
-aclocal $AC_SEARCH_OPTS
-autoconf
-autoheader
-automake --add-missing
+aclocal $AC_SEARCH_OPTS $force
+autoconf $force
+autoheader $force
+automake --add-missing $force
