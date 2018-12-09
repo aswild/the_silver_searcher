@@ -127,7 +127,9 @@ AM_COND_IF([USE_FOPENCOOKIE], [AC_DEFINE([USE_FOPENCOOKIE], [], [Use fopencookie
 
 AC_CHECK_PROGS([CRAM], [cram cram3 cram2], [no])
 AM_CONDITIONAL([HAVE_CRAM], [test x$CRAM != xno])
-AM_COND_IF([HAVE_CRAM], [], [AC_MSG_WARN([cram not found, test suite is disabled])])
+AM_COND_IF([HAVE_CRAM], [ag_test_suite=enabled],
+           [ag_test_suite=disabled
+            AC_MSG_WARN([cram not found, test suite is disabled])])
 
 # List the tests during configure time, because we can't use wildcards in Makefile.am.
 # Note these must be relative to ${srcdir} but not contain ${srcdir} or else the log/trs
@@ -142,8 +144,9 @@ AC_CHECK_PROGS(
 )
 AM_CONDITIONAL([HAVE_CLANG_FORMAT], [test x$CLANG_FORMAT != xno])
 AM_COND_IF(
-    [HAVE_CLANG_FORMAT], [],
-    [AC_MSG_WARN([clang-format not found. 'make test' will not detect improperly-formatted files.])]
+    [HAVE_CLANG_FORMAT], [ag_clang_format=enabled],
+    [ag_clang_format=disabled
+    AC_MSG_WARN([clang-format not found. 'make test' will not detect improperly-formatted files.])]
 )
 
 # Determine if we're building in a git repo, and if so enable dynamic versioning.
@@ -208,5 +211,8 @@ The Silver Searcher $ag_version configuration summary:
     PCRE version            ${ag_pcre_string}
     zlib decompression      ${ag_found_zlib}
     lzma decompression      ${ag_found_lzma}
+
+    Test suite              ${ag_test_suite}
+    Code format check       ${ag_clang_format}
 
 EOF
