@@ -85,6 +85,7 @@ const lang_spec_t langs[] = {
     { "octave", { "m" } },
     { "org", { "org" } },
     { "parrot", { "pir", "pasm", "pmc", "ops", "pod", "pg", "tg" } },
+    { "patch", { "patch", "diff" } },
     { "pdb", { "pdb" } },
     { "perl", { "pl", "pm", "pm6", "pod", "t" } },
     { "php", { "php", "phpt", "php3", "php4", "php5", "phtml" } },

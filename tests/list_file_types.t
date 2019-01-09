@@ -246,6 +246,9 @@ Language types are output:
     --parrot
         .pir  .pasm  .pmc  .ops  .pod  .pg  .tg
   
+    --patch
+        .patch  .diff
+  
     --pdb
         .pdb
   
