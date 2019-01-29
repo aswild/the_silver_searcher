@@ -22,7 +22,7 @@ fi
 
 # shellcheck disable=2086
 set -x
-aclocal $AC_SEARCH_OPTS $force
+aclocal -I m4 $AC_SEARCH_OPTS $force
 autoconf $force
 autoheader $force
 automake --add-missing $force

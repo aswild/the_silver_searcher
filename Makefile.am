@@ -1,4 +1,4 @@
-ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CFLAGS = -std=gnu99 -D_GNU_SOURCE \
             -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith \
             -Wcast-qual -Wmissing-prototypes -Wno-missing-braces

@@ -1,3 +1,4 @@
+AC_PREREQ([2.64])
 AC_INIT(
     [the_silver_searcher],
     [2.2.0-wild],
@@ -5,13 +6,12 @@ AC_INIT(
     [the_silver_searcher],
     [https://github.com/aswild/the_silver_searcher])
 
-AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([no-define foreign subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_PROG_CC
 AM_PROG_CC_C_O
-AC_PREREQ([2.64])
 AC_PROG_SED
 AC_PROG_GREP
 
