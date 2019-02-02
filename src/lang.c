@@ -37,7 +37,7 @@ const lang_spec_t langs[] = {
     { "elm", { "elm" } },
     { "erlang", { "erl", "hrl" } },
     { "factor", { "factor" } },
-    { "fortran", { "f", "f77", "f90", "f95", "f03", "for", "ftn", "fpp" } },
+    { "fortran", { "f", "F", "f77", "f90", "F90", "f95", "f03", "for", "ftn", "fpp", "FPP" } },
     { "fsharp", { "fs", "fsi", "fsx" } },
     { "gettext", { "po", "pot", "mo" } },
     { "glsl", { "vert", "tesc", "tese", "geom", "frag", "comp" } },
