@@ -102,6 +102,10 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `-i --ignore-case`:
     Match case-insensitively.
 
+  * `-j --just-filename`:
+    Search only the file name, not the full path, when using a file search
+    regex (such as with -g or -G).
+
   * `-l --files-with-matches`:
     Only print the names of files containing matches, not the matching
     lines. An empty query will print all files that would be searched.

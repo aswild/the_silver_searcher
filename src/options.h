@@ -43,6 +43,7 @@ typedef struct {
     int match_files;
     pcre2_code *file_search_regex;
     int invert_file_search_regex;
+    bool file_search_regex_just_filename;
     pcre2_code *filetype_regex;
     int color;
     char *color_line_number;

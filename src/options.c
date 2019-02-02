@@ -107,6 +107,8 @@ Search Options:\n\
   -f --follow             Follow symlinks\n\
   -F --fixed-strings      Alias for --literal for compatibility with grep\n\
   -G --file-search-regex  PATTERN Limit search to filenames matching PATTERN\n\
+  -j --just-filename      Search only the file name, not the full path, when using\n\
+                          a file search regex (such as with -g or -G)\n\
      --hidden             Search hidden files (obeys .*ignore files)\n\
   -i --ignore-case        Match case insensitively\n\
      --ignore PATTERN     Ignore files/directories matching PATTERN\n\
@@ -298,7 +300,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     init_options();
 
-    const char optstring[] = "A::aB::C::cDG:g:FfHhiLlm:noP::p:QqRrSsvVtuUwW:X:z0";
+    const char optstring[] = "A::aB::C::cDG:g:FfHhijLlm:noP::p:QqRrSsvVtuUwW:X:z0";
     const option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
         { "ackmate-dir-filter", required_argument, NULL, 0 },
@@ -337,6 +339,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "ignore-case", no_argument, NULL, 'i' },
         { "ignore-dir", required_argument, NULL, 0 },
         { "invert-match", no_argument, NULL, 'v' },
+        { "just-filename", no_argument, NULL, 'j' },
         /* deprecated for --numbers. Remove eventually. */
         { "line-numbers", no_argument, &opts.print_line_numbers, 2 },
         { "list-file-types", no_argument, &list_file_types, 1 },
@@ -590,6 +593,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 break;
             case 'i':
                 opts.casing = CASE_INSENSITIVE;
+                break;
+            case 'j':
+                opts.file_search_regex_just_filename = true;
                 break;
             case 'L':
                 opts.print_nonmatching_files = 1;

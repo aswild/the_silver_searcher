@@ -716,7 +716,8 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
                         filename_matched = false;
                 }
                 if (filename_matched && opts.file_search_regex) {
-                    rc = ag_pcre2_match(opts.file_search_regex, dir_full_path, strlen(dir_full_path), 0, 0, mdata);
+                    const char *file_search_path = opts.file_search_regex_just_filename ? dir->d_name : dir_full_path;
+                    rc = ag_pcre2_match(opts.file_search_regex, file_search_path, strlen(file_search_path), 0, 0, mdata);
 
                     /* XOR between finding a match and inverting that regex. Either but not both means
                      * to continue searching the file */
@@ -732,7 +733,18 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
                 } else if (opts.match_files) {
                     log_debug("match_files: file_search_regex/filetype_regex matched for %s.", dir_full_path);
                     pthread_mutex_lock(&print_mtx);
-                    print_path_match(dir_full_path, opts.path_sep, pcre2_get_ovector_pointer(mdata));
+                    if (!opts.file_search_regex_just_filename) {
+                        print_path_match(dir_full_path, opts.path_sep, pcre2_get_ovector_pointer(mdata));
+                    } else {
+                        const size_t *m_ovec = pcre2_get_ovector_pointer(mdata);
+                        if (m_ovec) {
+                            size_t offset = strlen(path) + 1;
+                            size_t ovec[2] = { m_ovec[0] + offset, m_ovec[1] + offset };
+                            print_path_match(dir_full_path, opts.path_sep, ovec);
+                        } else {
+                            print_path_match(dir_full_path, opts.path_sep, NULL);
+                        }
+                    }
                     pthread_mutex_unlock(&print_mtx);
                     opts.match_found = 1;
                     goto cleanup;
