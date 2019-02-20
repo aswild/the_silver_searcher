@@ -83,7 +83,7 @@ run_sanitizer() {
 
     [[ -f Makefile ]] && vrun make distclean
     vrun ../configure $CONFIGOPTS ac_cv_prog_CLANG_FORMAT=no CC=$SANITIZE_CC \
-                      CFLAGS="-g -O0 -fsanitize=$sanitizer $EXTRA_CFLAGS"
+                      CFLAGS="-g -O2 -fsanitize=$sanitizer $EXTRA_CFLAGS"
     if [[ $? != 0 ]]; then
         echo "ERROR: Failed to configure. Try setting CONFIGOPTS?"
         return 1
