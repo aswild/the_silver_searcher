@@ -300,7 +300,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     init_options();
 
-    const char optstring[] = "A::aB::C::cDG:g:FfHhijLlm:noP::p:QqRrSsvVtuUwW:X:z0";
+    const char optstring[] = "A::aB::C::cDG:g:FfHhiI:jLlm:noP::p:QqRrSsvVtuUwW:X:z0";
     const option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
         { "ackmate-dir-filter", required_argument, NULL, 0 },
@@ -335,7 +335,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "help", no_argument, NULL, 'h' },
         { "help-types", no_argument, &list_file_types, 1 },
         { "hidden", no_argument, &opts.search_hidden_files, 1 },
-        { "ignore", required_argument, NULL, 0 },
+        { "ignore", required_argument, NULL, 'I' },
         { "ignore-case", no_argument, NULL, 'i' },
         { "ignore-dir", required_argument, NULL, 0 },
         { "invert-match", no_argument, NULL, 'v' },
@@ -594,6 +594,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'i':
                 opts.casing = CASE_INSENSITIVE;
                 break;
+            case 'I':
+                add_ignore_pattern(root_ignores, optarg);
+                break;
             case 'j':
                 opts.file_search_regex_just_filename = true;
                 break;
@@ -703,9 +706,6 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                     opts.print_line_numbers = TRUE;
                     break;
                 } else if (strcmp(longopts[opt_index].name, "ignore-dir") == 0) {
-                    add_ignore_pattern(root_ignores, optarg);
-                    break;
-                } else if (strcmp(longopts[opt_index].name, "ignore") == 0) {
                     add_ignore_pattern(root_ignores, optarg);
                     break;
                 } else if (strcmp(longopts[opt_index].name, "no-filename") == 0 ||

@@ -92,7 +92,7 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `--hidden`:
     Search hidden files. This option obeys ignored files.
 
-  * `--ignore PATTERN`:
+  * `-I --ignore PATTERN`:
     Ignore files/directories whose names match this pattern. Literal
     file and directory names are also allowed.
 
