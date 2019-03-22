@@ -601,8 +601,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 opts.file_search_regex_just_filename = true;
                 break;
             case 'L':
-                opts.invert_match = 1;
-            /* fall through */
+                opts.print_nonmatching_files = 1;
+                opts.print_path = PATH_PRINT_TOP;
+                break;
             case 'l':
                 needs_query = 0;
                 opts.print_filename_only = 1;
