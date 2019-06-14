@@ -15,15 +15,10 @@ AM_PROG_CC_C_O
 AC_PROG_SED
 AC_PROG_GREP
 
-# pthreads check. Note that if -Werror is in CFLAGS, the pthreads checks always fail, so temporarily remove it
-save_cflags="$CFLAGS"
-dnl an extra set of brackets is needed because of m4 bracket quoting insanity
-CFLAGS=`echo "$save_cflags" | $SED 's/-Werror[[^[:space:]]]*//g'`
 AX_PTHREAD(
     [AC_CHECK_HEADERS([pthread.h])],
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
 )
-CFLAGS="$save_cflags"
 AW_APPEND_CFLAGS([$PTHREAD_CFLAGS])
 AW_APPEND_LIBS([$PTHREAD_LIBS])
 
@@ -66,6 +61,11 @@ if test -d "${libdir_expanded}/pkgconfig"; then
     export PKG_CONFIG_PATH
 fi
 
+AC_ARG_ENABLE([werror], [AS_HELP_STRING([--enable-werror], [Compile with warnings as errors])])
+AM_CONDITIONAL([ENABLE_WERROR], [test "x$enable_werror" = "xyes"])
+AC_MSG_CHECKING([Whether --enable-werror was specified])
+AM_COND_IF([ENABLE_WERROR], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
+
 ################### PCRE Check #####################
 # pcre1 is no longer supported, only pcre2
 PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [
@@ -76,6 +76,7 @@ PKG_CHECK_MODULES([PCRE2], [libpcre2-8], [
 ])
 
 ##### ZLIB #####
+ag_found_zlib=no
 AC_ARG_ENABLE([zlib],
     AS_HELP_STRING([--disable-zlib], [Disable zlib compressed search support]))
 AS_IF([test "x$enable_zlib" != "xno"], [
@@ -92,6 +93,7 @@ AS_IF([test "x$ag_found_zlib" = "xyes"],
 ])
 
 ##### LZMA #####
+ag_found_lzma=no
 AC_ARG_ENABLE([lzma],
     AS_HELP_STRING([--disable-lzma], [Disable lzma compressed search support]))
 AS_IF([test "x$enable_lzma" != "xno"], [
