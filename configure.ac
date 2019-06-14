@@ -25,6 +25,7 @@ AW_APPEND_LIBS([$PTHREAD_LIBS])
 AC_CANONICAL_HOST
 case "$host_os" in
     *mingw*)
+        AC_DEFINE([__USE_MINGW_ANSI_STDIO], [1], [Enable C99 printf formats under MinGW])
         AC_CHECK_LIB(shlwapi, main,, AC_MSG_ERROR(libshlwapi missing))
         ;;
     *linux*)

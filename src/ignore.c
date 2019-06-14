@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <ctype.h>
 #include <dirent.h>
 #include <limits.h>
@@ -5,15 +7,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <pcre2.h>
 
-#include "config.h"
 #include "ignore.h"
 #include "log.h"
 #include "options.h"
 #include "scandir.h"
 #include "util.h"
-
-#include <pcre2.h>
 
 #ifdef _WIN32
 #include <shlwapi.h>

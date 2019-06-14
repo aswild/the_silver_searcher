@@ -1,4 +1,7 @@
+#include "config.h"
+
 #include <errno.h>
+#include <getopt.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -8,7 +11,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "config.h"
+#include <pcre2.h>
+
 #include "ignore.h"
 #include "lang.h"
 #include "log.h"
@@ -17,7 +21,7 @@
 #include "util.h"
 #include "version.h"
 
-#include <pcre2.h>
+typedef struct option option_t;
 
 cli_options opts;
 

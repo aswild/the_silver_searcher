@@ -1,12 +1,9 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#include <getopt.h>
-#include <stdbool.h>
-#include <sys/stat.h>
-
 #include "config.h"
 
+#include <stdbool.h>
 #include <pcre2.h>
 
 #define DEFAULT_AFTER_LEN 2
@@ -102,8 +99,6 @@ typedef struct {
 
 /* global options. parse_options gives it sane values, everything else reads from it */
 extern cli_options opts;
-
-typedef struct option option_t;
 
 void print_version(void);
 

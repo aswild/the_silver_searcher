@@ -1,11 +1,7 @@
 #ifndef DECOMPRESS_H
 #define DECOMPRESS_H
 
-#include <stdio.h>
-
 #include "config.h"
-#include "log.h"
-#include "options.h"
 
 typedef enum {
     AG_NO_COMPRESSION,

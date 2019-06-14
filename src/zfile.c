@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifdef __FreeBSD__
 #include <sys/endian.h>
 #endif
@@ -16,8 +18,6 @@ typedef _off64_t off64_t;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "config.h"
 
 #ifdef HAVE_ERR_H
 #include <err.h>

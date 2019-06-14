@@ -1,6 +1,10 @@
+#include "config.h"
+
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 
+#include "log.h"
 #include "decompress.h"
 
 #ifdef USE_LZMA
@@ -11,10 +15,18 @@ static const uint8_t XZ_HEADER_MAGIC[6] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
 static const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
 #endif
 
-
 #ifdef USE_ZLIB
 #define ZLIB_CONST 1
 #include <zlib.h>
+
+#ifdef _WIN32
+// mingw unistd.h doesn't have getpagesize(2)
+// Let's just assume WIndows is x86 only with 4k pages
+static int getpagesize(void)
+{
+    return 4096;
+}
+#endif
 
 /* Code in decompress_zlib from
  *

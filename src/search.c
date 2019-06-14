@@ -1,7 +1,22 @@
-#include "search.h"
+#include "config.h"
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/mman.h>
+#endif
+
+#include "decompress.h"
 #include "print.h"
 #include "scandir.h"
-#include <stdbool.h>
+#include "search.h"
 
 #ifdef OS_LINUX
 #define is_procfile(path) (strncmp((path), "/proc", 5) == 0)
@@ -286,12 +301,16 @@ void search_file(const char *file_full_path) {
 
     rv = stat(file_full_path, &statbuf);
     if (rv != 0) {
+#ifndef _WIN32
         rv = lstat(file_full_path, &statbuf);
         if (S_ISLNK(statbuf.st_mode)) {
             log_debug("Skipping %s: broken symlink", file_full_path);
         } else {
             log_err("Skipping %s: Error fstat()ing file.", file_full_path);
         }
+#else
+        log_err("Skipping %s: Error stat()ing file.", file_full_path);
+#endif
         goto cleanup;
     }
 
@@ -316,12 +335,16 @@ void search_file(const char *file_full_path) {
     // repeating stat check with file handle to prevent TOCTOU issue
     rv = fstat(fd, &statbuf);
     if (rv != 0) {
+#ifndef _WIN32
         rv = lstat(file_full_path, &statbuf);
         if (S_ISLNK(statbuf.st_mode)) {
             log_debug("Skipping %s: broken symlink", file_full_path);
         } else {
             log_err("Skipping %s: Error fstat()ing file.", file_full_path);
         }
+#else
+        log_err("Skipping %s: Error stat()ing file.", file_full_path);
+#endif
         goto cleanup;
     }
 
@@ -557,6 +580,7 @@ void *search_file_worker(void *i) {
 
 static int check_symloop_enter(const char *path, dirkey_t *outkey) {
 #ifdef _WIN32
+    (void)path; (void)outkey;
     return SYMLOOP_OK;
 #else
     struct stat buf;
@@ -590,6 +614,7 @@ static int check_symloop_enter(const char *path, dirkey_t *outkey) {
 
 static int check_symloop_leave(dirkey_t *dirkey) {
 #ifdef _WIN32
+    (void)dirkey;
     return SYMLOOP_OK;
 #else
     symdir_t *item_found = NULL;

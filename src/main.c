@@ -1,16 +1,16 @@
+#include "config.h"
+
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <pcre2.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
-
-#include "config.h"
-
-#include <pcre2.h>
 
 #ifdef HAVE_SYS_CPUSET_H
 #include <sys/cpuset.h>

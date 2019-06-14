@@ -1,8 +1,8 @@
 #ifndef IGNORE_H
 #define IGNORE_H
 
-#include <dirent.h>
-#include <sys/types.h>
+// forward declaration so we don't have to include dirent.h
+struct dirent;
 
 struct ignores {
     char **extensions; /* File extensions to ignore */

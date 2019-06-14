@@ -1,37 +1,16 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <limits.h>
+#include "config.h"
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <sys/mman.h>
-#endif
+#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-
-#include "config.h"
-
-#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-#endif
 
-#include "config.h"
-#include "decompress.h"
 #include "ignore.h"
-#include "log.h"
-#include "options.h"
-#include "print.h"
-#include "uthash.h"
 #include "util.h"
-
-#include <pcre2.h>
+#include "uthash.h"
 
 extern size_t alpha_skip_lookup[256];
 extern size_t *find_skip_lookup;

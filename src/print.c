@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -169,7 +171,7 @@ void print_binary_file_matches(const char *path) {
     fprintf(out_fd, "Binary file %s matches.\n", path);
 }
 
-void print_file_matches(const char *path, const char *buf, const size_t buf_len, const match_t matches[], const size_t matches_len) {
+void print_file_matches(const char *path, const char *buf, const size_t buf_len, const match_t *matches, const size_t matches_len) {
     size_t cur_match = 0;
     ssize_t lines_to_print = 0;
     char sep = '-';
@@ -366,7 +368,7 @@ void print_line_number(size_t line, const char sep) {
     }
 }
 
-void print_column_number(const match_t matches[], size_t last_printed_match,
+void print_column_number(const match_t *matches, size_t last_printed_match,
                          size_t prev_line_offset, const char sep) {
     size_t column = 0;
     if (prev_line_offset <= matches[last_printed_match].start) {

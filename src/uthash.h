@@ -24,6 +24,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef UTHASH_H
 #define UTHASH_H
 
+#include "config.h"
+
 #include <stddef.h> /* ptrdiff_t */
 #include <stdlib.h> /* exit() */
 #include <string.h> /* memcmp,strlen */

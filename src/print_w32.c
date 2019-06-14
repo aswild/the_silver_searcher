@@ -1,3 +1,4 @@
+#include "config.h"
 #include "print.h"
 #include <io.h>
 #include <stdarg.h>
