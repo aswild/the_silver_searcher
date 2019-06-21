@@ -32,10 +32,6 @@ if WIN32_BUILD
 ag_SOURCES += src/print_w32.c
 endif
 
-if USE_FOPENCOOKIE
-ag_SOURCES += src/zfile.c
-endif
-
 dist_man_MANS = doc/ag.1
 
 bashcompdir = $(datadir)/bash-completion/completions
