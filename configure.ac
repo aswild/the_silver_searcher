@@ -109,6 +109,19 @@ AS_IF([test "x$ag_found_lzma" = "xyes"],
       [AS_IF([test "x$enable_lzma" = "xyes"], [AC_MSG_ERROR([--enable-lzma was specified but lzma couldn't be found])])
 ])
 
+##### LIBARCHIVE #####
+ag_found_libarchive=no
+AC_ARG_ENABLE([libarchive], AS_HELP_STRING([--enable-libarchive], [Enable file decompression support using libarchive]))
+AS_IF([test "x$enable_libarchive" = "xyes"], [
+      PKG_CHECK_MODULES([LIBARCHIVE], [libarchive])
+      AW_APPEND_CFLAGS([$LIBARCHIVE_CFLAGS])
+      AW_APPEND_LIBS([$LIBARCHIVE_LIBS])
+      AC_CHECK_HEADERS([archive.h archive_entry.h], [],
+                       [AC_MSG_ERROR([pkg-config found libarchive, but libarchive's headers couldn't be found])])
+      ag_found_libarchive=yes
+      AC_DEFINE([USE_LIBARCHIVE], [], [Enable libarchive decompression])
+])
+
 AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
 AC_CHECK_HEADERS([sys/cpuset.h err.h])
 
@@ -206,6 +219,7 @@ The Silver Searcher $ag_version configuration summary:
     PCRE version            ${ag_pcre_string}
     zlib decompression      ${ag_found_zlib}
     lzma decompression      ${ag_found_lzma}
+    libarchive support      ${ag_found_libarchive}
 
     Test suite              ${ag_test_suite}
     Code format check       ${ag_clang_format}
