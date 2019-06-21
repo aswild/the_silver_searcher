@@ -1,7 +1,14 @@
+#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "decompress.h"
+
+#ifdef USE_LIBARCHIVE
+#include <archive.h>
+#include <archive_entry.h>
+#endif
 
 #ifdef USE_LZMA
 #include <lzma.h>
@@ -10,7 +17,6 @@
 static const uint8_t XZ_HEADER_MAGIC[6] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
 static const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
 #endif
-
 
 #ifdef USE_ZLIB
 #define ZLIB_CONST 1
@@ -165,6 +171,79 @@ error_out:
 }
 #endif // USE_LZMA
 
+#ifdef USE_LIBARCHIVE
+static void *decompress_libarchive(const void *buf, const size_t buf_len,
+                                   const char *dir_full_path, size_t *new_buf_len) {
+    struct archive *a = NULL;
+    struct archive_entry *ae = NULL;
+    size_t total_read = 0;
+    const size_t pagesize = getpagesize();
+
+    size_t result_size = ((buf_len + pagesize - 1) & ~(pagesize - 1));
+    unsigned char *result = malloc(result_size);
+    if (result == NULL) {
+        log_err("Unable to malloc %zu bytes to decompress file %s", result_size, dir_full_path);
+        goto error_out;
+    }
+
+    a = archive_read_new();
+    if (a == NULL) {
+        log_err("Unable to initialize libarchive");
+        goto error_out;
+    }
+
+    archive_read_support_format_raw(a);
+    archive_read_support_filter_all(a);
+    if (archive_read_open_memory(a, buf, buf_len) != ARCHIVE_OK) {
+        log_err("Unable to open libarchive stream: %s", archive_error_string(a));
+        goto error_out;
+    }
+    if (archive_read_next_header(a, &ae) != ARCHIVE_OK) {
+        log_err("Unable to read libarchive header entry: %s", archive_error_string(a));
+        goto error_out;
+    }
+
+    while (true) {
+        const void *block;
+        size_t block_size;
+        off_t block_off;
+        int r = archive_read_data_block(a, &block, &block_size, &block_off);
+        if (r == ARCHIVE_EOF) {
+            break;
+        } else if (r != ARCHIVE_OK) {
+            log_err("Failed decompressing file %s with libarchive: %s", dir_full_path, archive_error_string(a));
+            goto error_out;
+        }
+
+        total_read = block_off + block_size;
+        while (result_size < total_read) {
+            unsigned char *result_save = result;
+            result_size *= 2;
+            result = realloc(result, result_size);
+            if (result == NULL) {
+                log_err("Unable to realloc %zu bytes to decompress file %s", result_size, dir_full_path);
+                free(result_save);
+                goto error_out;
+            }
+        }
+
+        memcpy(result + block_off, block, block_size);
+    }
+
+    archive_read_free(a);
+    *new_buf_len = total_read;
+    return result;
+
+error_out:
+    *new_buf_len = 0;
+    free(result);
+    if (a != NULL) {
+        archive_read_free(a);
+    }
+    return NULL;
+}
+#endif // USE_LIBARCHIVE
+
 
 /* This function is very hot. It's called on every file when zip is enabled. */
 void *decompress(const ag_compression_type zip_type, const void *buf, const size_t buf_len,
@@ -181,6 +260,10 @@ void *decompress(const ag_compression_type zip_type, const void *buf, const size
 #ifdef USE_LZMA
         case AG_XZ:
             return decompress_lzma(buf, buf_len, dir_full_path, new_buf_len);
+#endif
+#ifdef USE_LIBARCHIVE
+        case AG_LIBARCHIVE:
+            return decompress_libarchive(buf, buf_len, dir_full_path, new_buf_len);
 #endif
         case AG_NO_COMPRESSION:
             log_err("File %s is not compressed", dir_full_path);
@@ -234,6 +317,31 @@ ag_compression_type is_zipped(const void *buf, const size_t buf_len) {
             return AG_XZ;
         }
     }
+#endif
+
+    /* check for libarchive support */
+#ifdef USE_LIBARCHIVE
+    struct archive *a = archive_read_new();
+    if (a == NULL) {
+        log_err("Failed to initialize libarchive");
+        return AG_NO_COMPRESSION;
+    }
+    /* check for all compression filters, but only in the raw format
+     * so that libarchive doesn't try to check for tar files and what not */
+    archive_read_support_format_raw(a);
+    archive_read_support_filter_all(a);
+
+    /* open the libarchive stream to check whether it's compressed, then close/free it.
+     * TODO: keep the libarchive stream open and pass it back to the search code */
+    bool la_supported = false;
+    int r = archive_read_open_memory(a, buf_c, buf_len);
+    if (r == ARCHIVE_OK) {
+        la_supported = archive_filter_code(a, 0) != ARCHIVE_FILTER_NONE;
+    } else {
+        log_err("Failed to check compression type with libarchive");
+    }
+    archive_read_free(a); /* automatically calls archive_read_close */
+    return la_supported ? AG_LIBARCHIVE : AG_NO_COMPRESSION;
 #endif
 
     return AG_NO_COMPRESSION;

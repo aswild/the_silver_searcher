@@ -11,6 +11,7 @@ typedef enum {
     AG_NO_COMPRESSION,
     AG_GZIP,
     AG_XZ,
+    AG_LIBARCHIVE,
 } ag_compression_type;
 
 ag_compression_type is_zipped(const void *buf, const size_t buf_len);
