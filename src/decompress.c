@@ -202,8 +202,9 @@ ag_compression_type is_zipped(const void *buf, const size_t buf_len) {
 
     const unsigned char *const buf_c = buf;
 
-    if (buf_len == 0)
+    if (buf_len == 0) {
         return AG_NO_COMPRESSION;
+    }
 
     /* Check for gzip & compress */
 #ifdef USE_ZLIB
