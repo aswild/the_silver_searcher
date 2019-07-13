@@ -3,11 +3,6 @@
 #include "scandir.h"
 #include <stdbool.h>
 
-#ifdef OS_LINUX
-#define is_procfile(path) (strncmp((path), "/proc", 5) == 0)
-#define is_sysfile(path) (strncmp((path), "/sys", 4) == 0)
-#endif
-
 // globals
 size_t alpha_skip_lookup[256];
 size_t *find_skip_lookup;
@@ -19,6 +14,14 @@ pthread_cond_t files_ready;
 pthread_mutex_t stats_mtx;
 pthread_mutex_t work_queue_mtx;
 symdir_t *symhash;
+
+#ifdef OS_LINUX
+dev_t proc_dev = 0;
+dev_t sys_dev = 0;
+
+#define is_procfile(_statbuf) (proc_dev && (proc_dev == _statbuf.st_dev))
+#define is_sysfile(_statbuf) (sys_dev && (sys_dev == _statbuf.st_dev))
+#endif
 
 /* Returns: -1 if skipped, otherwise # of matches */
 ssize_t search_buf(const char *buf, const size_t buf_len,
@@ -349,7 +352,7 @@ void search_file(const char *file_full_path) {
     f_len = statbuf.st_size;
 
 #ifdef OS_LINUX
-    if (f_len == 0 && !is_procfile(file_full_path)) {
+    if (f_len == 0 && !is_procfile(statbuf)) {
 #else
     if (f_len == 0) {
 #endif
@@ -387,7 +390,7 @@ void search_file(const char *file_full_path) {
 #else
 
 #ifdef OS_LINUX
-    if (is_procfile(file_full_path)) {
+    if (is_procfile(statbuf)) {
         // /proc files can't be mmap'd and show up as zero-length. Sometimes we can lseek them to get the size and sometimes we can't
         ssize_t bytes_read = 0;
         f_len = lseek(fd, 0, SEEK_END);
@@ -418,7 +421,7 @@ void search_file(const char *file_full_path) {
         }
         log_debug("%s: read %zu", file_full_path, bytes_read);
         f_len = (off_t)bytes_read;
-    } else if (is_sysfile(file_full_path)) {
+    } else if (is_sysfile(statbuf)) {
         // /sys files can't be mmap'd, and reading them might return less than the expected amount
         buf = ag_malloc(f_len);
         ssize_t bytes_read = read(fd, buf, f_len);
@@ -501,7 +504,7 @@ cleanup:
         UnmapViewOfFile(buf);
 #else
 #ifdef OS_LINUX
-        if (is_procfile(file_full_path) || is_sysfile(file_full_path)) {
+        if (is_procfile(statbuf) || is_sysfile(statbuf)) {
             free(buf);
         } else if (opts.mmap) {
 #else

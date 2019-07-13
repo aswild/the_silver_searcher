@@ -50,6 +50,10 @@ extern pthread_cond_t files_ready;
 extern pthread_mutex_t stats_mtx;
 extern pthread_mutex_t work_queue_mtx;
 
+#ifdef OS_LINUX
+extern dev_t proc_dev;
+extern dev_t sys_dev;
+#endif
 
 /* For symlink loop detection */
 #define SYMLOOP_ERROR (-1)

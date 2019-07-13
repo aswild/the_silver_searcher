@@ -135,6 +135,24 @@ int main(int argc, char **argv) {
         opts.re = ag_pcre2_compile(opts.query, pcre_opts, opts.use_jit);
     }
 
+#ifdef OS_LINUX
+    {
+        struct stat sb;
+        if (stat("/proc", &sb) == 0) {
+            proc_dev = sb.st_dev;
+            log_debug("/proc device is %lu", proc_dev);
+        } else {
+            log_debug("WARNING: failed to stat /proc: %s", strerror(errno));
+        }
+        if (stat("/sys", &sb) == 0) {
+            sys_dev = sb.st_dev;
+            log_debug("/sys device is %lu", sys_dev);
+        } else {
+            log_debug("WARNING: failed to stat /sys: %s", strerror(errno));
+        }
+    }
+#endif
+
     if (opts.search_stream) {
         search_stream(stdin, "");
     } else {
