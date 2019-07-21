@@ -394,7 +394,7 @@ void search_file(const char *file_full_path) {
         // /proc files can't be mmap'd and show up as zero-length. Sometimes we can lseek them to get the size and sometimes we can't
         ssize_t bytes_read = 0;
         f_len = lseek(fd, 0, SEEK_END);
-        if (f_len != -1) {
+        if (f_len && (f_len != -1)) {
             // lseek succeeded, so we know how much to read
             lseek(fd, 0, SEEK_SET);
             buf = ag_malloc(f_len);
@@ -404,7 +404,7 @@ void search_file(const char *file_full_path) {
             }
         } else {
             // lseek failed, so use the last-resort of dynamically reallocating the buffer until we've read as much as we can
-            size_t buf_size = 4096;
+            size_t buf_size = 1024;
             buf = ag_malloc(buf_size);
             while (TRUE) {
                 bytes_read += read(fd, buf + bytes_read, buf_size - bytes_read);
