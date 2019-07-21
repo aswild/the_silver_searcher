@@ -169,6 +169,10 @@ error_out:
 /* This function is very hot. It's called on every file when zip is enabled. */
 void *decompress(const ag_compression_type zip_type, const void *buf, const size_t buf_len,
                  const char *dir_full_path, size_t *new_buf_len) {
+    /* suppress unused-parameter warnings if zlib and lzma are disabled */
+    (void)buf;
+    (void)buf_len;
+
     switch (zip_type) {
 #ifdef USE_ZLIB
         case AG_GZIP:
@@ -201,6 +205,7 @@ ag_compression_type is_zipped(const void *buf, const size_t buf_len) {
      */
 
     const unsigned char *const buf_c = buf;
+    (void)buf_c; /* suppress unused variable warning if zlib and lzma are disabled */
 
     if (buf_len == 0) {
         return AG_NO_COMPRESSION;
