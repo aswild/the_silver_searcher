@@ -106,8 +106,6 @@ extern cli_options opts;
 
 typedef struct option option_t;
 
-void print_version(void);
-
 void init_options(void);
 void parse_options(int argc, char **argv, char **base_paths[], char **paths[]);
 void cleanup_options(void);

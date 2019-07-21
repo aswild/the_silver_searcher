@@ -159,9 +159,8 @@ can be found at http://geoff.greer.fm/ag\n\
     fputs(usage_text, fp);
 }
 
-void print_version(void) {
+static void print_version(void) {
     char jit = opts.use_jit ? '+' : '-';
-    char pcre2 = '+';
     char lzma = '-';
     char zlib = '-';
 
@@ -175,7 +174,7 @@ void print_version(void) {
     printf("ag version %s\n", AG_VERSION);
     printf("pcre version %s\n", ag_pcre2_version());
     printf("Features:\n");
-    printf("  %cjit %cpcre2 %clzma %czlib\n", jit, pcre2, lzma, zlib);
+    printf("  %cjit %clzma %czlib\n", jit, lzma, zlib);
 }
 
 void init_options(void) {
