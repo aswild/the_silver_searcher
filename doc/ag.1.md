@@ -17,18 +17,18 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `--[no]affinity`:
     Set thread affinity (if platform supports it). Default is true.
 
-  * `--agrc=<path-to-agrc-file>`:
-    Use <path-to-agrc-file> instead of $AGRC or $HOME/.agrc for default options.
-    Specify `--no-agrc` to disable reading from an agrc file. See [AGRC][] for details.
+  * `--agrc`=_FILE_:
+    Use _FILE_ instead of $AGRC or $HOME/.agrc for default options.
+    Specify `--no-agrc` to disable reading from an agrc file. See [AGRC][AGRC] for details.
 
   * `-a --all-types`:
     Search all files. This doesn't include hidden files, and doesn't respect any ignore files.
 
-  * `-A --after [LINES]`:
-    Print lines after match. If not provided, LINES defaults to 2.
+  * `-A --after`[=_LINES_]:
+    Print lines after match. If not provided, _LINES_ defaults to 2.
 
-  * `-B --before [LINES]`:
-    Print lines before match. If not provided, LINES defaults to 2.
+  * `-B --before`[=_LINES_]:
+    Print lines before match. If not provided, _LINES_ defaults to 2.
 
   * `--[no]break`:
     Print a newline between matches in different files. Enabled by default.
@@ -53,14 +53,14 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `--column`:
     Print column numbers in results.
 
-  * `-C --context [LINES]`:
-    Print lines before and after matches. Default is 2.
+  * `-C --context`[=_LINES_]:
+    Print lines before and after matches. If not provided, _LINES_ defaults to 2.
 
   * `-D --debug`:
     Output ridiculous amounts of debugging info. Not useful unless you're actually debugging.
 
-  * `--depth NUM`:
-    Search up to NUM directories deep, -1 for unlimited. Default is 25.
+  * `--depth`=_NUM_:
+    Search up to _NUM_ directories deep, -1 for unlimited. Default is 25.
 
   * `--[no]filename`:
     Print file names. Enabled by default, except when searching a single file.
@@ -77,11 +77,11 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
     filename. `--nogroup` refrains from this, and instead places the
     filename at the start of each match line.
 
-  * `-g PATTERN`:
-    Print filenames matching PATTERN.
+  * `-g --filename-pattern`=_PATTERN_:
+    Print filenames matching _PATTERN_.
 
-  * `-G --file-search-regex PATTERN`:
-    Only search files whose names match PATTERN.
+  * `-G --file-search-regex`=_PATTERN_:
+    Only search files whose names match _PATTERN_.
 
   * `-H --[no]heading`:
     Print filenames above matching contents.
@@ -92,11 +92,11 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `--hidden`:
     Search hidden files. This option obeys ignored files.
 
-  * `-I --ignore PATTERN`:
-    Ignore files/directories whose names match this pattern. Literal
+  * `-I --ignore`=_PATTERN_:
+    Ignore files/directories whose names match _PATTERN_. Literal
     file and directory names are also allowed.
 
-  * `--ignore-dir NAME`:
+  * `--ignore-dir`=_PATTERN_:
     Alias for --ignore for compatibility with ack.
 
   * `-i --ignore-case`:
@@ -116,8 +116,8 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `--list-file-types`:
     See `FILE TYPES` below.
 
-  * `-m --max-count NUM`:
-    Skip the rest of a file after NUM matches. Default is 0, which never skips.
+  * `-m --max-count`=_NUM_:
+    Skip the rest of a file after _NUM_ matches. Default is 0, which never skips.
 
   * `--[no]mmap`:
     Toggle use of memory-mapped I/O. Defaults to true on platforms where
@@ -141,10 +141,10 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
     devices. This lets you avoid scanning slow network mounts.
     This feature is not supported on all platforms.
 
-  * `-p --path-to-ignore STRING`:
-    Provide a path to a specific .ignore file.
+  * `-p --path-to-ignore`=_PATH_:
+    Provide _PATH_ pointing to a specific .ignore file.
 
-  * `-P --pager=COMMAND`:
+  * `-P --pager`=_COMMAND_:
     Use a pager such as `less`. Use `--nopager` to override. This option
     is also ignored if output is piped to another program.
     The pager selected is selected from (in order): the command line argument,
@@ -163,7 +163,7 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
     When searching a stream, print all lines even if they don't match.
 
   * `-Q --literal`:
-    Do not parse PATTERN as a regular expression. Try to match it literally.
+    Do not parse _PATTERN_ as a regular expression. Try to match it literally.
 
   * `-q --silent`:
     Suppress all log messages, including errors.
@@ -175,7 +175,7 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
     Match case-sensitively.
 
   * `-S --smart-case`:
-    Match case-sensitively if there are any uppercase letters in PATTERN,
+    Match case-sensitively if there are any uppercase letters in _PATTERN_,
     case-insensitively otherwise. Enabled by default.
 
   * `--search-binary`:
@@ -218,14 +218,14 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `-w --word-regexp`:
     Only match whole words.
 
-  * `--workers NUM`:
-    Use NUM worker threads. Default is the number of CPU cores, with a max of 8.
+  * `--workers`=_NUM_:
+    Use _NUM_ worker threads. Default is the number of CPU cores, with a max of 8.
 
-  * `-W --width NUM`:
-    Truncate match lines after NUM characters.
+  * `-W --width`=_NUM_:
+    Truncate match lines after _NUM_ characters.
 
-  * `-X --invert-file-search-regex PATTERN`:
-    Like -G, but only search files whose names do not match PATTERN.
+  * `-X --invert-file-search-regex`=_PATTERN_:
+    Like -G, but only search files whose names do not match _PATTERN_.
     File-type searches are still used and not inverted.
 
   * `-z --search-zip`:
@@ -261,7 +261,7 @@ to search all, including hidden files.
 
 To modify the "default" options, ag can read a list of command-line arguments
 from an "agrc" file. One "agrc" file will be selected as the first of 1) the
-`<path>` in `--agrc=<path>`, 2) the environment variable `AGRC`, or 3) the
+_PATH_ in `--agrc`=_PATH_, 2) the environment variable `AGRC`, or 3) the
 default `$HOME/.agrc`.
 
 If `--noagrc` is specified, an "agrc" file will not be used.
@@ -288,6 +288,9 @@ the form `--option=value` rather than `--option value`.
 
 ag was originally created by Geoff Greer. More information (and the latest
 release) can be found at http://geoff.greer.fm/ag
+
+This man page is part of Allen Wild's fork of ag, which uses version 2 of the
+PCRE library and other additional features: https://github.com/aswild/the_silver_searcher
 
 ## SEE ALSO
 
