@@ -636,7 +636,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
     /* find .*ignore files to load ignore patterns from */
     for (i = 0; opts.skip_vcs_ignores ? (i == 0) : (ignore_pattern_files[i] != NULL); i++) {
         ignore_file = ignore_pattern_files[i];
-        ag_asprintf(&dir_full_path, "%s/%s", path, ignore_file);
+        dir_full_path = join_paths(path, ignore_file);
         load_ignore_patterns(ig, dir_full_path);
         free(dir_full_path);
         dir_full_path = NULL;
@@ -687,7 +687,7 @@ void search_dir(ignores *ig, const char *base_path, const char *path, const int 
     for (i = 0; i < results; i++) {
         queue_item = NULL;
         dir = dir_list[i];
-        ag_asprintf(&dir_full_path, "%s/%s", path, dir->d_name);
+        dir_full_path = join_paths(path, dir->d_name);
 #ifndef _WIN32
         if (opts.one_dev) {
             struct stat s;

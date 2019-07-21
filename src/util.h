@@ -144,6 +144,8 @@ int is_directory(const char *path, const struct dirent *d);
 int is_symlink(const char *path, const struct dirent *d);
 int is_named_pipe(const char *path, const struct dirent *d);
 
+char *join_paths(const char *a, const char *b);
+
 void die(const char *fmt, ...) FORMAT_PRINTF(1, 2) NORETURN;
 
 void ag_asprintf(char **ret, const char *fmt, ...) FORMAT_PRINTF(2, 3);

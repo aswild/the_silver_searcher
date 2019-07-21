@@ -511,9 +511,8 @@ int is_directory(const char *path, const struct dirent *d) {
         return d->d_type == DT_DIR;
     }
 #endif
-    char *full_path;
     struct stat s;
-    ag_asprintf(&full_path, "%s/%s", path, d->d_name);
+    char *full_path = join_paths(path, d->d_name);
     if (stat(full_path, &s) != 0) {
         free(full_path);
         return FALSE;
@@ -540,9 +539,8 @@ int is_symlink(const char *path, const struct dirent *d) {
         return (d->d_type == DT_LNK);
     }
 #endif
-    char *full_path;
     struct stat s;
-    ag_asprintf(&full_path, "%s/%s", path, d->d_name);
+    char *full_path = join_paths(path, d->d_name);
     if (lstat(full_path, &s) != 0) {
         free(full_path);
         return FALSE;
@@ -558,9 +556,8 @@ int is_named_pipe(const char *path, const struct dirent *d) {
         return d->d_type == DT_FIFO || d->d_type == DT_SOCK;
     }
 #endif
-    char *full_path;
     struct stat s;
-    ag_asprintf(&full_path, "%s/%s", path, d->d_name);
+    char *full_path = join_paths(path, d->d_name);
     if (stat(full_path, &s) != 0) {
         free(full_path);
         return FALSE;
@@ -571,6 +568,22 @@ int is_named_pipe(const char *path, const struct dirent *d) {
            || S_ISSOCK(s.st_mode)
 #endif
         ;
+}
+
+/*
+ * replaces ag_asprintf(&out, "%s/%s", a, b)
+ * Optimized because we can pre-calculate exactly how big the buffer should be
+ * and avoid vasprintf overhead
+ */
+char *join_paths(const char *a, const char *b) {
+    const size_t len_a = strlen(a);
+    const size_t len_b = strlen(b);
+    char *buf = ag_malloc(len_a + len_b + 2); // extra room for '/' and null
+    memcpy(buf, a, len_a);
+    buf[len_a] = '/';
+    memcpy(buf + len_a + 1, b, len_b);
+    buf[len_a + len_b + 1] = '\0';
+    return buf;
 }
 
 void ag_asprintf(char **ret, const char *fmt, ...) {

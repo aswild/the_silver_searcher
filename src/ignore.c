@@ -71,14 +71,14 @@ ignores *init_ignore(ignores *parent, const char *dirname, const size_t dirname_
     }
 
     if (parent && parent->abs_path_len > 0) {
-        ag_asprintf(&(ig->abs_path), "%s/%s", parent->abs_path, dirname);
+        ig->abs_path = join_paths(parent->abs_path, dirname);
         ig->abs_path_len = parent->abs_path_len + 1 + dirname_len;
     } else if (dirname_len == 1 && dirname[0] == '.') {
         ig->abs_path = ag_malloc(sizeof(char));
         ig->abs_path[0] = '\0';
         ig->abs_path_len = 0;
     } else {
-        ag_asprintf(&(ig->abs_path), "%s", dirname);
+        ig->abs_path = ag_strdup(dirname);
         ig->abs_path_len = dirname_len;
     }
     return ig;
@@ -227,7 +227,7 @@ static int path_ignore_search(const ignores *ig, const char *path, const char *f
         return 1;
     }
 
-    ag_asprintf(&temp, "%s/%s", path[0] == '.' ? path + 1 : path, filename);
+    temp = join_paths(path[0] == '.' ? path + 1 : path, filename);
 
     if (strncmp(temp, ig->abs_path, ig->abs_path_len) == 0) {
         char *slash_filename = temp + ig->abs_path_len;
@@ -372,8 +372,10 @@ int filename_filter(const char *path, const struct dirent *dir, void *baton) {
             }
 #endif
             if (filename[filename_len - 1] != '/') {
-                char *temp;
-                ag_asprintf(&temp, "%s/", filename);
+                char *temp = ag_malloc(filename_len + 2);
+                memcpy(temp, filename, filename_len);
+                temp[filename_len] = '/';
+                temp[filename_len + 1] = '\0';
                 int rv = path_ignore_search(ig, path_start, temp);
                 free(temp);
                 if (rv) {

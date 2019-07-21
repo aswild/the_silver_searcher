@@ -865,7 +865,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     if (home_dir && !opts.search_all_files) {
         log_debug("Found user's home dir: %s", home_dir);
-        ag_asprintf(&ignore_file_path, "%s/.agignore", home_dir);
+        ignore_file_path = join_paths(home_dir, ".agignore");
         load_ignore_patterns(root_ignores, ignore_file_path);
         free(ignore_file_path);
     }
@@ -890,9 +890,9 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 free(gitconfig_res);
                 const char *config_home = getenv("XDG_CONFIG_HOME");
                 if (config_home) {
-                    ag_asprintf(&gitconfig_res, "%s/%s", config_home, "git/ignore");
+                    gitconfig_res = join_paths(config_home, "git/ignore");
                 } else {
-                    ag_asprintf(&gitconfig_res, "%s/%s", home_dir, ".config/git/ignore");
+                    gitconfig_res = join_paths(home_dir, ".config/git/ignore");
                 }
             }
             log_debug("global core.excludesfile: %s", gitconfig_res);
