@@ -232,6 +232,15 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
     Search contents of compressed files. Currently, gz and xz are supported.
     This option requires that ag is built with lzma and zlib.
 
+  * `-Z --null-lines`:
+    Use NULL (`\0`) as the newline separator instead of `\n`. This is primarily
+    useful for searching special files such as /proc/pid/environ. It applies
+    globally to all files searched, and `\n` is NOT treated as a newline. This
+    means that if a normal text file (that contains no null bytes) contains
+    a match, the entire file will be printed as though it were a single line.
+    This setting does not affect how newlines in regex patterns are handled
+    (i.e. it doesn't change PCRE matching).
+
   * `-0 --null --print0`:
     Separate the filenames with `\0`, rather than `\n`:
     this allows `xargs -0 <command>` to correctly process filenames containing

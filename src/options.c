@@ -136,6 +136,8 @@ Search Options:\n\
                           Like -G, but only search files whose names do not match PATTERN.\n\
                           File-type searches are still used and not inverted.\n\
   -z --search-zip         Search contents of compressed (e.g., gzip) files\n\
+  -Z --null-lines         Search files containing null-delimited lines. Applies to all\n\
+                          files searched, and '\\n' is not considered a newline.\n\
 \n\
 Other Options:\n\
      --agrc=<agrc-path>   Load options (one per line) from <agrc-path>\n\
@@ -203,6 +205,7 @@ void init_options(void) {
     opts.use_thread_affinity = TRUE;
     opts.invert_file_search_regex = FALSE;
     opts.search_as_text = FALSE;
+    opts.line_delim = '\n';
 
     uint32_t use_jit = 0;
     if (pcre2_config(PCRE2_CONFIG_JIT, &use_jit) < 0) {
@@ -300,7 +303,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     init_options();
 
-    const char optstring[] = "A::aB::C::cDG:g:FfHhiI:jLlm:noP::p:QqRrSsvVtuUwW:X:z0";
+    const char optstring[] = "A::aB::C::cDG:g:FfHhiI:jLlm:noP::p:QqRrSsvVtuUwW:X:zZ0";
     const option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
         { "ackmate-dir-filter", required_argument, NULL, 0 },
@@ -390,6 +393,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "recurse", no_argument, NULL, 'r' },
         { "search-binary", no_argument, &opts.search_binary_files, 1 },
         { "search-files", no_argument, &opts.search_stream, 0 },
+        { "null-lines", no_argument, NULL, 'Z' },
         { "search-zip", no_argument, &opts.search_zip_files, 1 },
         { "silent", no_argument, NULL, 'q' },
         { "skip-vcs-ignores", no_argument, NULL, 'U' },
@@ -690,6 +694,10 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 break;
             case 'z':
                 opts.search_zip_files = 1;
+                break;
+            case 'Z':
+                opts.line_delim = '\0';
+                opts.search_as_text = TRUE;
                 break;
             case '0':
                 opts.path_sep = '\0';

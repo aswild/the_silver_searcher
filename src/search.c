@@ -152,7 +152,7 @@ ssize_t search_buf(const char *buf, const size_t buf_len,
         } else {
             while (buf_offset < buf_len) {
                 const char *const line = buf + buf_offset;
-                const char *line_end = memchr(line, '\n', buf_len - buf_offset);
+                const char *line_end = memchr(line, opts.line_delim, buf_len - buf_offset);
                 if (!line_end) {
                     line_end = buf + buf_len;
                 }
@@ -166,6 +166,7 @@ ssize_t search_buf(const char *buf, const size_t buf_len,
                     }
                     offset_vector = pcre2_get_ovector_pointer(mdata);
                     log_debug("Regex match found. File %s, offset %zu bytes.", dir_full_path, offset_vector[0]);
+                    log_debug("line_offset=%zu, line_len=%zu", line_offset, line_len);
                     line_offset = offset_vector[1];
                     if (offset_vector[0] == offset_vector[1]) {
                         ++line_offset;
@@ -255,7 +256,7 @@ ssize_t search_stream(FILE *stream, const char *path) {
 
     print_init_context();
 
-    for (i = 1; (line_len = getline(&line, &line_cap, stream)) > 0; i++) {
+    for (i = 1; (line_len = getdelim(&line, &line_cap, opts.line_delim, stream)) > 0; i++) {
         ssize_t result;
         opts.stream_line_num = i;
         result = search_buf(line, line_len, path);
@@ -267,7 +268,7 @@ ssize_t search_stream(FILE *stream, const char *path) {
         } else if (matches_count <= 0 && result == -1) {
             matches_count = -1;
         }
-        if (line[line_len - 1] == '\n') {
+        if (line[line_len - 1] == opts.line_delim) {
             line_len--;
         }
         print_trailing_context(path, line, line_len);

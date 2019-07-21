@@ -276,6 +276,10 @@ Like \-G, but only search files whose names do not match \fIPATTERN\fR\. File\-t
 Search contents of compressed files\. Currently, gz and xz are supported\. This option requires that ag is built with lzma and zlib\.
 .
 .TP
+\fB\-Z \-\-null\-lines\fR
+Use NULL (\fB\e0\fR) as the newline separator instead of \fB\en\fR\. This is primarily useful for searching special files such as /proc/pid/environ\. It applies globally to all files searched, and \fB\en\fR is NOT treated as a newline\. This means that if a normal text file (that contains no null bytes) contains a match, the entire file will be printed as though it were a single line\. This setting does not affect how newlines in regex patterns are handled (i\.e\. it doesn\'t change PCRE matching)\.
+.
+.TP
 \fB\-0 \-\-null \-\-print0\fR
 Separate the filenames with \fB\e0\fR, rather than \fB\en\fR: this allows \fBxargs \-0 <command>\fR to correctly process filenames containing spaces or newlines\.
 .
