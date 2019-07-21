@@ -348,26 +348,46 @@ pcre2_code *ag_pcre2_compile(const char *q, uint32_t pcre_opts, bool use_jit) {
 /* This function is very hot. It's called on every file. */
 int is_binary(const void *buf, const size_t buf_len) {
     size_t suspicious_bytes = 0;
-    size_t total_bytes = buf_len > 512 ? 512 : buf_len;
-    const unsigned char *buf_c = buf;
-    size_t i;
+    const size_t total_bytes = buf_len > 512 ? 512 : buf_len;
+    const unsigned char *const buf_c = buf;
 
     if (buf_len == 0) {
         /* Is an empty file binary? Is it text? */
         return 0;
     }
 
-    if (buf_len >= 3 && buf_c[0] == 0xEF && buf_c[1] == 0xBB && buf_c[2] == 0xBF) {
-        /* UTF-8 BOM. This isn't binary. */
-        return 0;
+#if defined(_WIN32) || defined(__CYGWIN__)
+    /* Is this a PE executable? */
+    if (buf_len >= 0x40) {
+        /* This check assumes little-endian, but I'm not aware of Windows
+         * running on any big-endian systems.
+         * Use memcpy rather than pointer-aliasing for correct handling of
+         * memory alignment, which GCC will optimize to a single
+         * load or move if the CPU allows unaligned access. */
+        uint32_t pe_offset;
+        memcpy(&pe_offset, buf + 0x3c, 4);
+        if (buf_len >= (pe_offset + 4) && memcmp(buf + pe_offset, "PE\0\0", 4) == 0) {
+            return 1;
+        }
     }
+#else
+    /* Is this an ELF binary? */
+    if (buf_len >= 4 && memcmp(buf, "\177ELF", 4) == 0) {
+        return 1;
+    }
+#endif
 
-    if (buf_len >= 5 && strncmp(buf, "%PDF-", 5) == 0) {
+    if (buf_len >= 5 && memcmp(buf, "%PDF-", 5) == 0) {
         /* PDF. This is binary. */
         return 1;
     }
 
-    for (i = 0; i < total_bytes; i++) {
+    if (buf_len >= 3 && memcmp(buf, "\xEF\xBB\xBF", 3) == 0) {
+        /* UTF-8 BOM. This isn't binary. */
+        return 0;
+    }
+
+    for (size_t i = 0; i < total_bytes; i++) {
         if (buf_c[i] == '\0') {
             /* NULL char. It's binary */
             return 1;
