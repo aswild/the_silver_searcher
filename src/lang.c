@@ -54,6 +54,7 @@ const lang_spec_t langs[] = {
     { "hh", { "h" } },
     { "html", { "htm", "html", "shtml", "xhtml" } },
     { "idris", { "idr", "ipkg", "lidr" } },
+    { "inf", { "inf" } },
     { "ini", { "ini" } },
     { "ipython", { "ipynb" } },
     { "isabelle", { "thy" } },

@@ -153,6 +153,9 @@ Language types are output:
     --idris
         .idr  .ipkg  .lidr
   
+    --inf
+        .inf
+  
     --ini
         .ini
   
