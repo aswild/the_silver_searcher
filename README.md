@@ -88,7 +88,7 @@ or
         zypper install the_silver_searcher
 
 * CentOS:
-        
+
         yum install the_silver_searcher
 
 * SUSE Linux Enterprise: Follow [these simple instructions](https://software.opensuse.org/download.html?project=utilities&package=the_silver_searcher).
@@ -108,7 +108,7 @@ or
 * Win32/64
 
   Unofficial daily builds are [available](https://github.com/k-takata/the_silver_searcher-win32).
-  
+
 * Chocolatey
 
         choco install ag
@@ -155,6 +155,17 @@ or
 3. Make install:
 
         sudo make install
+
+### Build options
+
+ * As you'd expect, run `./configure --help` to get a list of all available autoconf options.
+ * `--enable-zlib` / `--disable-zlib`: force enabling or disable gzip decompression support when running `ag -z`,
+   the default is to auto-detect. Requires the zlib library (zlib1g-dev package on Ubuntu/Debian)
+ * `--enable-lzma` / `--disable-lzma`: force enabling or disable LZMA (xz) decompression support when running `ag -z`,
+   the default is to auto-detect. Requires the lzma library (liblzma-dev package on Ubuntu/Debian)
+ * `--enable-libarchive`: Use libarchive to decompress a wide variety of compression formats. Requires the libarchive library.
+   * Warning: while flexible, the libarchive format detection is _slow_ compared to the built-in gz/xz checks, and may significantly
+     slow down ag if searching directories containing lots of uncompressed files (only when using the `-z` option)
 
 
 ### Building a release tarball
