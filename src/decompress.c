@@ -1,26 +1,36 @@
+#include "config.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "decompress.h"
+#ifdef USE_ZLIB
+#define ZLIB_CONST 1
+#include <zlib.h>
+#endif
+
+#ifdef USE_LZMA
+#include <lzma.h>
+/*  http://tukaani.org/xz/xz-file-format.txt */
+static const uint8_t XZ_HEADER_MAGIC[6] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
+static const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
+#endif
 
 #ifdef USE_LIBARCHIVE
 #include <archive.h>
 #include <archive_entry.h>
 #endif
 
-#ifdef USE_LZMA
-#include <lzma.h>
+#include "decompress.h"
+#include "util.h"
 
-/*  http://tukaani.org/xz/xz-file-format.txt */
-static const uint8_t XZ_HEADER_MAGIC[6] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
-static const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
-#endif
-
-#ifdef USE_ZLIB
-#define ZLIB_CONST 1
-#include <zlib.h>
+static size_t pagesize = 0;
+ALWAYS_INLINE static inline size_t round_up_page(size_t sz) {
+    if (pagesize == 0)
+        pagesize = getpagesize();
+    return (sz + pagesize - 1) & ~(pagesize - 1);
+}
 
 /* Code in decompress_zlib from
  *
@@ -30,12 +40,12 @@ static const uint8_t LZMA_HEADER_SOMETIMES[3] = { 0x5D, 0x00, 0x00 };
  *    Not copyrighted -- provided to the public domain
  *    Version 1.4  11 December 2005  Mark Adler
  */
+#ifdef USE_ZLIB
 static void *decompress_zlib(const void *buf, const size_t buf_len,
                              const char *dir_full_path, size_t *new_buf_len) {
     int ret = 0;
     unsigned char *result = NULL;
-    size_t result_size = 0;
-    size_t pagesize = 0;
+    size_t result_size = round_up_page(buf_len);
     z_stream stream;
 
     log_debug("Decompressing zlib file %s", dir_full_path);
@@ -56,8 +66,6 @@ static void *decompress_zlib(const void *buf, const size_t buf_len,
     stream.avail_in = buf_len;
     stream.next_in = buf;
 
-    pagesize = getpagesize();
-    result_size = ((buf_len + pagesize - 1) & ~(pagesize - 1));
     do {
         do {
             unsigned char *tmp_result = result;
@@ -111,8 +119,7 @@ static void *decompress_lzma(const void *buf, const size_t buf_len,
     lzma_stream stream = LZMA_STREAM_INIT;
     lzma_ret lzrt;
     unsigned char *result = NULL;
-    size_t result_size = 0;
-    size_t pagesize = 0;
+    size_t result_size = round_up_page(buf_len);
 
     stream.avail_in = buf_len;
     stream.next_in = buf;
@@ -124,8 +131,6 @@ static void *decompress_lzma(const void *buf, const size_t buf_len,
         goto error_out;
     }
 
-    pagesize = getpagesize();
-    result_size = ((buf_len + pagesize - 1) & ~(pagesize - 1));
     do {
         do {
             unsigned char *tmp_result = result;
@@ -177,9 +182,8 @@ static void *decompress_libarchive(const void *buf, const size_t buf_len,
     struct archive *a = NULL;
     struct archive_entry *ae = NULL;
     size_t total_read = 0;
-    const size_t pagesize = getpagesize();
+    size_t result_size = round_up_page(buf_len);
 
-    size_t result_size = ((buf_len + pagesize - 1) & ~(pagesize - 1));
     unsigned char *result = malloc(result_size);
     if (result == NULL) {
         log_err("Unable to malloc %zu bytes to decompress file %s", result_size, dir_full_path);
@@ -288,7 +292,7 @@ ag_compression_type is_zipped(const void *buf, const size_t buf_len) {
      */
 
     const unsigned char *const buf_c = buf;
-    (void)buf_c; /* suppress unused variable warning if zlib and lzma are disabled */
+    (void)buf_c; /* suppress unused variable warning if all compression modes are disabled */
 
     if (buf_len == 0) {
         return AG_NO_COMPRESSION;

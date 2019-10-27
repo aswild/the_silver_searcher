@@ -36,10 +36,10 @@ extern FILE *out_fd;
 #else
 #endif
 
-#if defined(__GNUC__) || defined(__clang__)
-// GCC/clang attributes, don't forget to #undef them at the bottom of this file
+#ifdef __GNUC__
+// GCC attributes (also work in clang)
 // clang-format off
-#define ALWAYS_INLINE           __attribute__((always_inline))
+#define ALWAYS_INLINE           __attribute__((always_inline,unused))
 #define FORMAT_PRINTF(a, b)     __attribute__((format(printf, a, b)))
 #define NORETURN                __attribute__((noreturn))
 // clang-format on
@@ -167,10 +167,4 @@ size_t strlcpy(char *dest, const char *src, size_t size);
 int vasprintf(char **ret, const char *fmt, va_list args);
 #endif
 
-// undefine gcc attribute macros
-#undef ALWAYS_INLINE
-#undef FORMAT_PRINTF
-#undef NORETURN
-#undef NO_SANITIZE_ALIGNMENT
-
-#endif
+#endif // UTIL_H
