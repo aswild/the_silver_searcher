@@ -163,6 +163,7 @@ static void print_version(void) {
     char jit = opts.use_jit ? '+' : '-';
     char lzma = '-';
     char zlib = '-';
+    char libarchive = '-';
 
 #ifdef USE_LZMA
     lzma = '+';
@@ -170,11 +171,14 @@ static void print_version(void) {
 #ifdef USE_ZLIB
     zlib = '+';
 #endif
+#ifdef USE_LIBARCHIVE
+    libarchive = '+';
+#endif
 
     printf("ag version %s\n", AG_VERSION);
     printf("pcre version %s\n", ag_pcre2_version());
     printf("Features:\n");
-    printf("  %cjit %clzma %czlib\n", jit, lzma, zlib);
+    printf("  %cjit %clzma %czlib %clibarchive\n", jit, lzma, zlib, libarchive);
 }
 
 void init_options(void) {
