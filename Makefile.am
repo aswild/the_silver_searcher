@@ -1,8 +1,8 @@
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CFLAGS = -std=gnu99 -D_GNU_SOURCE \
-            -Wall -Wextra -Werror=implicit-function-declaration -Werror=int-conversion \
+            -Wall -Wextra -Werror=implicit-function-declaration \
             -Wformat=2 -Wshadow -Wpointer-arith -Wcast-qual -Wmissing-prototypes \
-            -Wno-missing-braces -Wno-format-nonliteral
+            -Wno-missing-braces -Wno-format-nonliteral @CFLAGS_VERDEP@
 if ENABLE_WERROR
 AM_CFLAGS += -Werror
 endif

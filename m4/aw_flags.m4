@@ -36,6 +36,19 @@ AC_DEFUN([AW_APPEND_LIBS], [
     done
 ])dnl
 
+# AW_ADD_CFLAGS_VERDEP(FLAG)
+# ------------------------------------------------
+# Check whether FLAG is supported by the compiler using
+# AX_CHECK_COMPILE_FLAG, and add to CFLAGS_VERDEP if so.
+AC_DEFUN_ONCE([_AW_SUBST_CFLAGS_VERDEP], [
+    AC_SUBST([CFLAGS_VERDEP])
+    AM_SUBST_NOTMAKE([CFLAGS_VERDEP])
+])dnl
+AC_DEFUN([AW_ADD_CFLAGS_VERDEP], [
+    AX_CHECK_COMPILE_FLAG([$1], [AX_APPEND_FLAG([$1], [CFLAGS_VERDEP])])
+    _AW_SUBST_CFLAGS_VERDEP
+])dnl
+
 # AW_STRIP_FLAGS(variable-name)
 # ------------------------------------------------
 # Strip leading/trailing spaces from the given variable

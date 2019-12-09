@@ -22,6 +22,10 @@ AX_PTHREAD(
 AW_APPEND_CFLAGS([$PTHREAD_CFLAGS])
 AW_APPEND_LIBS([$PTHREAD_LIBS])
 
+dnl Extra warnings which are useful in newer GCC, but not available in old versions
+dnl Note these are subst'd into AM_CFLAGS, thus not applied in CLFAGS during configure.
+AW_ADD_CFLAGS_VERDEP([-Werror=int-conversion])
+
 AC_CANONICAL_HOST
 case "$host_os" in
     *mingw*)
