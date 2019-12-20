@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <sched.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -164,9 +165,9 @@ int main(int argc, char **argv) {
             }
 #if defined(HAVE_PTHREAD_SETAFFINITY_NP) && (defined(USE_CPU_SET) || defined(HAVE_SYS_CPUSET_H))
             if (opts.use_thread_affinity) {
-#ifdef __linux__
+#if defined(HAVE_CPU_SET_T)
                 cpu_set_t cpu_set;
-#elif __FreeBSD__
+#elif defined(HAVE_CPU_SET)
                 cpuset_t cpu_set;
 #endif
                 CPU_ZERO(&cpu_set);

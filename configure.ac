@@ -15,6 +15,12 @@ AM_PROG_CC_C_O
 AC_PROG_SED
 AC_PROG_GREP
 
+dnl Enable _GNU_SOURCE early since it's needed for some configure checks.
+dnl Don't use AC_DEFINE because we want it included on the command line
+dnl before every compilation without having to make sure it's always first
+dnl in every C file.
+AW_APPEND_CFLAGS([-D_GNU_SOURCE])
+
 AX_PTHREAD(
     [AC_CHECK_HEADERS([pthread.h])],
     [AC_MSG_WARN([No pthread support. Ag will be slower due to running single-threaded.])]
@@ -126,8 +132,16 @@ AS_IF([test "x$enable_libarchive" = "xyes"], [
       AC_DEFINE([USE_LIBARCHIVE], [], [Enable libarchive decompression])
 ])
 
-AC_CHECK_DECLS([CPU_ZERO, CPU_SET], [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])] , [], [#include <sched.h>])
-AC_CHECK_HEADERS([sys/cpuset.h err.h])
+AC_CHECK_DECLS([CPU_ZERO, CPU_SET],
+               [AC_DEFINE([USE_CPU_SET], [], [Use CPU_SET macros])], [], [#include <sched.h>])
+
+AC_CHECK_HEADERS([sys/cpuset.h])
+AC_CHECK_TYPES([cpu_set_t, cpu_set], [], [],
+    [#include <sched.h>
+     #ifdef HAVE_SYS_CPUSET_H
+     #include <sys/cpuset.h>
+     #endif
+    ])
 
 AC_CHECK_DECL([_WIN32], ag_win32_build="yes")
 AM_CONDITIONAL([WIN32_BUILD], [test "x$ag_win32_build" = "xyes"])
