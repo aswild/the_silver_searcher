@@ -201,10 +201,10 @@ AM_COND_IF([USE_GITVERSION], [], [
     dnl Only do this if version.c.in exists. If it doesn't assume we're building from a
     dnl release tarball and version.c already exists
     AS_IF([test -f "${srcdir}/src/version.c.in"], [
-        AC_MSG_NOTICE([Creating version.c])
-        rm -f ${srcdir}/src/version.c
-        mkdir -p src
-        $SED 's/@AG_VERSION@/PACKAGE_VERSION/' ${srcdir}/src/version.c.in >src/version.c
+        AG_VERSION="PACKAGE_VERSION"
+        AC_SUBST([AG_VERSION])
+        AM_SUBST_NOTMAKE([AG_VERSION])
+        AC_CONFIG_FILES([src/version.c])
     ])
 ])
 

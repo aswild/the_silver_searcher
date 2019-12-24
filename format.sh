@@ -24,7 +24,7 @@ then
     exit 1
 fi
 
-SOURCE_FILES=$(git ls-files src/ | grep '\.[ch]$')
+SOURCE_FILES="$(find src -name '*.[ch]' -not -name 'version.c')"
 
 if [ "$1" == "reformat" ]
 then

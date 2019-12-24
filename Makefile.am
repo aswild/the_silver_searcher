@@ -1,4 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+AM_CPPFLAGS = -I$(srcdir)/src
 AM_CFLAGS = -std=gnu99 \
             -Wall -Wextra -Werror=implicit-function-declaration \
             -Wformat=2 -Wshadow -Wpointer-arith -Wcast-qual -Wmissing-prototypes \
@@ -52,7 +53,8 @@ CLEANFILES = .version src/version.c
 
 src/version.c: .version
 	@rm -f src/version.c
-	@$(SED) "s/@AG_VERSION@/\"$(AG_VERSION)\"/" $(srcdir)/src/version.c.in >src/version.c
+	$(AM_V_GEN)$(SED) "s/[@]AG_VERSION[@]/\"$(AG_VERSION)\"/" $(srcdir)/src/version.c.in >$@;\
+        ret=$$?; if [ $$ret != 0 ]; then rm -f $@; exit $$ret; fi
 endif
 
 #
@@ -72,6 +74,9 @@ SH_LOG_DRIVER = $(LOG_DRIVER)
 # Environment variables exported for all tests
 AM_TESTS_ENVIRONMENT  = AGPROG='$(abs_builddir)/ag'; export AGPROG;
 AM_TESTS_ENVIRONMENT += CLANG_FORMAT='$(CLANG_FORMAT)'; export CLANG_FORMAT;
+
+EXTRA_DIST += $(TESTS) $(LOG_DRIVER) .clang-format
+EXTRA_DIST += tests/setup.sh tests/is_binary.pdf tests/print_end.txt
 
 # Check program availability to determine how to actually run the tests.
 # Exit code 77 means to skip a test

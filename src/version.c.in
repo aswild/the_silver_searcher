@@ -1,6 +1,4 @@
 #include "config.h"
+#include "version.h"
 
-// fake include of version.h since it doesn't get found when building in a separate dir
-// the extern declaraion first makes clang -Wmissing-variable-declarations happy
-extern const char * AG_VERSION;
-const char * AG_VERSION = @AG_VERSION@;
+const char *AG_VERSION = @AG_VERSION@;
