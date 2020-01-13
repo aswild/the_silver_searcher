@@ -366,7 +366,9 @@ int is_binary(const void *buf, const size_t buf_len) {
          * load or move if the CPU allows unaligned access. */
         uint32_t pe_offset;
         memcpy(&pe_offset, buf_c + 0x3c, 4);
-        if (buf_len >= (pe_offset + 4) && memcmp(buf_c + pe_offset, "PE\0\0", 4) == 0) {
+        if ((pe_offset < 0xfffffffc) &&
+            (buf_len >= (pe_offset + 4)) &&
+            memcmp(buf_c + pe_offset, "PE\0\0", 4) == 0) {
             return 1;
         }
     }
