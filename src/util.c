@@ -493,9 +493,10 @@ int is_wordchar(char ch) {
 }
 
 int is_lowercase(const char *s) {
-    int i;
-    for (i = 0; s[i] != '\0'; i++) {
-        if (!isascii(s[i]) || isupper(s[i])) {
+    // cast to unsigned char to avoid -Wchar-subscripts warning on MinGW
+    const unsigned char *c;
+    for (c = (const unsigned char *)s; *c; c++) {
+        if (!isascii(*c) || isupper(*c)) {
             return FALSE;
         }
     }
