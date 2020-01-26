@@ -141,13 +141,13 @@ int main(int argc, char **argv) {
         struct stat sb;
         if (stat("/proc", &sb) == 0) {
             proc_dev = sb.st_dev;
-            log_debug("/proc device is %lu", proc_dev);
+            log_debug("/proc device is %lu", (unsigned long)proc_dev);
         } else {
             log_debug("WARNING: failed to stat /proc: %s", strerror(errno));
         }
         if (stat("/sys", &sb) == 0) {
             sys_dev = sb.st_dev;
-            log_debug("/sys device is %lu", sys_dev);
+            log_debug("/sys device is %lu", (unsigned long)sys_dev);
         } else {
             log_debug("WARNING: failed to stat /sys: %s", strerror(errno));
         }
