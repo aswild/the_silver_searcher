@@ -258,7 +258,6 @@ ssize_t search_stream(FILE *stream, const char *path) {
 
     for (i = 1; (line_len = getdelim(&line, &line_cap, opts.line_delim, stream)) > 0; i++) {
         ssize_t result;
-        opts.stream_line_num = i;
         result = search_buf(line, line_len, path);
         if (result > 0) {
             if (matches_count == -1) {
