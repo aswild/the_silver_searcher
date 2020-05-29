@@ -62,6 +62,9 @@ Recursively search for PATTERN in PATH. Like grep or ack, but faster.
   * `--depth`=_NUM_:
     Search up to _NUM_ directories deep, -1 for unlimited. Default is 25.
 
+  * `-E --extension`=_EXT_:
+    Search files with this extension. Equivalent to `-j -G '\.EXT$'` (_EXT_ could be a regex fragment).
+
   * `--[no]filename`:
     Print file names. Enabled by default, except when searching a single file.
 

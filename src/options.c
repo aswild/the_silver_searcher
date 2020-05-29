@@ -104,11 +104,13 @@ Search Options:\n\
                           or patterns from ignore files)\n\
   -D --debug              Ridiculous debugging (probably not useful)\n\
      --depth NUM          Search up to NUM directories deep (Default: 25)\n\
+  -E --extension          Search only files with this extension\n\
   -f --follow             Follow symlinks\n\
   -F --fixed-strings      Alias for --literal for compatibility with grep\n\
-  -G --file-search-regex  PATTERN Limit search to filenames matching PATTERN\n\
+  -G --file-search-regex  PATTERN\n\
+                          Search only files matching this pattern\n\
   -j --just-filename      Search only the file name, not the full path, when using\n\
-                          a file search regex (such as with -g or -G)\n\
+                          a file search regex (such as with -G or -E)\n\
      --hidden             Search hidden files (obeys .*ignore files)\n\
   -i --ignore-case        Match case insensitively\n\
      --ignore PATTERN     Ignore files/directories matching PATTERN\n\
@@ -306,7 +308,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
 
     init_options();
 
-    const char optstring[] = "A::aB::C::cDG:g:FfHhiI:jLlm:noP::p:QqRrSsvVtuUwW:X:zZ0";
+    const char optstring[] = "A::aB::C::cDE:G:g:FfHhiI:jLlm:noP::p:QqRrSsvVtuUwW:X:zZ0";
     const option_t base_longopts[] = {
         { "ackmate", no_argument, &opts.ackmate, 1 },
         { "ackmate-dir-filter", required_argument, NULL, 0 },
@@ -329,6 +331,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
         { "count", no_argument, NULL, 'c' },
         { "debug", no_argument, NULL, 'D' },
         { "depth", required_argument, NULL, 0 },
+        { "extension", required_argument, NULL, 'E' },
         { "filename", no_argument, NULL, 0 },
         { "filename-pattern", required_argument, NULL, 'g' },
         { "file-search-regex", required_argument, NULL, 'G' },
@@ -577,6 +580,15 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             case 'D':
                 set_log_level(LOG_LEVEL_DEBUG);
                 break;
+            case 'E':
+                if (file_search_regex) {
+                    log_err("File search regex (-E, -g, -G, or -X) already specified.");
+                    short_usage(stderr);
+                    exit(1);
+                }
+                opts.file_search_regex_just_filename = true;
+                ag_asprintf(&file_search_regex, "\\.%s$", optarg);
+                break;
             case 'f':
                 opts.follow_symlinks = 1;
                 break;
@@ -586,7 +598,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
             /* fall through */
             case 'G':
                 if (file_search_regex) {
-                    log_err("File search regex (-g, -G, or -X) already specified.");
+                    log_err("File search regex (-E, -g, -G, or -X) already specified.");
                     short_usage(stderr);
                     exit(1);
                 }
@@ -688,7 +700,7 @@ void parse_options(int argc, char **argv, char **base_paths[], char **paths[]) {
                 break;
             case 'X':
                 if (file_search_regex) {
-                    log_err("File search regex (-g, -G, or -X) already specified.");
+                    log_err("File search regex (-E, -g, -G, or -X) already specified.");
                     short_usage(stderr);
                     exit(1);
                 }
