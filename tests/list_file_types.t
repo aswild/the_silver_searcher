@@ -33,6 +33,9 @@ Language types are output:
     --batch
         .bat  .cmd
   
+    --bazel
+        .bazel
+  
     --bb
         .bb  .bbappend  .bbclass  .inc  .conf
   
@@ -52,7 +55,7 @@ Language types are output:
         .chpl
   
     --clojure
-        .clj  .cljs  .cljc  .cljx
+        .clj  .cljs  .cljc  .cljx  .edn
   
     --cmake
         ^CMakeLists\.txt  .cmake
@@ -128,6 +131,9 @@ Language types are output:
   
     --go
         .go
+  
+    --gradle
+        .gradle
   
     --groovy
         .groovy  .gtmpl  .gpp  .grunit  .gradle
@@ -414,6 +420,9 @@ Language types are output:
     --vim
         .vim
   
+    --vue
+        .vue
+  
     --wix
         .wxi  .wxs
   
@@ -428,4 +437,7 @@ Language types are output:
   
     --yaml
         .yaml  .yml
+  
+    --zephir
+        .zep
   

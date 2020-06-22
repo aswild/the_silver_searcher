@@ -23,7 +23,7 @@
     }                                     \
     return ptr;
 
-FILE *out_fd;
+FILE *out_fd = NULL;
 ag_stats stats;
 
 void *ag_malloc(size_t size) {
